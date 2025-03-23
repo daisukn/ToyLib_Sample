@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7EE0295E2D90A9120048EF67 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EE0295D2D90A9120048EF67 /* OpenGL.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		7EE028ED2D90A8200048EF67 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		7EE028EF2D90A8200048EF67 /* ToyLib_Sample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToyLib_Sample; sourceTree = BUILT_PRODUCTS_DIR; };
+		7EE0295D2D90A9120048EF67 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7EE0295E2D90A9120048EF67 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +51,7 @@
 			isa = PBXGroup;
 			children = (
 				7EE028F12D90A8200048EF67 /* ToyLib_Sample */,
+				7EE0295C2D90A9120048EF67 /* Frameworks */,
 				7EE028F02D90A8200048EF67 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,6 +62,14 @@
 				7EE028EF2D90A8200048EF67 /* ToyLib_Sample */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7EE0295C2D90A9120048EF67 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7EE0295D2D90A9120048EF67 /* OpenGL.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -245,6 +260,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lglew",
+					"-lassimp",
+					"-lSDL2",
+					"-lSDL2_image",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -253,6 +283,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lglew",
+					"-lassimp",
+					"-lSDL2",
+					"-lSDL2_image",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
