@@ -1,4 +1,4 @@
-/*
+
 #include "SingleInstance.h"
 #include <iostream>
 #include <fcntl.h>
@@ -62,4 +62,4 @@ SingleInstance::~SingleInstance()
 #endif
     }
 }
-*/
+
