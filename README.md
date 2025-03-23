@@ -8,8 +8,8 @@
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://github.com/your-username/toylib/issues"><img src="https://img.shields.io/github/issues/your-username/toylib" alt="Issues"></a>
-  <a href="https://github.com/your-username/toylib/stargazers"><img src="https://img.shields.io/github/stars/your-username/toylib?style=social" alt="Stars"></a>
+  <a href="https://github.com/daisukn/ToyLib_Sample/issues"><img src="https://img.shields.io/github/issues/daisukn/ToyLib_Sample" alt="Issues"></a>
+  <a href="https://github.com/daisukn/ToyLib_Sample/stargazers"><img src="https://img.shields.io/github/stars/daisukn/ToyLib_Sample?style=social" alt="Stars"></a>
 </p>
 
 ---
