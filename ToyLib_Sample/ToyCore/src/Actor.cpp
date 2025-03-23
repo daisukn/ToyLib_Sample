@@ -17,7 +17,6 @@ Actor::Actor(Application* a)
     mApp->AddActor(this);
 }
 
-
 #include <iostream>
 // デストラクタ
 Actor::~Actor()
