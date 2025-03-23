@@ -4,8 +4,6 @@
 #include <vector>
 #include <string>
 
-
-
 // アクター管理
 class Actor
 {
