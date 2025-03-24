@@ -18,13 +18,13 @@ const float SCREEN_W = 1280.f;
 const float SCREEN_H = 720.f;
 #endif // __HIGH_RESOLUTION__
 
-const std::string WINDOW_TITLE = "Luna";
 
 // コンストラクタ
-Application::Application()
+Application::Application(std::string title)
     : mIsActive(false)
     , mIsUpdatingActors(false)
     , mIsPause(false)
+    , mApplicationTitle(title)
 {
     mRenderer = std::make_unique<class Renderer>();
     mInputSys = std::make_unique<class InputSystem>();
@@ -50,7 +50,7 @@ bool Application::Initialize()
     }
     
     // Renderer初期化
-    mRenderer->Initialize(WINDOW_TITLE, SCREEN_W, SCREEN_H);
+    mRenderer->Initialize(mApplicationTitle, SCREEN_W, SCREEN_H);
 
     // 入力システム初期化
     mInputSys->Initialize();
@@ -125,12 +125,6 @@ void Application::ProcessInput(){
     {
         mIsPause = false;
     }
-
-    //UpdatingActors = true;
-
-    //UpdatingActors = false;
-    
-    
     
     // 配下のActorsに渡す
     for (auto actor : mActors)

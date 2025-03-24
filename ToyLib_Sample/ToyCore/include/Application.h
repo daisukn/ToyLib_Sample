@@ -7,7 +7,6 @@
 
 extern const float SCREEN_W;
 extern const float SCREEN_H;
-extern const std::string WINDOW_TITLE;
 
 enum class StageTransitionID
 {
@@ -23,7 +22,7 @@ class Application
 {
 public:
     // コンストラクタ
-    Application();
+    Application(std::string title);
     // デストラクタ
     ~Application();
 
@@ -48,6 +47,9 @@ public:
     
 private:
     
+    // アプリの名前、Windowのタイトルバーに出る
+    std::string mApplicationTitle;
+    
     // ゲームデータ読み込み/開放
     void UnloadData();
     void LoadData();
@@ -70,9 +72,6 @@ private:
     std::vector<class Actor*> mPendingActors;
     // true の場合Pendingsにまわす
     bool mIsUpdatingActors;
-
-    // カメラ
-    //class CameraActor* cameraAct;
 
     // 入力受付
     void ProcessInput();
