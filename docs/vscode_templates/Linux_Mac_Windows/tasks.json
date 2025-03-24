@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "CMake Configure",
+      "label": "CMake Configure (Unix)",
       "type": "shell",
-      "command": "cmake -S . -B build",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -12,22 +12,33 @@
       }
     },
     {
-      "label": "CMake Build (Debug)",
+      "label": "CMake Configure (Windows)",
       "type": "shell",
-      "command": "cmake --build build --config Debug",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "CMake Build (Unix)",
+      "type": "shell",
+      "command": "cmake --build build",
       "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": "CMake Configure"
+      "dependsOn": "CMake Configure (Unix)"
     },
     {
-      "label": "CMake Build (Release)",
+      "label": "CMake Build (Windows)",
       "type": "shell",
-      "command": "cmake --build build --config Release",
+      "command": "cmake --build build --config Debug",
       "problemMatcher": [],
-      "group": "build"
+      "group": "build",
+      "dependsOn": "CMake Configure (Windows)"
     }
   ]
 }

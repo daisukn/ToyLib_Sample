@@ -2,31 +2,33 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch (Windows)",
+      "name": "Launch Game (Windows)",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/Debug/game.exe",
-      "cwd": "${workspaceFolder}/build",
+      "cwd": "${workspaceFolder}/build/",
       "console": "externalTerminal",
-      "preLaunchTask": "CMake Build"
+      "preLaunchTask": "CMake Build (Windows)"
     },
     {
-      "name": "Launch (macOS)",
+      "name": "Launch Game (Linux)",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/game",
       "cwd": "${workspaceFolder}/build",
+      "MIMode": "gdb",
       "console": "externalTerminal",
-      "MIMode": "lldb"
+      "preLaunchTask": "CMake Build (Unix)"
     },
     {
-      "name": "Launch (Linux)",
+      "name": "Launch Game (macOS)",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/game",
       "cwd": "${workspaceFolder}/build",
+      "MIMode": "lldb",
       "console": "externalTerminal",
-      "MIMode": "gdb"
+      "preLaunchTask": "CMake Build (Unix)"
     }
   ]
 }

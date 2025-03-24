@@ -5,6 +5,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
 
+# Assimpのパスを追加
+#set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/usr/local/lib/cmake/assimp-5.4")
+
+find_package(OpenGL REQUIRED)
+
+
 # ソースファイル収集
 file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/*.cpp
@@ -29,23 +35,31 @@ include_directories(
 if(WIN32)
     message(STATUS "Configuring for Windows build")
 
+    find_package(SDL2 CONFIG REQUIRED)
+    find_package(SDL2_image CONFIG REQUIRED)
+    find_package(SDL2_ttf CONFIG REQUIRED)
+    find_package(SDL2_mixer CONFIG REQUIRED)
+    find_package(GLEW REQUIRED)
+    find_package(OpenGL REQUIRED)
+
     include_directories(
+        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/include
+        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp
         C:/dev/local/assimp/include
     )
 
     link_directories(
-        "C:/dev/vcpkg/installed/x64-windows/lib"
         "C:/dev/local/assimp/lib"
     )
 
     target_link_libraries(${PROJECT_NAME}
         OpenGL32
-        SDL2
-        SDL2main
-        SDL2_image
-        SDL2_ttf
-        SDL2_mixer
-        glew32
+        SDL2::SDL2
+        SDL2::SDL2main
+        SDL2_image::SDL2_image
+        SDL2_ttf::SDL2_ttf
+        SDL2_mixer::SDL2_mixer
+        ${GLEW_LIBRARIES}
         C:/dev/local/assimp/lib/assimp-vc143-mt.lib
     )
 
@@ -73,25 +87,49 @@ if(WIN32)
         )
     endforeach()
 
+
+    # Assimp DLL のコピー先はビルドディレクトリ
+    set(ASSIMP_DLL_PATH "C:/dev/local/assimp/bin/assimp-vc143-mt.dll")  # バージョンに合わせて適宜変更
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${ASSIMP_DLL_PATH}
+            ${CMAKE_BINARY_DIR}
+        COMMENT "Copying Assimp DLL to build directory"
+    )
+
+
 elseif(UNIX AND NOT APPLE)
     message(STATUS "Configuring for Linux build")
 
     find_package(OpenGL REQUIRED)
-    find_package(SDL2 REQUIRED)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SDL2 REQUIRED sdl2)
+    pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
+    pkg_check_modules(SDL2_TTF REQUIRED SDL2_ttf)
+    pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
     find_package(GLEW REQUIRED)
-    find_package(ASSIMP REQUIRED)
+    #find_package(ASSIMP REQUIRED)
 
     include_directories(
         ${SDL2_INCLUDE_DIRS}
+        ${SDL2_IMAGE_INCLUDE_DIRS}
+        ${SDL2_TTF_INCLUDE_DIRS}
+        ${SDL2_MIXER_INCLUDE_DIRS}
         ${GLEW_INCLUDE_DIRS}
-        ${ASSIMP_INCLUDE_DIRS}
+        #${ASSIMP_INCLUDE_DIRS}
+        /usr/local/include
     )
 
     target_link_libraries(${PROJECT_NAME}
         ${OPENGL_LIBRARIES}
-        ${SDL2_LIBRARIES}
+        ${SDL2_LIBRARIES} 
+        ${SDL2_IMAGE_LIBRARIES}
+        ${SDL2_TTF_LIBRARIES}
+        ${SDL2_MIXER_LIBRARIES} 
         ${GLEW_LIBRARIES}
-        ${ASSIMP_LIBRARIES}
+        #${ASSIMP_LIBRARIES}
+        assimp
     )
 
 elseif(APPLE)
@@ -99,10 +137,13 @@ elseif(APPLE)
 
     find_package(OpenGL REQUIRED)
     find_package(SDL2 REQUIRED)
-    find_package(GLEW REQUIRED)
+    find_package(SDL2_image REQUIRED)
+    find_package(GLEW REQUIRED HINTS /opt/homebrew/opt/glew)
     find_package(ASSIMP REQUIRED)
 
     include_directories(
+        /opt/homebrew/include
+        /usr/local/include
         ${SDL2_INCLUDE_DIRS}
         ${GLEW_INCLUDE_DIRS}
         ${ASSIMP_INCLUDE_DIRS}
@@ -110,22 +151,27 @@ elseif(APPLE)
 
     target_link_libraries(${PROJECT_NAME}
         ${OPENGL_LIBRARIES}
-        ${SDL2_LIBRARIES}
-        ${GLEW_LIBRARIES}
-        ${ASSIMP_LIBRARIES}
+        SDL2
+        SDL2_image
+        glew
+        assimp
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreVideo"
+    )
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@executable_path/../lib;/usr/local/lib"
     )
 endif()
 
 set(SOURCE_SHADER_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/Shaders")
 set(DEST_SHADER_DIR "${CMAKE_BINARY_DIR}/ToyCore/Shaders")
 
-add_custom_command(
-    OUTPUT ${DEST_SHADER_DIR}
+add_custom_target(copy_Shaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_SHADER_DIR} ${DEST_SHADER_DIR}
     COMMENT "Copying Shaders to build directory"
 )
 
-add_custom_target(copy_Shaders ALL DEPENDS ${DEST_SHADER_DIR})
+
