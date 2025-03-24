@@ -87,6 +87,18 @@ if(WIN32)
         )
     endforeach()
 
+
+    # Assimp DLL のコピー先はビルドディレクトリ
+    set(ASSIMP_DLL_PATH "C:/dev/local/assimp/bin/assimp-vc143-mt.dll")  # バージョンに合わせて適宜変更
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${ASSIMP_DLL_PATH}
+            ${CMAKE_BINARY_DIR}
+        COMMENT "Copying Assimp DLL to build directory"
+    )
+
+
 elseif(UNIX AND NOT APPLE)
     message(STATUS "Configuring for Linux build")
 
