@@ -138,10 +138,12 @@ elseif(APPLE)
     find_package(OpenGL REQUIRED)
     find_package(SDL2 REQUIRED)
     find_package(SDL2_image REQUIRED)
-    find_package(GLEW REQUIRED)
+    find_package(GLEW REQUIRED HINTS /opt/homebrew/opt/glew)
     find_package(ASSIMP REQUIRED)
 
     include_directories(
+        /opt/homebrew/include
+        /usr/local/include
         ${SDL2_INCLUDE_DIRS}
         ${GLEW_INCLUDE_DIRS}
         ${ASSIMP_INCLUDE_DIRS}
@@ -149,13 +151,18 @@ elseif(APPLE)
 
     target_link_libraries(${PROJECT_NAME}
         ${OPENGL_LIBRARIES}
-        ${SDL2_LIBRARIES}
-        ${SDL2_IMAGE_LIBRARIES}
-        ${GLEW_LIBRARIES}
-        ${ASSIMP_LIBRARIES}
+        SDL2
+        SDL2_image
+        glew
+        assimp
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreVideo"
+    )
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@executable_path/../lib;/usr/local/lib"
     )
 endif()
 
@@ -166,4 +173,5 @@ add_custom_target(copy_Shaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_SHADER_DIR} ${DEST_SHADER_DIR}
     COMMENT "Copying Shaders to build directory"
 )
+
 
