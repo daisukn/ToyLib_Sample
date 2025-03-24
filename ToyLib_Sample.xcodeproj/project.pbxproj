@@ -48,9 +48,49 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7E1675032D91139C002987AB /* Linux */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Linux;
+			sourceTree = "<group>";
+		};
+		7E1675042D91139C002987AB /* Mac */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Mac;
+			sourceTree = "<group>";
+		};
+		7E1675052D91139C002987AB /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Windows;
+			sourceTree = "<group>";
+		};
+		7E1675062D91139C002987AB /* vscode_templates */ = {
+			isa = PBXGroup;
+			children = (
+				7E1675032D91139C002987AB /* Linux */,
+				7E1675042D91139C002987AB /* Mac */,
+				7E1675052D91139C002987AB /* Windows */,
+			);
+			path = vscode_templates;
+			sourceTree = "<group>";
+		};
+		7E1675072D91139C002987AB /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				7E1675062D91139C002987AB /* vscode_templates */,
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
 		7EE028E62D90A8200048EF67 = {
 			isa = PBXGroup;
 			children = (
+				7E1675072D91139C002987AB /* docs */,
 				7EE02C1B2D90DE910048EF67 /* CMakeLists.txt */,
 				7EE028F12D90A8200048EF67 /* ToyLib_Sample */,
 				7EE0295C2D90A9120048EF67 /* Frameworks */,
