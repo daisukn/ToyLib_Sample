@@ -32,17 +32,12 @@
 		7E1675DA2D911E07002987AB /* c_cpp_properties.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = c_cpp_properties.json; sourceTree = "<group>"; };
 		7E1675DB2D911E4A002987AB /* launch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = launch.json; sourceTree = "<group>"; };
 		7E1675DC2D911F2B002987AB /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
+		7E16776A2D91F361002987AB /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		7EE028EF2D90A8200048EF67 /* ToyLib_Sample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToyLib_Sample; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EE0295D2D90A9120048EF67 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		7EE02C1B2D90DE910048EF67 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7E1677062D91F2B1002987AB /* CMake */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CMake;
-			sourceTree = "<group>";
-		};
 		7EE028F12D90A8200048EF67 /* ToyLib_Sample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ToyLib_Sample;
@@ -97,17 +92,24 @@
 		7E1675D92D911D49002987AB /* docs */ = {
 			isa = PBXGroup;
 			children = (
-				7E1677062D91F2B1002987AB /* CMake */,
+				7E16776B2D91F361002987AB /* cmake_templates */,
 				7E1675D82D911D49002987AB /* vscode_templates */,
 			);
 			path = docs;
+			sourceTree = "<group>";
+		};
+		7E16776B2D91F361002987AB /* cmake_templates */ = {
+			isa = PBXGroup;
+			children = (
+				7E16776A2D91F361002987AB /* CMakeLists.txt */,
+			);
+			path = cmake_templates;
 			sourceTree = "<group>";
 		};
 		7EE028E62D90A8200048EF67 = {
 			isa = PBXGroup;
 			children = (
 				7E1675D92D911D49002987AB /* docs */,
-				7EE02C1B2D90DE910048EF67 /* CMakeLists.txt */,
 				7EE028F12D90A8200048EF67 /* ToyLib_Sample */,
 				7EE0295C2D90A9120048EF67 /* Frameworks */,
 				7EE028F02D90A8200048EF67 /* Products */,
