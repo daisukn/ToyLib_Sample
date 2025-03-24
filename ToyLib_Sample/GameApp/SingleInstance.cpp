@@ -1,5 +1,4 @@
-
-/*#include "SingleInstance.h"
+#include "SingleInstance.h"
 #include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
@@ -62,4 +61,4 @@ SingleInstance::~SingleInstance()
 #endif
     }
 }
-*/
+

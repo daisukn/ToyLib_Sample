@@ -1,5 +1,5 @@
 #pragma once
-/*
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -24,4 +24,4 @@ public:
 
     bool IsLocked() const { return mIsLocked; }
 };
-*/
+
