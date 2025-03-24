@@ -24,12 +24,14 @@
 
 /* Begin PBXFileReference section */
 		7E1675CE2D911D49002987AB /* linux */ = {isa = PBXFileReference; lastKnownFileType = text; path = linux; sourceTree = "<group>"; };
-		7E1675D02D911D49002987AB /* Mac */ = {isa = PBXFileReference; lastKnownFileType = text; path = Mac; sourceTree = "<group>"; };
 		7E1675D22D911D49002987AB /* c_cpp_properties.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = c_cpp_properties.json; sourceTree = "<group>"; };
 		7E1675D32D911D49002987AB /* launch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = launch.json; sourceTree = "<group>"; };
 		7E1675D42D911D49002987AB /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
 		7E1675D52D911D49002987AB /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
 		7E1675D62D911D49002987AB /* Windows */ = {isa = PBXFileReference; lastKnownFileType = text; path = Windows; sourceTree = "<group>"; };
+		7E1675DA2D911E07002987AB /* c_cpp_properties.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = c_cpp_properties.json; sourceTree = "<group>"; };
+		7E1675DB2D911E4A002987AB /* launch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = launch.json; sourceTree = "<group>"; };
+		7E1675DC2D911F2B002987AB /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
 		7EE028EF2D90A8200048EF67 /* ToyLib_Sample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToyLib_Sample; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EE0295D2D90A9120048EF67 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		7EE02C1B2D90DE910048EF67 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -55,20 +57,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7E1675CF2D911D49002987AB /* Linux */ = {
+		7E1675CF2D911D49002987AB /* Linux_Mac_Windows */ = {
 			isa = PBXGroup;
 			children = (
+				7E1675DC2D911F2B002987AB /* tasks.json */,
+				7E1675DB2D911E4A002987AB /* launch.json */,
+				7E1675DA2D911E07002987AB /* c_cpp_properties.json */,
 				7E1675CE2D911D49002987AB /* linux */,
 			);
-			path = Linux;
-			sourceTree = "<group>";
-		};
-		7E1675D12D911D49002987AB /* Mac */ = {
-			isa = PBXGroup;
-			children = (
-				7E1675D02D911D49002987AB /* Mac */,
-			);
-			path = Mac;
+			path = Linux_Mac_Windows;
 			sourceTree = "<group>";
 		};
 		7E1675D72D911D49002987AB /* Windows */ = {
@@ -86,8 +83,7 @@
 		7E1675D82D911D49002987AB /* vscode_templates */ = {
 			isa = PBXGroup;
 			children = (
-				7E1675CF2D911D49002987AB /* Linux */,
-				7E1675D12D911D49002987AB /* Mac */,
+				7E1675CF2D911D49002987AB /* Linux_Mac_Windows */,
 				7E1675D72D911D49002987AB /* Windows */,
 			);
 			path = vscode_templates;
