@@ -1,85 +1,92 @@
-
 cmake_minimum_required(VERSION 3.15)
+project(game)
 
-# プロジェクト名
-project(ToyLib_Sample LANGUAGES CXX)
-
-# C++17を使用
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Debug)
 
-# Windows用UTF-8オプション設定
-if (MSVC)
-    add_compile_options("/utf-8")
-endif()
-
-# 出力ディレクトリを構成ごとに指定（Visual Studio対応）
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/Debug)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/Release)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/Debug)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/Release)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/Debug)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/Release)
-
-# vcpkg ユーザーへのガイド（コメント）
-# Note: On Windows with vcpkg, configure using:
-# cmake -B build -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="[vcpkg_root]/scripts/buildsystems/vcpkg.cmake"
-
-# 必要なパッケージの検索
 find_package(OpenGL REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(ASSIMP REQUIRED)
 
-# ToyCore ライブラリ部分
-file(GLOB_RECURSE TOYCORE_SRC
-    ${CMAKE_SOURCE_DIR}/ToyCore/src/*.cpp
-    ${CMAKE_SOURCE_DIR}/ToyCore/src/*.h
+# ソースファイル収集
+file(GLOB_RECURSE SOURCES
+    ${CMAKE_SOURCE_DIR}/*.cpp
+    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/src/*.cpp
+    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp/*.cpp
 )
+
+# 内部ファイル除去
+foreach(source ${SOURCES})
+    if(${source} MATCHES ".*/CMakeFiles/.*")
+        list(REMOVE_ITEM SOURCES ${source})
+    endif()
+endforeach()
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+
+message(STATUS "Configuring for Windows build")
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/ToyCore/include
-    ${SDL2_INCLUDE_DIRS}
-    ${GLEW_INCLUDE_DIRS}
-    ${ASSIMP_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/include
+    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp
+    C:/dev/local/assimp/include
 )
 
-add_library(ToyCore STATIC ${TOYCORE_SRC})
-
-# リンクライブラリ
- target_link_libraries(ToyCore
-    ${OPENGL_LIBRARIES}
-    ${SDL2_LIBRARIES}
-    ${GLEW_LIBRARIES}
-    ${ASSIMP_LIBRARIES}
+link_directories(
+    "C:/dev/vcpkg/installed/x64-windows/lib"
+    "C:/dev/local/assimp/lib"
 )
 
-# GameApp（サンプルアプリケーション）
-file(GLOB_RECURSE GAMEAPP_SRC
-    ${CMAKE_SOURCE_DIR}/GameApp/*.cpp
-    ${CMAKE_SOURCE_DIR}/GameApp/*.h
+target_link_libraries(${PROJECT_NAME}
+    OpenGL32
+    SDL2
+    SDL2main
+    SDL2_image
+    SDL2_ttf
+    SDL2_mixer
+    glew32
+    C:/dev/local/assimp/lib/assimp-vc143-mt.lib
 )
 
-add_executable(GameApp ${GAMEAPP_SRC})
-
-# GameApp に ToyCore をリンク
- target_link_libraries(GameApp ToyCore)
-
-# Windows環境でDLL自動コピー設定（SDL2, GLEW, Assimp の例）
-if (WIN32)
-    add_custom_command(TARGET GameApp POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${VCPKG_ROOT}/installed/x64-windows/bin/SDL2.dll"
-        $<TARGET_FILE_DIR:GameApp>
-    )
-    add_custom_command(TARGET GameApp POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${VCPKG_ROOT}/installed/x64-windows/bin/glew32.dll"
-        $<TARGET_FILE_DIR:GameApp>
-    )
-    add_custom_command(TARGET GameApp POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${VCPKG_ROOT}/installed/x64-windows/bin/assimp-vc143-mt.dll"
-        $<TARGET_FILE_DIR:GameApp>
-    )
+# UTF-8 文字コードオプション追加（MSVC専用）
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
 endif()
+
+# 実行時に main() を使うためのサブシステム指定
+target_link_options(${PROJECT_NAME} PRIVATE /SUBSYSTEM:CONSOLE)
+
+# DLL 自動コピー
+set(DLL_FILES
+    "C:/dev/vcpkg/installed/x64-windows/bin/SDL2.dll"
+    "C:/dev/vcpkg/installed/x64-windows/bin/SDL2_image.dll"
+    "C:/dev/vcpkg/installed/x64-windows/bin/jpeg62.dll"
+    "C:/dev/vcpkg/installed/x64-windows/bin/libpng16.dll"
+    "C:/dev/vcpkg/installed/x64-windows/bin/zlib1.dll"
+    "C:/dev/vcpkg/installed/x64-windows/bin/SDL2_ttf.dll"
+    "C:/dev/vcpkg/installed/x64-windows/bin/SDL2_mixer.dll"
+    "C:/dev/vcpkg/installed/x64-windows/bin/glew32.dll"
+    "C:/dev/local/assimp/bin/assimp-vc143-mt.dll"   # バージョン名はビルド結果に応じて確認
+)
+
+foreach(dll ${DLL_FILES})
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${dll}
+            ${CMAKE_BINARY_DIR}
+        COMMENT "Copying ${dll} to ${CMAKE_BINARY_DIR}"
+    )
+endforeach()
+
+    
+# Shaderスクリプトをコピー
+set(SOURCE_SHADER_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/Shaders")
+set(DEST_SHADER_DIR "${CMAKE_BINARY_DIR}/ToyCore/Shaders")
+
+add_custom_command(
+    OUTPUT ${DEST_SHADER_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_SHADER_DIR} ${DEST_SHADER_DIR}
+    COMMENT "Copying Shaders to build directory"
+)
+
+add_custom_target(copy_Shaders ALL DEPENDS ${DEST_SHADER_DIR})
