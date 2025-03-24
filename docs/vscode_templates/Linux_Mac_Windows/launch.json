@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/Debug/game.exe",
       "cwd": "${workspaceFolder}/build/",
-      "console": "externalTerminal",
+      "console": "internalConsole",
       "preLaunchTask": "CMake Build (Windows)"
     },
     {
@@ -17,7 +17,7 @@
       "program": "${workspaceFolder}/build/game",
       "cwd": "${workspaceFolder}/build",
       "MIMode": "gdb",
-      "console": "externalTerminal",
+      "console": "internalConsole",
       "preLaunchTask": "CMake Build (Unix)"
     },
     {
@@ -27,7 +27,7 @@
       "program": "${workspaceFolder}/build/game",
       "cwd": "${workspaceFolder}/build",
       "MIMode": "lldb",
-      "console": "externalTerminal",
+      "console": "internalConsole",
       "preLaunchTask": "CMake Build (Unix)"
     }
   ]
