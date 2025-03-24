@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
 
+# Assimpのパスを追加
+#set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/usr/local/lib/cmake/assimp-5.4")
+
 # ソースファイル収集
 file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/*.cpp
@@ -77,21 +80,33 @@ elseif(UNIX AND NOT APPLE)
     message(STATUS "Configuring for Linux build")
 
     find_package(OpenGL REQUIRED)
-    find_package(SDL2 REQUIRED)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SDL2 REQUIRED sdl2)
+    pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
+    pkg_check_modules(SDL2_TTF REQUIRED SDL2_ttf)
+    pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
     find_package(GLEW REQUIRED)
-    find_package(ASSIMP REQUIRED)
+    #find_package(ASSIMP REQUIRED)
 
     include_directories(
         ${SDL2_INCLUDE_DIRS}
+        ${SDL2_IMAGE_INCLUDE_DIRS}
+        ${SDL2_TTF_INCLUDE_DIRS}
+        ${SDL2_MIXER_INCLUDE_DIRS}
         ${GLEW_INCLUDE_DIRS}
-        ${ASSIMP_INCLUDE_DIRS}
+        #${ASSIMP_INCLUDE_DIRS}
+        /usr/local/include
     )
 
     target_link_libraries(${PROJECT_NAME}
         ${OPENGL_LIBRARIES}
-        ${SDL2_LIBRARIES}
+        ${SDL2_LIBRARIES} 
+        ${SDL2_IMAGE_LIBRARIES}
+        ${SDL2_TTF_LIBRARIES}
+        ${SDL2_MIXER_LIBRARIES} 
         ${GLEW_LIBRARIES}
-        ${ASSIMP_LIBRARIES}
+        #${ASSIMP_LIBRARIES}
+        assimp
     )
 
 elseif(APPLE)
@@ -99,6 +114,7 @@ elseif(APPLE)
 
     find_package(OpenGL REQUIRED)
     find_package(SDL2 REQUIRED)
+    find_package(SDL2_image REQUIRED)
     find_package(GLEW REQUIRED)
     find_package(ASSIMP REQUIRED)
 
@@ -111,6 +127,7 @@ elseif(APPLE)
     target_link_libraries(${PROJECT_NAME}
         ${OPENGL_LIBRARIES}
         ${SDL2_LIBRARIES}
+        ${SDL2_IMAGE_LIBRARIES}
         ${GLEW_LIBRARIES}
         ${ASSIMP_LIBRARIES}
         "-framework Cocoa"
