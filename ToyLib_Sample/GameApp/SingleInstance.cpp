@@ -1,10 +1,13 @@
 #include "SingleInstance.h"
 #include <iostream>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <cstring>
-
+#ifdef _WIN32
+    // Windows用は特に追加不要
+#else
+    #include <fcntl.h>
+    #include <unistd.h>
+    #include <errno.h>
+    #include <cstring>
+#endif
 
 const char* LOCK_FILE_NAME = "/tmp/my_program.lock";
 
@@ -12,15 +15,16 @@ SingleInstance::SingleInstance()
     : mIsLocked(false)
 {
 #ifdef _WIN32
-    mMutex = CreateMutex(NULL, FALSE, "MyProgram_UniqueMutex");
-    if (hMutex == NULL)
+    mMutex = CreateMutexA(NULL, FALSE, "Global\\ToyLib_Sample_SingleInstance_Mutex");
+    if (mMutex == NULL)
     {
         std::cerr << "CreateMutex failed: " << GetLastError() << std::endl;
         return;
     }
-    if (GetLastError() == ERROR_ALREADY_EXISTS)
+    DWORD err = GetLastError();
+    if (err == ERROR_ALREADY_EXISTS)
     {
-        std::cerr << "プログラムはすでに起動しています。" << std::endl;
+        std::cerr << "プログラムはすでに起動しています。GetLastError: " << err << std::endl;
         CloseHandle(mMutex);
         mMutex = NULL;
         return;
