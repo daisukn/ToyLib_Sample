@@ -4,7 +4,7 @@
     {
       "label": "CMake Configure",
       "type": "shell",
-      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -12,9 +12,9 @@
       }
     },
     {
-      "label": "CMake Build (Debug)",
+      "label": "CMake Build (Unix)",
       "type": "shell",
-      "command": "cmake --build build --config Debug",
+      "command": "cmake --build build",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -23,11 +23,12 @@
       "dependsOn": "CMake Configure"
     },
     {
-      "label": "CMake Build (Release)",
+      "label": "CMake Build (Windows)",
       "type": "shell",
-      "command": "cmake --build build --config Release",
+      "command": "cmake --build build --config Debug",
       "problemMatcher": [],
-      "group": "build"
+      "group": "build",
+      "dependsOn": "CMake Configure"
     }
   ]
 }
