@@ -2,13 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch (Windows)",
+      "name": "Launch Game (Windows)",,
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/Debug/game.exe",
       "cwd": "${workspaceFolder}/build",
       "console": "externalTerminal",
-      "preLaunchTask": "CMake Build"
+      "preLaunchTask": "CMake Build (Debug)"
     },
     {
       "name": "Launch (macOS)",

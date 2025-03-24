@@ -8,6 +8,9 @@ set(CMAKE_BUILD_TYPE Debug)
 # Assimpのパスを追加
 #set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/usr/local/lib/cmake/assimp-5.4")
 
+find_package(OpenGL REQUIRED)
+
+
 # ソースファイル収集
 file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/*.cpp
@@ -32,23 +35,31 @@ include_directories(
 if(WIN32)
     message(STATUS "Configuring for Windows build")
 
+    find_package(SDL2 CONFIG REQUIRED)
+    find_package(SDL2_image CONFIG REQUIRED)
+    find_package(SDL2_ttf CONFIG REQUIRED)
+    find_package(SDL2_mixer CONFIG REQUIRED)
+    find_package(GLEW REQUIRED)
+    find_package(OpenGL REQUIRED)
+
     include_directories(
+        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/include
+        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp
         C:/dev/local/assimp/include
     )
 
     link_directories(
-        "C:/dev/vcpkg/installed/x64-windows/lib"
         "C:/dev/local/assimp/lib"
     )
 
     target_link_libraries(${PROJECT_NAME}
         OpenGL32
-        SDL2
-        SDL2main
-        SDL2_image
-        SDL2_ttf
-        SDL2_mixer
-        glew32
+        SDL2::SDL2
+        SDL2::SDL2main
+        SDL2_image::SDL2_image
+        SDL2_ttf::SDL2_ttf
+        SDL2_mixer::SDL2_mixer
+        ${GLEW_LIBRARIES}
         C:/dev/local/assimp/lib/assimp-vc143-mt.lib
     )
 
@@ -139,10 +150,8 @@ endif()
 set(SOURCE_SHADER_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/Shaders")
 set(DEST_SHADER_DIR "${CMAKE_BINARY_DIR}/ToyCore/Shaders")
 
-add_custom_command(
-    OUTPUT ${DEST_SHADER_DIR}
+add_custom_target(copy_Shaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_SHADER_DIR} ${DEST_SHADER_DIR}
     COMMENT "Copying Shaders to build directory"
 )
 
-add_custom_target(copy_Shaders ALL DEPENDS ${DEST_SHADER_DIR})

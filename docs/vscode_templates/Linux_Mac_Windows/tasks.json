@@ -4,7 +4,7 @@
     {
       "label": "CMake Configure",
       "type": "shell",
-      "command": "cmake -S . -B build",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "problemMatcher": [],
       "group": {
         "kind": "build",
