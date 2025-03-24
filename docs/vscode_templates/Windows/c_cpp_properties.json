@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "Windows",
+      "includePath": [
+        //"${workspaceFolder}/include",
+        //"${workspaceFolder}/GameEngine",
+        "${workspaceFolder}/ToyLib_Sample/ToyCore/include",
+        "${workspaceFolder}/ToyLib_Sample/GameApp",
+        "C:/dev/vcpkg/installed/x64-windows/include",
+        "${workspaceFolder}/**"
+      ],
+      "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.3x.xxxxx/bin/Hostx64/x64/cl.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-msvc-x64"
+    }
+  ],
+  "version": 4
+}

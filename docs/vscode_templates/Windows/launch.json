@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch (Windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Debug/game.exe",
+      "cwd": "${workspaceFolder}/build",
+      "console": "externalTerminal",
+      "preLaunchTask": "CMake Build"
+    }
+  ]
+}
