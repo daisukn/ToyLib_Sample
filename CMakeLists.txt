@@ -153,10 +153,10 @@ elseif(APPLE)
     )
 
     target_link_libraries(${PROJECT_NAME}
-        ${OPENGL_LIBRARIES}
-        ${SDL2_LIBRARIES}
-        ${SDL2_IMAGE_LIBRARIES}
-        ${GLEW_LIBRARIES}
+        OpenGL::GL
+        SDL2::SDL2
+        SDL2_image::SDL2_image
+        GLEW::GLEW
         ${ASSIMP_LIBRARIES}
         #SDL2
         #SDL2_image
