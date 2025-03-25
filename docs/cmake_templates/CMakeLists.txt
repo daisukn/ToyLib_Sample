@@ -136,8 +136,10 @@ elseif(APPLE)
     message(STATUS "Configuring for macOS build")
 
     find_package(OpenGL REQUIRED)
-    find_package(SDL2 REQUIRED)
-    find_package(SDL2_image REQUIRED)
+    #pkg_check_modules(SDL2 REQUIRED sdl2)
+    #pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
+    find_package(SDL2 REQUIRED HINTS /opt/homebrew/opt/sdl2)
+    find_package(SDL2_image REQUIRED HINTS /opt/homebrew/opt/sdl2_image)
     find_package(GLEW REQUIRED HINTS /opt/homebrew/opt/glew)
     find_package(ASSIMP REQUIRED)
 
@@ -145,16 +147,21 @@ elseif(APPLE)
         /opt/homebrew/include
         /usr/local/include
         ${SDL2_INCLUDE_DIRS}
+        ${SDL2_IMAGE_INCLUDE_DIRS}
         ${GLEW_INCLUDE_DIRS}
         ${ASSIMP_INCLUDE_DIRS}
     )
 
     target_link_libraries(${PROJECT_NAME}
-        ${OPENGL_LIBRARIES}
-        SDL2
-        SDL2_image
-        glew
-        assimp
+        OpenGL::GL
+        SDL2::SDL2
+        SDL2_image::SDL2_image
+        GLEW::GLEW
+        ${ASSIMP_LIBRARIES}
+        #SDL2
+        #SDL2_image
+        #glew
+        #assimp
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreVideo"
@@ -162,7 +169,7 @@ elseif(APPLE)
 
     set_target_properties(${PROJECT_NAME} PROPERTIES
         BUILD_WITH_INSTALL_RPATH TRUE
-        INSTALL_RPATH "@executable_path/../lib;/usr/local/lib"
+        INSTALL_RPATH "@executable_path/../lib;/opt/homebrew/lib;/usr/local/lib"
     )
 endif()
 
