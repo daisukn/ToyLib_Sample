@@ -37,7 +37,7 @@ bool Texture::Load(const std::string& fileName)
                 0x0000ff00,
                 0x00ff0000,
                 0xff000000);
-        /*Usage
+        //Usage
                 SDL_Surface* SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
          
          flags    未使用 常に0にすること
@@ -49,8 +49,6 @@ bool Texture::Load(const std::string& fileName)
          Bmask    ピクセルの青マスク
          Amask    ピクセルのαマスク
 
-        */
-/*
         //実際のSuraceにコンバート
         image = SDL_ConvertSurface(image, tmpImage->format, SDL_SWSURFACE);
         // 仮のSurface解放

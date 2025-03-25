@@ -70,7 +70,7 @@ void Application::RunLoop()
     while (mIsActive)
     {
         ProcessInput();
-        UpdateGame();
+        Update();
         Draw();
     }
 }
@@ -207,7 +207,7 @@ void Application::LoadData()
 }
 
 // ゲームメインルーチン
-void Application::UpdateGame()
+void Application::Update()
 {
     
     // FPS60固定
