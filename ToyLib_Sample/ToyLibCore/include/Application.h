@@ -44,6 +44,7 @@ public:
 protected:
     virtual void UpdateGame(float deltaTime) { };
     virtual void InitGame() {};
+    virtual void ShutdownGame() {};
     
     
 private:

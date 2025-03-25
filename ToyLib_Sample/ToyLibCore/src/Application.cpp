@@ -88,6 +88,7 @@ void Application::Draw()
 // 終了処理
 void Application::Shutdown()
 {
+    ShutdownGame();
     UnloadData();
     mInputSys->Shutdown();
     mRenderer->Shutdown();
