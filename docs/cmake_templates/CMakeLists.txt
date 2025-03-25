@@ -158,10 +158,6 @@ elseif(APPLE)
         SDL2_image::SDL2_image
         GLEW::GLEW
         ${ASSIMP_LIBRARIES}
-        #SDL2
-        #SDL2_image
-        #glew
-        #assimp
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreVideo"
