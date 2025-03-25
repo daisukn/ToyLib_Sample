@@ -14,7 +14,7 @@ find_package(OpenGL REQUIRED)
 # ソースファイル収集
 file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/*.cpp
-    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/src/*.cpp
+    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/src/*.cpp
     ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp/*.cpp
 )
 
@@ -28,7 +28,7 @@ endforeach()
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/include
+    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/include
     ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp
 )
 
@@ -43,7 +43,7 @@ if(WIN32)
     find_package(OpenGL REQUIRED)
 
     include_directories(
-        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/include
+        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/include
         ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp
         C:/dev/local/assimp/include
     )
@@ -173,8 +173,8 @@ elseif(APPLE)
     )
 endif()
 
-set(SOURCE_SHADER_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyCore/Shaders")
-set(DEST_SHADER_DIR "${CMAKE_BINARY_DIR}/ToyCore/Shaders")
+set(SOURCE_SHADER_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/Shaders")
+set(DEST_SHADER_DIR "${CMAKE_BINARY_DIR}/ToyLibCore/Shaders")
 
 add_custom_target(copy_Shaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_SHADER_DIR} ${DEST_SHADER_DIR}

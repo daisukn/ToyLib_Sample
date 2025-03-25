@@ -58,6 +58,9 @@ bool Application::Initialize()
     // データ ロード、主にRendererに登録されるもの。
     LoadData();
     
+    // 派生先のInitを呼ぶ
+    InitGame();
+    
     mIsActive = true;
     mTicksCount = SDL_GetTicks();
     return true;
@@ -70,7 +73,7 @@ void Application::RunLoop()
     while (mIsActive)
     {
         ProcessInput();
-        Update();
+        UpdateFrame();
         Draw();
     }
 }
@@ -207,7 +210,7 @@ void Application::LoadData()
 }
 
 // ゲームメインルーチン
-void Application::Update()
+void Application::UpdateFrame()
 {
     
     // FPS60固定
@@ -223,6 +226,9 @@ void Application::Update()
 
     // ポーズ中以降の処理キャンセル
     if(mIsPause) return;
+    
+    // 派生先のUpdateを呼ぶ
+    UpdateGame(deltaTime);
     
     // 物理計算系
     //physWorld->ComputeGroundHeight();
