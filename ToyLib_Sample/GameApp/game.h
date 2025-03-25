@@ -9,4 +9,5 @@ public:
 protected:
     void InitGame() override;
     void UpdateGame(float deltaTime) override;
+    void ShutdownGame() override;
 };

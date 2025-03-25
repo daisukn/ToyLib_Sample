@@ -559,11 +559,11 @@ bool Mesh::Load(const std::string& fileName, class Renderer* r)
         {
             std::string texturefilename = Path.data;
             // テクスチャ読み込み
-            t = r->GetTexture("Assets/Textures/" + texturefilename);
+            t = r->GetTexture("Assets/" + texturefilename);
         }
         else
         {
-            t = r->GetTexture("Assets/Textures/Default.png");
+            t = r->GetTexture("Assets/Default.png");
         }
         mTextures.push_back(t);
     }
