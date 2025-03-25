@@ -23,7 +23,7 @@ public:
     // コンストラクタ
     Application(std::string title);
     // デストラクタ
-    ~Application();
+    virtual ~Application();
 
     // 初期化
     bool Initialize();
@@ -41,7 +41,9 @@ public:
     // 物理エンジンを取得
     class PhysWorld* GetPhysWorld() const { return mPhysWorld.get(); }
     
-
+protected:
+    virtual void UpdateGame(float deltaTime) { };
+    virtual void InitGame() {};
     
     
 private:
@@ -75,7 +77,7 @@ private:
     // 入力受付
     void ProcessInput();
     // ゲームメイン
-    void Update();
+    void UpdateFrame();
     // 描画
     void Draw();
 

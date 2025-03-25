@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "game.h"
 #include "SingleInstance.h"
 #include <memory>
 
@@ -13,13 +13,13 @@ int main(int argc, char** argv)
     }
 
     
-    std::unique_ptr<Application> app = std::make_unique<Application>("Sample Game");
+    std::unique_ptr<Game> game = std::make_unique<Game>("Sample Game");
     
-    if (app->Initialize())
+    if (game->Initialize())
     {
-        app->RunLoop();
+        game->RunLoop();
     }
-    app->Shutdown();
+    game->Shutdown();
     return 0;
 }
 
