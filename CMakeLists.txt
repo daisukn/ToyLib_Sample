@@ -169,12 +169,22 @@ elseif(APPLE)
     )
 endif()
 
+# Shaderファイルのコピー
 set(SOURCE_SHADER_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/Shaders")
 set(DEST_SHADER_DIR "${CMAKE_BINARY_DIR}/ToyLibCore/Shaders")
 
 add_custom_target(copy_Shaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_SHADER_DIR} ${DEST_SHADER_DIR}
     COMMENT "Copying Shaders to build directory"
+)
+
+#Assetファイルのコピー
+set(SOURCE_ASSET_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/Assets")
+set(DEST_ASSET_DIR "${CMAKE_BINARY_DIR}/Assets")
+
+add_custom_target(copy_Assets ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_ASSET_DIR} ${DEST_ASSET_DIR}
+    COMMENT "Copying Assets to build directory"
 )
 
 
