@@ -16,7 +16,6 @@ enum class StageTransitionID
 };
 
 
-
 // アプリ制御クラス
 class Application
 {
@@ -76,7 +75,7 @@ private:
     // 入力受付
     void ProcessInput();
     // ゲームメイン
-    void UpdateGame();
+    void Update();
     // 描画
     void Draw();
 
