@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <memory>
 #include <vector>
 
 // 頂点データ管理
