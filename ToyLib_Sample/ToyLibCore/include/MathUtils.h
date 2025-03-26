@@ -11,6 +11,7 @@ namespace Math
 	const float PiOver2 = Pi / 2.0f;
 	const float Infinity = std::numeric_limits<float>::infinity();
 	const float NegInfinity = -std::numeric_limits<float>::infinity();
+    const float NearZeroEpsilon = 1.0e-6f;
 
 	inline float ToRadians(float degrees)
 	{
@@ -22,7 +23,7 @@ namespace Math
 		return radians * 180.0f / Pi;
 	}
 
-	inline bool NearZero(float val, float epsilon = 0.001f)
+	inline bool NearZero(float val, float epsilon = NearZeroEpsilon)
 	{
 		if (fabs(val) <= epsilon)
 		{

@@ -281,7 +281,7 @@ void Renderer::DrawDebugger()
     // デバッガー用の描画
     mSolidShader->SetActive();
     mSolidShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    mSolidShader->SetVectorUniform("uSolColor", Vector3(0.2f, 0.2f, 1.0f));
+    mSolidShader->SetVectorUniform("uSolColor", Vector3(1.f, 1.f, 1.f));
     // Update lighting uniforms
     SetLightUniforms(mSolidShader.get());
     for (auto dg : mDbgComps)
@@ -420,11 +420,7 @@ bool Renderer::LoadShaders()
     // ビューマトリックス、プロジェクションマトリックス（デフォルト値）
     mViewMatrix = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
     mProjectionMatrix = Matrix4::CreatePerspectiveFOV(Math::ToRadians(mPerspectiveFOV), mScreenWidth, mScreenHeight, 1.0f, 2000.0f);
-    
-    // シェーダーに送る
-    //meshShader->SetMatrixUniform("uViewProj", viewMatrix * projectionMatrix);
-    //skinnedShader->SetMatrixUniform("uViewProj", viewMatrix * projectionMatrix);
-    //billboardShader->SetMatrixUniform("uViewProj", viewMatrix * projectionMatrix);
+
     
     
     return true;

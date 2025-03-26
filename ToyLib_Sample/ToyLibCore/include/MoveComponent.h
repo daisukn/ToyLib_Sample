@@ -14,21 +14,21 @@ public:
     float GetAngularSpeed() const { return mAngularSpeed; }
     float GetForwardSpeed() const { return mForwardSpeed; }
     float GetRightSpeed() const { return mRightSpeed; }
-    float GetDropSpeed() const { return mDropSpeed; }
+    float GetVerticalSpeed() const { return mVerticalSpeed; }
+
     void SetAngularSpeed(float speed) { mAngularSpeed = speed; }
     void SetForwardSpeed(float speed) { mForwardSpeed = speed; }
     void SetRightSpeed(float speed) { mRightSpeed = speed;}
-    void SetDropSpeed(float speed) { mDropSpeed = speed; }
-    void SetUpSpeed(float speed) {mUpperSpeed = speed; }
+    void SetVerticalSpeed(float speed) { mVerticalSpeed = speed; }
+
     
     void Reset();
 
 
 private:
-    float mAngularSpeed;     // 回転スピード
-    float mForwardSpeed;     // 移動スピード
-    float mRightSpeed;       // 横移動スピード
-    float mDropSpeed;        // 落下スピード
-    float mUpperSpeed;
+    float mAngularSpeed;     // 回転
+    float mForwardSpeed;     // 前後
+    float mRightSpeed;       // 左右
+    float mVerticalSpeed;    // 上下 （正＝上昇、負＝落下）
 
 };
