@@ -1,31 +1,31 @@
-#pragma once
-
-#include "MoveComponent.h"
+#include "InertiaMoveComponent.h"
+#include "Actor.h"
 #include "MathUtils.h"
 
-class InertiaMoveComponent : public MoveComponent
+InertiaMoveComponent::InertiaMoveComponent(class Actor* owner, int updateOrder)
+    : MoveComponent(owner, updateOrder)
+    , mTargetForwardSpeed(0.0f)
+    , mTargetRightSpeed(0.0f)
+    , mTargetVerticalSpeed(0.0f)
+    , mTargetAngularSpeed(0.0f)
+    , mAcceleration(5.0f)           // 好みに応じて調整
+    , mAngularAcceleration(90.0f)   // 好みに応じて調整
 {
-public:
-    InertiaMoveComponent(class Actor* owner, int updateOrder = 10);
+}
 
-    void Update(float deltaTime) override;
+void InertiaMoveComponent::Update(float deltaTime)
+{
+    // 徐々に現在速度を目標速度に近づける
+    float newForward = Math::Lerp(GetForwardSpeed(), mTargetForwardSpeed, mAcceleration * deltaTime);
+    float newRight   = Math::Lerp(GetRightSpeed(), mTargetRightSpeed, mAcceleration * deltaTime);
+    float newVert    = Math::Lerp(GetVerticalSpeed(), mTargetVerticalSpeed, mAcceleration * deltaTime);
+    float newAngular = Math::Lerp(GetAngularSpeed(), mTargetAngularSpeed, mAngularAcceleration * deltaTime);
 
-    // 目標速度をセット
-    void SetTargetForwardSpeed(float speed) { mTargetForwardSpeed = speed; }
-    void SetTargetRightSpeed(float speed) { mTargetRightSpeed = speed; }
-    void SetTargetVerticalSpeed(float speed) { mTargetVerticalSpeed = speed; }
-    void SetTargetAngularSpeed(float speed) { mTargetAngularSpeed = speed; }
+    SetForwardSpeed(newForward);
+    SetRightSpeed(newRight);
+    SetVerticalSpeed(newVert);
+    SetAngularSpeed(newAngular);
 
-    // 加速度を設定
-    void SetAcceleration(float acc) { mAcceleration = acc; }
-    void SetAngularAcceleration(float acc) { mAngularAcceleration = acc; }
-
-private:
-    float mTargetForwardSpeed;
-    float mTargetRightSpeed;
-    float mTargetVerticalSpeed;
-    float mTargetAngularSpeed;
-
-    float mAcceleration;         // 線形速度加速度
-    float mAngularAcceleration;  // 角速度加速度
-};
+    // 通常の移動処理は親クラスに任せる
+    MoveComponent::Update(deltaTime);
+}
