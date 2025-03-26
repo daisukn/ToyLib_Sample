@@ -5,7 +5,7 @@
 #include "ColliderComponent.h"
 
 CameraComponent::CameraComponent(Actor* a, int updateOrder)
-    : Component(a, updateOrder)
+: Component(a, updateOrder)
 {
     mCameraActor = std::make_unique<Actor>(mOwner->GetApp());
 }

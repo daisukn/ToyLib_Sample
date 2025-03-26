@@ -3,12 +3,12 @@
 
 // コンストラクタ
 MoveComponent::MoveComponent(class Actor* a, int updateOrder)
-    : Component(a, updateOrder)
-    , mAngularSpeed(0.0f)
-    , mForwardSpeed(0.0f)
-    , mRightSpeed(0.0f)
-    , mDropSpeed(0.0f)
-    , mUpperSpeed(0.0f)
+: Component(a, updateOrder)
+, mAngularSpeed(0.0f)
+, mForwardSpeed(0.0f)
+, mRightSpeed(0.0f)
+, mDropSpeed(0.0f)
+, mUpperSpeed(0.0f)
 {
 	
 }

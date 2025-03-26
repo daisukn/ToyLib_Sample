@@ -4,11 +4,11 @@
 #include "ColliderComponent.h"
 
 FollowCamera::FollowCamera(Actor* owner)
-    : CameraComponent(owner)
-    , mHorzDist(45.0f)        // 所有アクターとの距離
-    , mVertDist(10.0f)        // 所有アクターとの距離（高さ）
-    , mTargetDist(500.0f)      // 視点は所有アクターよりどのくらい前か
-    , mSpringConstant(100.0f)  // バネ定数
+: CameraComponent(owner)
+, mHorzDist(45.0f)        // 所有アクターとの距離
+, mVertDist(10.0f)        // 所有アクターとの距離（高さ）
+, mTargetDist(500.0f)      // 視点は所有アクターよりどのくらい前か
+, mSpringConstant(100.0f)  // バネ定数
 {
     
 }

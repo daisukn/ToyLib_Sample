@@ -6,10 +6,10 @@
 
 // コンストラクタ
 ColliderComponent::ColliderComponent(Actor* a)
-    : Component(a)
-    , mType(C_NONE)
-    , mIsCollided(false)
-    , mIsDisp(false)
+: Component(a)
+, mType(C_NONE)
+, mIsCollided(false)
+, mIsDisp(false)
 //, targetType(C_NONE)
 {
     boundingVolume = std::make_unique<BoundingVolumeComponent>(a);

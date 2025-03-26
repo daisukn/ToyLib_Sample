@@ -16,9 +16,9 @@ const int NUM_VERTEX = 12;
 // コンストラクタ
 BoundingVolumeComponent::BoundingVolumeComponent(Actor* a)
 //    : Component(a)
-    : DebuggerComponent(a)
-    , mRadius(0.0f)
-    , mIsVisible(false)
+: DebuggerComponent(a)
+, mRadius(0.0f)
+, mIsVisible(false)
 {
     mBoundingBox = std::make_unique<Cube>();
     mObb = std::make_unique<OBB>();

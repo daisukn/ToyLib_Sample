@@ -12,7 +12,7 @@
 const char* LOCK_FILE_NAME = "/tmp/my_program.lock";
 
 SingleInstance::SingleInstance()
-    : mIsLocked(false)
+: mIsLocked(false)
 {
 #ifdef _WIN32
     mMutex = CreateMutexA(NULL, FALSE, "Global\\ToyLib_Sample_SingleInstance_Mutex");

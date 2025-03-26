@@ -4,8 +4,8 @@
 
 
 Component::Component(Actor* a, int order)
-    : mOwner(a)
-    , mUpdateOrder(order)
+: mOwner(a)
+, mUpdateOrder(order)
 {
 
 }

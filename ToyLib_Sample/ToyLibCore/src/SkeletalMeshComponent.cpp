@@ -9,8 +9,8 @@
 
 
 SkeletalMeshComponent::SkeletalMeshComponent(Actor* owner)
-    : MeshComponent(owner, true)
-    , mAnimTime(0.0f)
+: MeshComponent(owner, true)
+, mAnimTime(0.0f)
 {
 }
 

@@ -6,9 +6,9 @@
 
 
 Texture::Texture()
-    : mTextureID(0)
-    , mWidth(0)
-    , mHeight(0)
+: mTextureID(0)
+, mWidth(0)
+, mHeight(0)
 {
 	
 }
@@ -17,70 +17,7 @@ Texture::~Texture()
 {
 	
 }
-/*
-// テクスチャのロード（SDL2_image利用）
-bool Texture::Load(const std::string& fileName)
-{
-    
-    SDL_Surface* image = NULL;
-    SDL_Surface* tmpImage;
 
-    // 画像フォーマット指定
-    IMG_Init(IMG_INIT_PNG & IMG_INIT_JPG & IMG_INIT_TIF);
-    // 読み込み
-    image = IMG_Load(fileName.c_str());
-    if (image)
-    {
-        // 仮のSurface作成してフォーマット指定
-        tmpImage = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0, 32,
-                0x000000ff,
-                0x0000ff00,
-                0x00ff0000,
-                0xff000000);
-        //Usage
-                SDL_Surface* SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
-         
-         flags    未使用 常に0にすること
-         width    サーフェイスの幅
-         height    サーフェイスの高さ
-         depth    サーフェイスのビット深度 (詳細を参照すること)
-         Rmask    ピクセルの赤マスク
-         Gmask    ピクセルの緑マスク
-         Bmask    ピクセルの青マスク
-         Amask    ピクセルのαマスク
-
-        //実際のSuraceにコンバート
-        image = SDL_ConvertSurface(image, tmpImage->format, SDL_SWSURFACE);
-        // 仮のSurface解放
-        SDL_FreeSurface(tmpImage);
-
-        // OpenGL用テクスチャ作成
-        glGenTextures(1, &mTextureID);
-        glBindTexture(GL_TEXTURE_2D, mTextureID);
-  
-        glGenerateMipmap(GL_TEXTURE_2D);
-        
-        // 拡大縮小の方法を指定
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- //       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-        // SurfaceのPIXELデータをテクスチャに転送
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image->w, image->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
-        
-        // 大きさを記録
-        mWidth  = image->w;
-        mHeight = image->h;
-
-        // Surfce解放
-        SDL_FreeSurface(image);
-        
-    }
-    
-
-	return true;
-}
-*/
 
 bool Texture::Load(const std::string& fileName)
 {

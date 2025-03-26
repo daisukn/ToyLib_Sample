@@ -5,7 +5,7 @@
 
 
 DebuggerComponent::DebuggerComponent(Actor* a)
-    : Component(a)
+: Component(a)
 {
     mOwner->GetApp()->GetRenderer()->AddDebuggerComp(this);
 }

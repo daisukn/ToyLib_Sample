@@ -6,11 +6,11 @@
 #include "Renderer.h"
 
 BillboardComponent::BillboardComponent(class Actor* a, int order)
-    : Component(a)
-    , mDrawOrder(order)
-    , mScale(1.0f)
-    , mIsBlendAdd(false)
-    , mIsVisible(false)
+: Component(a)
+, mDrawOrder(order)
+, mScale(1.0f)
+, mIsBlendAdd(false)
+, mIsVisible(false)
 {
     mOwner->GetApp()->GetRenderer()->AddBillboardComp(this);
 }

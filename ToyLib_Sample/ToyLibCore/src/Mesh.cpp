@@ -48,15 +48,15 @@ static void MatrixAi2Gl(Matrix4& mat, const aiMatrix4x4 aim)
 
 // コンストラクタ
 Mesh::Mesh()
-    : mScene(nullptr)
-    , mNumBones(0)
-    , mSpecPower(1.0f)
-    , mAnimID(0)
-    , mPrevAnimID(0)
-    , mNumAnimations(0)
-    , mPlayTime(0.0f)
-    , mPlayMode(PLAY_ONCE)
-    , mIsPlaying(false)
+: mScene(nullptr)
+, mNumBones(0)
+, mSpecPower(1.0f)
+, mAnimID(0)
+, mPrevAnimID(0)
+, mNumAnimations(0)
+, mPlayTime(0.0f)
+, mPlayMode(PLAY_ONCE)
+, mIsPlaying(false)
 {
     
 }

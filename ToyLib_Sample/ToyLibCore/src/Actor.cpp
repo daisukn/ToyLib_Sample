@@ -22,11 +22,7 @@ Actor::Actor(Application* a)
 // デストラクタ
 Actor::~Actor()
 {
-    // Applicationから削除
-    //mApp->RemoveActor(this);
-    // 保持しているComponentはここで削除
-    //mComponents.clear();
-    
+   
 
 }
 

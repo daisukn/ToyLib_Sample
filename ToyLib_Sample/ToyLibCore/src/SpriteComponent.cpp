@@ -9,16 +9,16 @@
 
 // コンストラクタ
 SpriteComponent::SpriteComponent(Actor* a, int order, bool isBG)
-    : Component(a)
-    , mTexture(nullptr)
-    , mDrawOrder(order)
-    , mTexWidth(0)
-    , mTexHeight(0)
-    , mIsBackGround(isBG)
-    , mIsVisible(true)
-    , mScaleWidth(1.0f)
-    , mScaleHeight(1.0f)
-    , mIsBlendAdd(false)
+: Component(a)
+, mTexture(nullptr)
+, mDrawOrder(order)
+, mTexWidth(0)
+, mTexHeight(0)
+, mIsBackGround(isBG)
+, mIsVisible(true)
+, mScaleWidth(1.0f)
+, mScaleHeight(1.0f)
+, mIsBlendAdd(false)
 {
     if(isBG)
     {

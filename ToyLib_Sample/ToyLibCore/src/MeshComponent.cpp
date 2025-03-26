@@ -13,17 +13,17 @@
 
 // コンストラクタ
 MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
-    : Component(a)
-    , mMesh(nullptr)
-    , mTextureIndex(0)
-    , mIsVisible(true)
-    , mIsSkeletal(isSkeletal)
-    , mIsToon(false)
-    , mContourFactor(1.1014f)
-    , mIsBlendAdd(false)
-    , mIsGlory(false)
-    , mMeshType(type)
-    , mScale(1.0f)
+: Component(a)
+, mMesh(nullptr)
+, mTextureIndex(0)
+, mIsVisible(true)
+, mIsSkeletal(isSkeletal)
+, mIsToon(false)
+, mContourFactor(1.1014f)
+, mIsBlendAdd(false)
+, mIsGlory(false)
+, mMeshType(type)
+, mScale(1.0f)
 {
 
     switch(mMeshType)

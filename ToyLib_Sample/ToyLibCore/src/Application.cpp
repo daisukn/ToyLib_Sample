@@ -21,10 +21,10 @@ const float SCREEN_H = 720.f;
 
 // コンストラクタ
 Application::Application(std::string title)
-    : mIsActive(false)
-    , mIsUpdatingActors(false)
-    , mIsPause(false)
-    , mApplicationTitle(title)
+: mIsActive(false)
+, mIsUpdatingActors(false)
+, mIsPause(false)
+, mApplicationTitle(title)
 {
     mRenderer = std::make_unique<class Renderer>();
     mInputSys = std::make_unique<class InputSystem>();

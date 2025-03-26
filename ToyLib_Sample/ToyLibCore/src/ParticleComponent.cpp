@@ -14,17 +14,17 @@
 
 // コンストラクタ
 ParticleComponent::ParticleComponent(Actor* a, int drawOrder)
-    : Component(a)
-    , mIsVisible(false)
-    , mPosition(Vector3(0.0f, 0.0f, 0.0f))
-    , mNumParts(0)
-    , mLifeTime(0.0f)
-    , mTotalLife(0.0f)
-    , mPartLifecycle(0.0f)
-    , mPartSize(0.0f)
-    , mParticleMode(P_SPARK)
-    , mPartSpeed(2.0f)
-    , mIsBlendAdd(false)
+: Component(a)
+, mIsVisible(false)
+, mPosition(Vector3(0.0f, 0.0f, 0.0f))
+, mNumParts(0)
+, mLifeTime(0.0f)
+, mTotalLife(0.0f)
+, mPartLifecycle(0.0f)
+, mPartSize(0.0f)
+, mParticleMode(P_SPARK)
+, mPartSpeed(2.0f)
+, mIsBlendAdd(false)
 {
     mOwner->GetApp()->GetRenderer()->AddParticleComp(this);
 }
