@@ -28,13 +28,13 @@ public:
     // 衝突した
     void Collided(ColliderComponent* c);
     
-    std::vector<ColliderComponent*> GetTargetColliders() const { return targetColliders; }
+    const std::vector<ColliderComponent*>& GetTargetColliders() const { return targetColliders; }
     void ClearCollidBuffer() { targetColliders.clear(); }
     
     void Update(float deltaTime) override;
     
     class Actor* GetActor() const { return mOwner; }
-    class BoundingVolumeComponent* GetBoundingVolume() const { return boundingVolume.get(); }
+    class BoundingVolumeComponent* GetBoundingVolume() const { return mBoundingVolume; }
     
     // 衝突しているかどうか
     bool GetCollided() const { return mIsCollided; }
@@ -50,7 +50,7 @@ private:
     bool mIsCollided;
     bool mIsDisp;
     
-    std::unique_ptr<class BoundingVolumeComponent> boundingVolume;
+    class BoundingVolumeComponent* mBoundingVolume;
     
     ColliderType mType;
     std::vector<ColliderComponent*> targetColliders;

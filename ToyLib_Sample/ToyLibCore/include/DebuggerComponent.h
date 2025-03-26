@@ -8,7 +8,7 @@ class DebuggerComponent : public Component
 {
 public:
     DebuggerComponent(class Actor* a);
-    ~DebuggerComponent();
+    virtual ~DebuggerComponent();
     
     virtual void Draw(class Shader* s) { }
 };
