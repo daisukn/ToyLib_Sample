@@ -185,10 +185,10 @@ void Application::UnloadData()
 {
     mActors.clear();
     /*
-    while (!actors.empty())
+    while (!mActors.empty())
     {
-        delete actors.back();
-        actors.pop_back();
+        delete mActors.back();
+        mActors.pop_back();
     }
     */
     if (mRenderer)

@@ -7,17 +7,16 @@
 
 //コンストラクタ
 Actor::Actor(Application* a)
-    : mStatus(EActive)
-    , mPosition(Vector3::Zero)
-    , mRotation(Quaternion::Identity)
-    , mScale(1.0f)
-    , mApp(a)
-    , mIsRecomputeWorldTransform(true)
+: mStatus(EActive)
+, mPosition(Vector3::Zero)
+, mRotation(Quaternion::Identity)
+, mScale(1.0f)
+, mApp(a)
+, mIsRecomputeWorldTransform(true)
 {
     mApp->AddActor(this);
 }
 
-#include <iostream>
 // デストラクタ
 Actor::~Actor()
 {

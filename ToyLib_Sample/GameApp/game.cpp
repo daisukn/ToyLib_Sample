@@ -25,6 +25,7 @@ void Game::InitGame()
     a->SetPosition(Vector3(0,0,30));
     Quaternion q = Quaternion(Vector3::UnitY, 180);
     a->SetRotation(q);
+    
 
 }
 
