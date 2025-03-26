@@ -3,6 +3,7 @@
 #include "MathUtils.h"
 #include <vector>
 #include <string>
+#include <memory>
 
 // アクター管理
 class Actor
@@ -25,7 +26,7 @@ public:
     // コンポーネントの更新
     void UpdateComponents(float deltaTime);
     // Override前提 派生先の処理を書く
-    virtual void UpdateActor(float deltaTime);
+    virtual void UpdateActor(float deltaTime) { };
 
     // 入力処理 Applicationから呼ばれる Override不可
     void ProcessInput(const struct InputState& state);
@@ -67,9 +68,18 @@ public:
 
 
 	// コンポーネントの追加削除
-	void AddComponent(class Component* component);
-	void RemoveComponent(class Component* component);
+	//void AddComponent(class Component* component);
+	void AddComponent(std::unique_ptr<class Component> component);
+    void RemoveComponent(class Component* component);
     
+    template <typename T, typename... Args>
+    T* CreateComponent(Args&&... args)
+    {
+        auto comp = std::make_unique<T>(this, std::forward<Args>(args)...);
+        T* rawPtr = comp.get();
+        AddComponent(std::move(comp));
+        return rawPtr;
+    }
 
 
 
@@ -86,7 +96,7 @@ private:
     bool        mIsRecomputeWorldTransform;
 
     // 保有コンポーネント
-    std::vector<class Component*> mComponents;
+    std::vector<std::unique_ptr<class Component>> mComponents;
     // アプリクラス
     class Application* mApp;
     

@@ -8,14 +8,6 @@
 extern const float SCREEN_W;
 extern const float SCREEN_H;
 
-enum class StageTransitionID
-{
-    STAGE_TITLE,
-    STAGE_CLOUD,
-    STAGE_END
-};
-
-
 // アプリ制御クラス
 class Application
 {
@@ -32,9 +24,18 @@ public:
     // 終了処理
     void Shutdown();
     
-    // アクターを登録/削除
-    void AddActor(class Actor* actor);
-    void RemoveActor(class Actor* actor);
+    // アクターを登録
+    void AddActor(std::unique_ptr<class Actor> a);
+    
+    // アクター生成
+    template <typename T, typename... Args>
+    T* CreateActor(Args&&... args)
+    {
+        auto actor = std::make_unique<T>(this, std::forward<Args>(args)...);
+        T* rawPtr = actor.get();
+        AddActor(std::move(actor));
+        return rawPtr;
+    }
     
     // 描画エンジンを取得
     class Renderer* GetRenderer() const { return mRenderer.get(); }
@@ -69,9 +70,9 @@ private:
 
     
     // アクティブなアクター
-    std::vector<class Actor*> mActors;
+    std::vector<std::unique_ptr<class Actor>> mActors;
     // ペンディング中のアクター
-    std::vector<class Actor*> mPendingActors;
+    std::vector<std::unique_ptr<class Actor>> mPendingActors;
     // true の場合Pendingsにまわす
     bool mIsUpdatingActors;
 
