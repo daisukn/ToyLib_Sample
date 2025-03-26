@@ -4,6 +4,8 @@
 #include "Application.h"
 #include "PhysWorld.h"
 
+#include <algorithm>
+
 // コンストラクタ
 ColliderComponent::ColliderComponent(Actor* a)
 : Component(a)

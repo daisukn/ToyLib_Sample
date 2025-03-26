@@ -10,6 +10,7 @@
 #include "Polygon.h"
 
 #include <vector>
+#include <algorithm>
 
 const int NUM_VERTEX = 12;
 
