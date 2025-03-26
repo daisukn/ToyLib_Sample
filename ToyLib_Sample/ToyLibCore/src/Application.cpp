@@ -34,7 +34,7 @@ Application::Application(std::string title)
 // デストラクタ
 Application::~Application()
 {
-    //delete activeStage;
+    
 }
 
 
@@ -131,7 +131,7 @@ void Application::ProcessInput(){
     }
     
     // 配下のActorsに渡す
-    for (auto actor : mActors)
+    for (auto& actor : mActors)
     {
         actor->ProcessInput(state);
     }
@@ -139,43 +139,15 @@ void Application::ProcessInput(){
 
 
 // Actor追加
-void Application::AddActor(Actor* actor)
+void Application::AddActor(std::unique_ptr<Actor> actor)
 {
-    // メインのActorsがUpdate中はPendingに追加
     if (mIsUpdatingActors)
     {
-        mPendingActors.emplace_back(actor);
+        mPendingActors.emplace_back(std::move(actor));
     }
     else
     {
-        mActors.emplace_back(actor);
-    }
-}
-
-// Actor削除
-void Application::RemoveActor(Actor* actor)
-{
-    // Pendingにないか確認
-    if (!mPendingActors.empty())
-    {
-        auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
-        if (iter != mPendingActors.end())
-        {
-            std::iter_swap(iter, mPendingActors.end() - 1);
-            mPendingActors.pop_back();
-        }
-    }
-
-
-    // actorsにある場合は削除
-    if (!mActors.empty())
-    {
-        auto iter = std::find(mActors.begin(), mActors.end(), actor);
-        if (iter != mActors.end())
-        {
-            std::iter_swap(iter, mActors.end() - 1);
-            mActors.pop_back();
-        }
+        mActors.emplace_back(std::move(actor));
     }
 }
 
@@ -184,13 +156,7 @@ void Application::RemoveActor(Actor* actor)
 void Application::UnloadData()
 {
     mActors.clear();
-    /*
-    while (!mActors.empty())
-    {
-        delete mActors.back();
-        mActors.pop_back();
-    }
-    */
+
     if (mRenderer)
     {
         mRenderer->UnloadData();
@@ -238,34 +204,23 @@ void Application::UpdateFrame()
 
     // Actorsメイン呼び出し
     mIsUpdatingActors = true;
-    for (auto a : mActors)
+    for (auto& a : mActors)
     {
         a->Update(deltaTime);
     }
     mIsUpdatingActors = false;
 
     // Pendingがある場合はActorsに移動
-    for (auto p : mPendingActors)
+    for (auto& p : mPendingActors)
     {
         p->ComputeWorldTransform();
-        mActors.emplace_back(p);
+        mActors.emplace_back(std::move(p));
     }
     mPendingActors.clear();
 
     // EDeadフラグのアクターは削除
-    std::vector<Actor*> deadActors;
-    for (auto a : mActors)
-    {
-        if (a->GetState() == Actor::EDead)
-        {
-            deadActors.emplace_back(a);
-        }
-    }
-    
-    for (auto a : deadActors)
-    {
-        delete a;
-    }
-
+    mActors.erase(std::remove_if(mActors.begin(), mActors.end(),
+                                 [](const std::unique_ptr<Actor>& actor) {
+                                    return actor->GetState() == Actor::EDead;
+                                }),mActors.end());
 }
-
