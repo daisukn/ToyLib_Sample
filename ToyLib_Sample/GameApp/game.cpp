@@ -23,16 +23,16 @@ void Game::InitGame()
     auto a = CreateActor<Actor>();
     auto mc = a->CreateComponent<SkeletalMeshComponent>();
     auto cc = a->CreateComponent<ColliderComponent>();
-    mc->SetMesh(GetRenderer()->GetMesh("Assets/wolf.fbx"));
-    mc->SetAnimID(3, PLAY_CYCLIC);
+    mc->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf"));
+    mc->SetAnimID(5, PLAY_CYCLIC);
     
     a->SetPosition(Vector3(0,-5,30));
-    a->SetScale(0.1f);
-    Quaternion q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
+    a->SetScale(1.f);
+    Quaternion q = Quaternion(Vector3::UnitY, Math::ToRadians(0));
     a->SetRotation(q);
 
-    cc->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/wolf.fbx")->GetVertexArray());
-    cc->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 35, 30), Vector3(0.9, 0.9, 0.6));
+    cc->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
+    //cc->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 35, 30), Vector3(0.9, 0.9, 0.6));
     cc->GetBoundingVolume()->CreateVArray();
     cc->GetBoundingVolume()->SetVisible(true);
 }
