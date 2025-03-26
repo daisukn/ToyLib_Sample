@@ -171,21 +171,22 @@ void VertexArray::CreatePolygon(const float* verts, const unsigned int* indices,
 {
     for (unsigned int i = 0;  i < num/3; i++)
     {
-        Polygon* f = new Polygon();
+        auto poly = std::make_unique<Polygon>();
         
-        f->a.x = verts[(indices[i*3] * 3)];
-        f->a.y = verts[(indices[i*3] * 3)+1];
-        f->a.z = verts[(indices[i*3] * 3)+2];
-
-        f->b.x = verts[(indices[i*3+1] * 3)];
-        f->b.y = verts[(indices[i*3+1] * 3)+1];
-        f->b.z = verts[(indices[i*3+1] * 3)+2];
-
-        f->c.x = verts[(indices[i*3+2] * 3)];
-        f->c.y = verts[(indices[i*3+2] * 3)+1];
-        f->c.z = verts[(indices[i*3+2] * 3)+2];
         
-        mPolygons.push_back(f);
+        poly->a.x = verts[(indices[i*3] * 3)];
+        poly->a.y = verts[(indices[i*3] * 3)+1];
+        poly->a.z = verts[(indices[i*3] * 3)+2];
+
+        poly->b.x = verts[(indices[i*3+1] * 3)];
+        poly->b.y = verts[(indices[i*3+1] * 3)+1];
+        poly->b.z = verts[(indices[i*3+1] * 3)+2];
+
+        poly->c.x = verts[(indices[i*3+2] * 3)];
+        poly->c.y = verts[(indices[i*3+2] * 3)+1];
+        poly->c.z = verts[(indices[i*3+2] * 3)+2];
+        
+        mPolygons.push_back(std::move(poly));
 
     }
 }

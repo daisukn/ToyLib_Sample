@@ -70,43 +70,22 @@ void BoundingVolumeComponent::ComputeBoundingVolume(const std::vector<VertexArra
 {
     
     // 複数VertexArrayをまとめて計算
-    for ( auto v : va )
+    for (const auto& v : va)
     {
-        std::vector<Polygon*> pl = v->GetPolygon();
-        for ( auto p : pl)
+        const auto& polygons = v->GetPolygons();
+        for (const auto& p : polygons)
         {
-            // xの最小を探す
-            if( p->a.x < mBoundingBox->min.x ) mBoundingBox->min.x = p->a.x;
-            if( p->b.x < mBoundingBox->min.x ) mBoundingBox->min.x = p->b.x;
-            if( p->c.x < mBoundingBox->min.x ) mBoundingBox->min.x = p->c.x;
+            const auto* poly = p.get();
 
-            // xの最大を探す
-            if( p->a.x > mBoundingBox->max.x ) mBoundingBox->max.x = p->a.x;
-            if( p->b.x > mBoundingBox->max.x ) mBoundingBox->max.x = p->b.x;
-            if( p->c.x > mBoundingBox->max.x ) mBoundingBox->max.x = p->c.x;
-            
-            // yの最小を探す
-            if( p->a.y < mBoundingBox->min.y ) mBoundingBox->min.y = p->a.y;
-            if( p->b.y < mBoundingBox->min.y ) mBoundingBox->min.y = p->b.y;
-            if( p->c.y < mBoundingBox->min.y ) mBoundingBox->min.y = p->c.y;
+            mBoundingBox->min.x = std::min({mBoundingBox->min.x, poly->a.x, poly->b.x, poly->c.x});
+            mBoundingBox->max.x = std::max({mBoundingBox->max.x, poly->a.x, poly->b.x, poly->c.x});
 
-            // yの最大を探す
-            if( p->a.y > mBoundingBox->max.y ) mBoundingBox->max.y = p->a.y;
-            if( p->b.y > mBoundingBox->max.y ) mBoundingBox->max.y = p->b.y;
-            if( p->c.y > mBoundingBox->max.y ) mBoundingBox->max.y = p->c.y;
+            mBoundingBox->min.y = std::min({mBoundingBox->min.y, poly->a.y, poly->b.y, poly->c.y});
+            mBoundingBox->max.y = std::max({mBoundingBox->max.y, poly->a.y, poly->b.y, poly->c.y});
 
-            // xの最小を探す
-            if( p->a.z < mBoundingBox->min.z ) mBoundingBox->min.z = p->a.z;
-            if( p->b.z < mBoundingBox->min.z ) mBoundingBox->min.z = p->b.z;
-            if( p->c.z < mBoundingBox->min.z ) mBoundingBox->min.z = p->c.z;
-
-            // xの最大を探す
-            if( p->a.z > mBoundingBox->max.z ) mBoundingBox->max.z = p->a.z;
-            if( p->b.z > mBoundingBox->max.z ) mBoundingBox->max.z = p->b.z;
-            if( p->c.z > mBoundingBox->max.z ) mBoundingBox->max.z = p->c.z;
-            
+            mBoundingBox->min.z = std::min({mBoundingBox->min.z, poly->a.z, poly->b.z, poly->c.z});
+            mBoundingBox->max.z = std::max({mBoundingBox->max.z, poly->a.z, poly->b.z, poly->c.z});
         }
-        
     }
     
     CreateVArray();

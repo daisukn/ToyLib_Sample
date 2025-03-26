@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <string>
 
-//#define __GAME_DEBUG
+#define __GAME_DEBUG
 //#define __FULLSCREEN__
 
 const std::string LIBRARY_PATH = "ToyLibCore/";

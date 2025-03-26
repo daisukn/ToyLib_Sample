@@ -77,10 +77,9 @@ public:
     {
         auto comp = std::make_unique<T>(this, std::forward<Args>(args)...);
         T* rawPtr = comp.get();
-        AddComponent(std::move(comp));
+        AddComponent(std::unique_ptr<class Component>(std::move(comp)));  // ★ここでComponent型に変換
         return rawPtr;
     }
-
 
 
     

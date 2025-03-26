@@ -12,7 +12,7 @@ ColliderComponent::ColliderComponent(Actor* a)
 , mIsDisp(false)
 //, targetType(C_NONE)
 {
-    boundingVolume = std::make_unique<BoundingVolumeComponent>(a);
+    mBoundingVolume = mOwner->CreateComponent<BoundingVolumeComponent>();
     mOwner->GetApp()->GetPhysWorld()->AddCollider(this);
 }
 
@@ -30,10 +30,12 @@ void ColliderComponent::Update(float deltaTime)
 // 衝突した
 void ColliderComponent::Collided(ColliderComponent* c)
 {
-    targetColliders.emplace_back(c);
-    mIsCollided = true;
+    if (std::find(targetColliders.begin(), targetColliders.end(), c) == targetColliders.end())
+    {
+        targetColliders.emplace_back(c);
+        mIsCollided = true;
+    }
 }
-
 
 void ColliderComponent::SetColliderType(const ColliderType t)
 {
