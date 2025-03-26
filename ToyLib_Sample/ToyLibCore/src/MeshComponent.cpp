@@ -43,17 +43,20 @@ MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
 // デストラクタ
 MeshComponent::~MeshComponent()
 {
-    switch(mMeshType)
+    if (mOwner && mOwner->GetApp() && mOwner->GetApp()->GetRenderer())
     {
-        case MESH_EFFECT:
-            mOwner->GetApp()->GetRenderer()->RemoveEffectMeshComp(this);
-            break;
-        case MESH_BG:
-            mOwner->GetApp()->GetRenderer()->RemoveBackGroudMeshComp(this);
-            break;
-    case MESH_NORMAL:
-            mOwner->GetApp()->GetRenderer()->RemoveMeshComp(this);
-            break;
+        switch(mMeshType)
+        {
+            case MESH_EFFECT:
+                mOwner->GetApp()->GetRenderer()->RemoveEffectMeshComp(this);
+                break;
+            case MESH_BG:
+                mOwner->GetApp()->GetRenderer()->RemoveBackGroudMeshComp(this);
+                break;
+            case MESH_NORMAL:
+                mOwner->GetApp()->GetRenderer()->RemoveMeshComp(this);
+                break;
+        }
     }
 }
 
