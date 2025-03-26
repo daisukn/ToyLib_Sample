@@ -97,7 +97,7 @@ bool Renderer::Initialize(std::string title, float scWidth, float scHeight)
  
     //
     SetClearColor(0.596f, 0.733f, 0.858f);
-    SetClearColor(0.5f, 0.0f, 0.0f);
+    SetClearColor(0.0f, 0.0f, 0.3f);
 
     return true;
 }
