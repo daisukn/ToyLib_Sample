@@ -1,0 +1,23 @@
+{
+  "position": [0.0, -2.0, 10.0],
+  "rotation_deg": [0.0, 180.0, 0.0],
+  "scale": 0.001,
+
+  "mesh": {
+    "file": "Assets/hero_m.fbx",
+    "animation_id": 0,
+    "toon_render": true,
+    "toon_scale": 1.02
+  },
+
+  "collider": {
+    "bounding_box_offset": [0.0, 0.0, 0.0],
+    "bounding_box_scale": [0.5, 1.0, 0.4],
+    "visible": true,
+    "type": "C_PLAYER"
+  },
+
+  "move_component": {
+    "type": "MoveComponent"
+  }
+}
