@@ -1,13 +1,5 @@
 #include "HeroActor.h"
-#include "Application.h"
-#include "Renderer.h"
-#include "SkeletalMeshComponent.h"
-#include "ColliderComponent.h"
-#include "BoundingVolumeComponent.h"
-#include "MoveComponent.h"
-#include "Mesh.h"
-#include "InputSystem.h"
-#include "MathUtils.h"
+
 
 HeroActor::HeroActor(Application* a)
 : Actor(a)
@@ -16,7 +8,7 @@ HeroActor::HeroActor(Application* a)
     meshComp = CreateComponent<SkeletalMeshComponent>();
     meshComp->SetMesh(GetApp()->GetRenderer()->GetMesh("Assets/hero_m.fbx"));
     meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
-    meshComp->SetToonRender(true, 1.02);
+    meshComp->SetToonRender(false, 1.02);
     
     // 場所調整
     SetPosition(Vector3(0.0f, -2.f, 10.0f));

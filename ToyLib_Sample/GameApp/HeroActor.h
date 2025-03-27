@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Actor.h"
+#include "ToyLib.h"
 
 #ifndef __HEROMOTION
 #define __HEROMOTION

@@ -1,10 +1,4 @@
 #include "game.h"
-#include "Actor.h"
-#include "SkeletalMeshComponent.h"
-#include "ColliderComponent.h"
-#include "BoundingVolumeComponent.h"
-#include "Mesh.h"
-#include "Renderer.h"
 #include "HeroActor.h"
 
 Game::Game(std::string name)

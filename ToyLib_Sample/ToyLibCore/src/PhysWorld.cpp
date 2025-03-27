@@ -24,7 +24,6 @@ PhysWorld::~PhysWorld()
 
 void PhysWorld::Test()
 {
-    std::cout << "aaa" << std::endl;
     for (auto c : mColliders)
     {
         c->ClearCollidBuffer();
