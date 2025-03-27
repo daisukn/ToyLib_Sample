@@ -28,6 +28,8 @@ HeroActor::HeroActor(Application* a)
     cc->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.5, 1.f, 0.4));
     cc->GetBoundingVolume()->CreateVArray();
     cc->GetBoundingVolume()->SetVisible(true);
+    cc->SetColliderType(C_PLAYER);
+    cc->SetDisp(true);
     
     mMoveComp = CreateComponent<MoveComponent>();
     

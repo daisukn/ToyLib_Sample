@@ -8,6 +8,7 @@
 #include <vector>
 #include <memory>
 
+extern const int NUM_VERTEX;
 
 // OBB計算用のStruct
 struct OBB
@@ -68,7 +69,7 @@ public:
     struct Cube* GetBoundingBox() const { return mBoundingBox.get(); }
     struct OBB* GetOBB() const { return mObb.get(); }
     
-    struct Polygon* GetPlygons() const { return mPolygons.get(); }
+    struct Polygon* GetPolygons() const { return mPolygons.get(); }
     
     void SetVisible(bool b) { mIsVisible = b; }
     bool GetVisibile() const { return mIsVisible; }

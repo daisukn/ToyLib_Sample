@@ -37,6 +37,8 @@ void Game::InitGame()
     cc->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
     cc->GetBoundingVolume()->CreateVArray();
     cc->GetBoundingVolume()->SetVisible(true);
+    cc->SetDisp(true);
+    cc->SetColliderType(C_WALL);
     
     auto hero = CreateActor<HeroActor>();
 }

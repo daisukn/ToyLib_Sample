@@ -81,6 +81,19 @@ public:
         return rawPtr;
     }
 
+    template <typename T>
+    T* GetComponent() const
+    {
+        for (const auto& comp : mComponents)
+        {
+            // dynamic_castで型チェック（RTTI必要）
+            if (auto casted = dynamic_cast<T*>(comp.get()))
+            {
+                return casted;
+            }
+        }
+        return nullptr;
+    }
 
     
 private:

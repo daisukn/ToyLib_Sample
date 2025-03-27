@@ -56,6 +56,8 @@ private:
     bool IsCollideBoxOBB(const OBB* cA, const OBB* cB);
     
     bool JudgeWithRadius(class ColliderComponent* col1, class ColliderComponent* col2);
+    
+    Vector3 ComputePushBackDirection(class ColliderComponent* a, class ColliderComponent* b);
 
     
     
@@ -71,6 +73,8 @@ private:
     std::vector<class ColliderComponent*> mCollEnemy;
     std::vector<class ColliderComponent*> mCollLaser;
     std::vector<class ColliderComponent*> mCollBullet;
+    std::vector<class ColliderComponent*> mCollWall;
+    std::vector<class ColliderComponent*> mCollGround;
 
 
     // 地表面をVarrayで持つ（WorldTransform未対応）

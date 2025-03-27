@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Polygon.h"
 
 #include <vector>
 #include <memory>
@@ -12,7 +13,9 @@ enum ColliderType
     C_PLAYER,   // プレーヤー
     C_ENEMY,    // 敵
     C_BULLET,   // 弾丸
-    C_LASER
+    C_LASER,
+    C_WALL,     // 壁
+    C_GROUND    // 地面
 };
 
 class ColliderComponent : public Component
@@ -44,6 +47,8 @@ public:
     bool GetDisp() const { return mIsDisp; }
     void SetDisp(bool b) { mIsDisp = b; }
 
+    // レイを取得 基本は空
+    virtual Ray GetRay() const { return Ray(); }
     
 private:
     
