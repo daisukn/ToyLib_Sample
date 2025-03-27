@@ -187,5 +187,12 @@ add_custom_target(copy_Assets ALL
     COMMENT "Copying Assets to build directory"
 )
 
+# Settingsファイルのコピー
+set(SOURCE_SETTINGS_DIR "${CMAKE_SOURCE_DIR}/ToyLib_Sample/Settings")
+set(DEST_SETTINGS_DIR "${CMAKE_BINARY_DIR}/Settings")
 
+add_custom_target(copy_Settings ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_SETTINGS_DIR} ${DEST_SETTINGS_DIR}
+    COMMENT "Copying Settings to build directory"
+)
 
