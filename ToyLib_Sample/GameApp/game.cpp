@@ -1,5 +1,9 @@
 #include "game.h"
+#include "ApplicationEntry.h"
 #include "HeroActor.h"
+
+TOYLIB_REGISTER_APP_WITH_ARGS(Game, "sample game")
+
 
 Game::Game(std::string name)
 : Application(name)
