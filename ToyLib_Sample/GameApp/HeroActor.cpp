@@ -42,7 +42,7 @@ void HeroActor::ActorInput(const InputState &state)
 {
     float forwardSpeed = 0.0f;
     float angularSpeed = 0.0f;
-    float speed = 10.0f;
+    float speed = 5.0f;
       
  
 
