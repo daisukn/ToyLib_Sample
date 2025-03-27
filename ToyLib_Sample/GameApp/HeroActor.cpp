@@ -5,6 +5,7 @@ HeroActor::HeroActor(Application* a)
 : Actor(a)
 , mAnimID(H_Stand)
 {
+    /*
     meshComp = CreateComponent<SkeletalMeshComponent>();
     meshComp->SetMesh(GetApp()->GetRenderer()->GetMesh("Assets/hero_m.fbx"));
     meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
@@ -25,7 +26,49 @@ HeroActor::HeroActor(Application* a)
     cc->SetDisp(true);
     
     mMoveComp = CreateComponent<MoveComponent>();
+    */
     
+    // --- JSON読み込み ---
+    std::ifstream file("Settings/HeroActor.json");
+    nlohmann::json json;
+    file >> json;
+
+    // --- スケルタルメッシュ ---
+    meshComp = CreateComponent<SkeletalMeshComponent>();
+    std::string meshPath;
+    if (json.contains("mesh") && json["mesh"].contains("file"))
+    {
+        JsonHelper::GetString(json["mesh"], "file", meshPath);
+    }
+    meshComp->SetMesh(a->GetRenderer()->GetMesh(meshPath));
+    meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
+
+    bool useToon = false;
+    float outline = 1.02f;
+    JsonHelper::GetBool(json, "toon_render", useToon);
+    JsonHelper::GetFloat(json, "toon_outline", outline);
+    meshComp->SetToonRender(useToon, outline);
+
+    // --- Transform設定 ---
+    SetPosition(JsonHelper::GetVector3(json, "position"));
+    SetRotation(JsonHelper::GetQuaternionFromEuler(json, "rotation_deg"));
+    float scale = 1.0f;
+    JsonHelper::GetFloat(json, "scale", scale);
+    SetScale(scale);
+
+    // --- コライダー ---
+    auto cc = CreateComponent<ColliderComponent>();
+    cc->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
+    cc->GetBoundingVolume()->AdjustBoundingBox(
+        JsonHelper::GetVector3(json["collider"], "bounding_box_offset"),
+        JsonHelper::GetVector3(json["collider"], "bounding_box_scale"));
+    cc->GetBoundingVolume()->CreateVArray();
+    cc->GetBoundingVolume()->SetVisible(true);
+    cc->SetColliderType(C_PLAYER);
+    cc->SetDisp(true);
+
+    // --- 移動コンポーネント ---
+    mMoveComp = CreateComponent<MoveComponent>();
 }
 
 HeroActor::~HeroActor()

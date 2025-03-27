@@ -1007,6 +1007,22 @@ public:
 
 		return retVal;
 	}
+    
+    // static 関数: Euler角（度）からクォータニオンに変換
+    static Quaternion FromEulerDegrees(const Vector3& euler)
+    {
+        Vector3 radians = Vector3(
+            Math::ToRadians(euler.x),
+            Math::ToRadians(euler.y),
+            Math::ToRadians(euler.z)
+        );
+
+        Quaternion qx(Vector3::UnitX, radians.x);
+        Quaternion qy(Vector3::UnitY, radians.y);
+        Quaternion qz(Vector3::UnitZ, radians.z);
+
+        return Concatenate(qz, Concatenate(qy, qx));
+    }
 
 	static const Quaternion Identity;
 };
