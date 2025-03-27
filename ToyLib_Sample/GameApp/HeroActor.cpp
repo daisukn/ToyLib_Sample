@@ -16,6 +16,7 @@ HeroActor::HeroActor(Application* a)
     meshComp = CreateComponent<SkeletalMeshComponent>();
     meshComp->SetMesh(GetApp()->GetRenderer()->GetMesh("Assets/hero_m.fbx"));
     meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
+    meshComp->SetToonRender(true, 1.02);
     
     // 場所調整
     SetPosition(Vector3(0.0f, -2.f, 10.0f));
