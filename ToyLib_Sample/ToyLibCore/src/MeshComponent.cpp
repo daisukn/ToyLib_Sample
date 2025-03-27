@@ -97,13 +97,15 @@ void MeshComponent::Draw(Shader* s)
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
             s->SetMatrixUniform("uWorldTransform", m * mOwner->GetWorldTransform());
+            s->SetVectorUniform("uSolColor", Vector3(0.f, 0.f, 0.f));
             for (auto v : va)
-            {
+            {/*
                 Texture* t = mOwner->GetApp()->GetRenderer()->GetTexture("Assets/black.png");
                 if (t)
                 {
-                    t->SetActive();
+                    //t->SetActive();
                 }
+              */
                 v->SetActive();
                 glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
             }
