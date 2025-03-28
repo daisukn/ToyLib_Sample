@@ -29,7 +29,7 @@ public:
     virtual ~Renderer();
       
     // 初期化
-    bool Initialize(std::string title, float scWidth, float scHeight);
+    bool Initialize(std::string title, float scWidth, float scHeight, bool isFullScreen);
     // 描画（Applicationから呼ばれる）
     void Draw();
     void DrawBackGround();
@@ -89,6 +89,10 @@ public:
     // デバッガーコンポーネント登録・削除
     void AddDebuggerComp(class DebuggerComponent* dbg);
     void RemoveDebuggerComp(class DebuggerComponent* dbg);
+
+    // デバッグモード設定
+    void SetDebugMode(const bool b) { mIsDebugMode = b; }
+    bool GetDebugMode() const { return mIsDebugMode; }
     
     
     // メッシュ登録
@@ -125,9 +129,10 @@ private:
     //スクリーンサイズ
     float mScreenWidth;
     float mScreenHeight;
+    bool mIsFullScreen;
+    // デバッグモード
+    bool mIsDebugMode;
     
-    
-
     // メッシュ用シェーダー
     std::unique_ptr<class Shader> mMeshShader;
     std::unique_ptr<class Shader> mMeshShaderToon;

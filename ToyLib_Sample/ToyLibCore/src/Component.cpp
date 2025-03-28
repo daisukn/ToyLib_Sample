@@ -4,7 +4,7 @@
 
 
 Component::Component(Actor* a, int order)
-: mOwner(a)
+: mOwnerActor(a)
 , mUpdateOrder(order)
 {
 
@@ -21,5 +21,5 @@ void Component::Update(float deltaTime)
 
 Vector3 Component::GetPosition() const
 {
-    return mOwner->GetPosition();
+    return mOwnerActor->GetPosition();
 }

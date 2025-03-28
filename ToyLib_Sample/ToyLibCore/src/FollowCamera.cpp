@@ -33,7 +33,7 @@ void FollowCamera::Update(float deltaTime)
     //mActualPos += velocity * deltaTime;
     mActualPos = idealPos;
 	// ターゲットは所有アクターの前方
-    Vector3 target = mOwner->GetPosition() + mOwner->GetForward() * mTargetDist;
+    Vector3 target = mOwnerActor->GetPosition() + mOwnerActor->GetForward() * mTargetDist;
     
    
 
@@ -53,7 +53,7 @@ void FollowCamera::SnapToIdeal()
 	// 速度ゼロ
     mVelocity = Vector3::Zero;
 	// ターゲットとビューを計算
-    Vector3 target = mOwner->GetPosition() + mOwner->GetForward() * mTargetDist;
+    Vector3 target = mOwnerActor->GetPosition() + mOwnerActor->GetForward() * mTargetDist;
 	// ビューマトリックスを生成
     Matrix4 view = Matrix4::CreateLookAt(mActualPos, target, Vector3::UnitY);
 	SetViewMatrix(view);
@@ -63,12 +63,12 @@ void FollowCamera::SnapToIdeal()
 Vector3 FollowCamera::ComputeCameraPos() const
 {
 	// カメラの位置を所有アクターの上のほうにセット
-	Vector3 cameraPos = mOwner->GetPosition();
+	Vector3 cameraPos = mOwnerActor->GetPosition();
     {
         //cameraPos.x = cameraPos.x / 2;
         //cameraPos.y = cameraPos.y / 2;
     }
-    cameraPos -= mOwner->GetForward() * mHorzDist;
+    cameraPos -= mOwnerActor->GetForward() * mHorzDist;
     cameraPos += Vector3::UnitY * mVertDist;
 	return cameraPos;
 }

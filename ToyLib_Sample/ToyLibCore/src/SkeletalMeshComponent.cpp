@@ -31,7 +31,7 @@ void SkeletalMeshComponent::Draw(Shader* shader)
 
         // ワールドマトリックスを送る
         Matrix4 m = Matrix4::CreateScale(mScale);
-        shader->SetMatrixUniform("uWorldTransform", m * mOwner->GetWorldTransform());
+        shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
 
         std::vector<Matrix4> transform;
         mMesh->BoneTransform(mAnimTime, transform);
@@ -60,10 +60,10 @@ void SkeletalMeshComponent::Draw(Shader* shader)
         {
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
-            shader->SetMatrixUniform("uWorldTransform", m * mOwner->GetWorldTransform());
+            shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             for (auto v : va)
             {
-                Texture* t = mOwner->GetApp()->GetRenderer()->GetTexture("Assets/black.png");
+                Texture* t = mOwnerActor->GetApp()->GetRenderer()->GetTexture("Assets/black.png");
                 if (t)
                 {
                     t->SetActive();
@@ -79,10 +79,10 @@ void SkeletalMeshComponent::Draw(Shader* shader)
             glBlendFunc(GL_ONE, GL_ONE);
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * 1.05);
-            shader->SetMatrixUniform("uWorldTransform", m * mOwner->GetWorldTransform());
+            shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             for (auto v : va)
             {
-                Texture* t = mOwner->GetApp()->GetRenderer()->GetTexture("Assets/glory.png");
+                Texture* t = mOwnerActor->GetApp()->GetRenderer()->GetTexture("Assets/glory.png");
                 if (t)
                 {
                     t->SetActive();

@@ -5,15 +5,13 @@
 #include <memory>
 #include <string>
 
-extern const float SCREEN_W;
-extern const float SCREEN_H;
 
 // アプリ制御クラス
 class Application
 {
 public:
     // コンストラクタ
-    Application(std::string title);
+    Application(std::string title, float scWidth = 1280.f, float scHeight = 720.f, bool isFullScreen = false);
     // デストラクタ
     virtual ~Application();
 
@@ -56,6 +54,12 @@ private:
     // ゲームデータ読み込み/開放
     void UnloadData();
     void LoadData();
+    
+    // フルスクリーンかどうか
+    bool mIsFullScreen;
+    // 解像度
+    float mScreenW;
+    float mScreenH;
     
     // false 終了、true 実行中
     bool mIsActive;

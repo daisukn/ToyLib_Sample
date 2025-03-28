@@ -128,9 +128,9 @@ void PhysWorld::Test()
             {
                 // 押し戻し処理
                 Vector3 pushDir = ComputePushBackDirection(c1, c2);
-                Vector3 newPos = c1->GetActor()->GetPosition() + pushDir;
+                Vector3 newPos = c1->GetOwner()->GetPosition() + pushDir;
 
-                c1->GetActor()->SetPosition(newPos);
+                c1->GetOwner()->SetPosition(newPos);
 
                 c1->Collided(c2);
                 c2->Collided(c1);
@@ -145,7 +145,7 @@ void PhysWorld::Test()
         {
             if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
             {
-                Actor* player = c1->GetActor();
+                Actor* player = c1->GetOwner();
                 Vector3 pos = player->GetPosition();
                 pos.y = c2->GetPosition().y + 1.f;//地面の厚み; // ちょっと上に補正
                 player->SetPosition(pos);

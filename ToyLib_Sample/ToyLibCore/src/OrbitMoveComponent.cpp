@@ -3,11 +3,11 @@
 #include <cmath>
 
 OrbitMoveComponent::OrbitMoveComponent(class Actor* owner, int updateOrder)
-    : MoveComponent(owner, updateOrder)
-    , mCenterActor(nullptr)
-    , mOrbitRadius(300.0f)
-    , mOrbitSpeed(45.0f) // degrees per second
-    , mCurrentAngle(0.0f)
+: MoveComponent(owner, updateOrder)
+, mCenterActor(nullptr)
+, mOrbitRadius(300.0f)
+, mOrbitSpeed(45.0f) // degrees per second
+, mCurrentAngle(0.0f)
 {
 }
 
@@ -24,11 +24,11 @@ void OrbitMoveComponent::Update(float deltaTime)
         float newX = centerPos.x + mOrbitRadius * cosf(radians);
         float newZ = centerPos.z + mOrbitRadius * sinf(radians);
 
-        mOwner->SetPosition(Vector3(newX, mOwner->GetPosition().y, newZ));
+        mOwnerActor->SetPosition(Vector3(newX, mOwnerActor->GetPosition().y, newZ));
 
-        Vector3 toCenter = centerPos - mOwner->GetPosition();
+        Vector3 toCenter = centerPos - mOwnerActor->GetPosition();
         toCenter.Normalize();
         float angle = atan2f(toCenter.x, toCenter.z);
-        mOwner->SetRotation(Quaternion(Vector3::UnitY, angle));
+        mOwnerActor->SetRotation(Quaternion(Vector3::UnitY, angle));
     }
 }

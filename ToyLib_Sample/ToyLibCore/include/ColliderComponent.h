@@ -36,7 +36,7 @@ public:
     
     void Update(float deltaTime) override;
     
-    class Actor* GetActor() const { return mOwner; }
+    //class Actor* GetActor() const { return mOwner; }
     class BoundingVolumeComponent* GetBoundingVolume() const { return mBoundingVolume; }
     
     // 衝突しているかどうか

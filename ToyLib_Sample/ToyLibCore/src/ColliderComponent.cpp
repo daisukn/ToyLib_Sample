@@ -14,13 +14,13 @@ ColliderComponent::ColliderComponent(Actor* a)
 , mIsDisp(false)
 //, targetType(C_NONE)
 {
-    mBoundingVolume = mOwner->CreateComponent<BoundingVolumeComponent>();
-    mOwner->GetApp()->GetPhysWorld()->AddCollider(this);
+    mBoundingVolume = mOwnerActor->CreateComponent<BoundingVolumeComponent>();
+    mOwnerActor->GetApp()->GetPhysWorld()->AddCollider(this);
 }
 
 ColliderComponent::~ColliderComponent()
 {
-    mOwner->GetApp()->GetPhysWorld()->RemoveCollider(this);
+    mOwnerActor->GetApp()->GetPhysWorld()->RemoveCollider(this);
 }
 
 void ColliderComponent::Update(float deltaTime)
@@ -42,6 +42,6 @@ void ColliderComponent::Collided(ColliderComponent* c)
 void ColliderComponent::SetColliderType(const ColliderType t)
 {
     mType = t;
-    mOwner->GetApp()->GetPhysWorld()->AddColliderType(this, t);
+    mOwnerActor->GetApp()->GetPhysWorld()->AddColliderType(this, t);
     
 }

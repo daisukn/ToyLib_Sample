@@ -22,11 +22,11 @@ SpriteComponent::SpriteComponent(Actor* a, int order, bool isBG)
 {
     if(isBG)
     {
-        mOwner->GetApp()->GetRenderer()->AddBackGroundSprite(this);
+        mOwnerActor->GetApp()->GetRenderer()->AddBackGroundSprite(this);
     }
     else
     {
-        mOwner->GetApp()->GetRenderer()->AddSprite(this);
+        mOwnerActor->GetApp()->GetRenderer()->AddSprite(this);
     }
 }
 
@@ -36,11 +36,11 @@ SpriteComponent::~SpriteComponent()
     
     if(mIsBackGround)
     {
-        mOwner->GetApp()->GetRenderer()->RemoveBackGroundSprite(this);
+        mOwnerActor->GetApp()->GetRenderer()->RemoveBackGroundSprite(this);
     }
     else
     {
-        mOwner->GetApp()->GetRenderer()->RemoveSprite(this);
+        mOwnerActor->GetApp()->GetRenderer()->RemoveSprite(this);
     }
 }
 
@@ -81,7 +81,7 @@ void SpriteComponent::Draw(Shader* shader)
     
 	//	Matrix4 scaleMat = Matrix4::CreateScale(static_cast<float>(texWidth), static_cast<float>(texHeight), 1.0f);
 		// ワールド座標生成
-        Matrix4 world = scaleMat * mOwner->GetWorldTransform();
+        Matrix4 world = scaleMat * mOwnerActor->GetWorldTransform();
 		
         // シェーダー に送る
 		shader->SetMatrixUniform("uWorldTransform", world);

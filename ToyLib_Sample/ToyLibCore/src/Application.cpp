@@ -7,24 +7,15 @@
 #include <algorithm>
 
 
-
-//#define __HIGH_RESOLUTION__
-
-#ifdef __HIGH_RESOLUTION__
-const float SCREEN_W = 1600.f;
-const float SCREEN_H = 900.f;
-#else
-const float SCREEN_W = 1280.f;
-const float SCREEN_H = 720.f;
-#endif // __HIGH_RESOLUTION__
-
-
 // コンストラクタ
-Application::Application(std::string title)
+Application::Application(std::string title, float scWidth, float scHeight, bool isFullScreen)
 : mIsActive(false)
 , mIsUpdatingActors(false)
 , mIsPause(false)
 , mApplicationTitle(title)
+, mIsFullScreen(isFullScreen)
+, mScreenW(scWidth)
+, mScreenH(scHeight)
 {
     mRenderer = std::make_unique<class Renderer>();
     mInputSys = std::make_unique<class InputSystem>();
@@ -50,7 +41,7 @@ bool Application::Initialize()
     }
     
     // Renderer初期化
-    mRenderer->Initialize(mApplicationTitle, SCREEN_W, SCREEN_H);
+    mRenderer->Initialize(mApplicationTitle, mScreenW, mScreenH, mIsFullScreen);
 
     // 入力システム初期化
     mInputSys->Initialize();

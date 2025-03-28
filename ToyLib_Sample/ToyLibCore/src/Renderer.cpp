@@ -15,20 +15,19 @@
 #include <algorithm>
 #include <string>
 
-#define __GAME_DEBUG
-//#define __FULLSCREEN__
 
 const std::string LIBRARY_PATH = "ToyLibCore/";
 
 // コンストラクタ
 Renderer::Renderer()
-    : mStrTitle("")
-    , mScreenWidth(0.f)
-    , mScreenHeight(0.f)
-    , mWindow(nullptr)
-    , mGLContext(nullptr)
-    , mPerspectiveFOV(30.f)
-    , mCameraPosition(Vector3(0.f, 0.f, 0.f))
+: mStrTitle("")
+, mScreenWidth(0.f)
+, mScreenHeight(0.f)
+, mWindow(nullptr)
+, mGLContext(nullptr)
+, mPerspectiveFOV(30.f)
+, mCameraPosition(Vector3(0.f, 0.f, 0.f))
+, mIsDebugMode(false)
 {
 }
 
@@ -39,11 +38,12 @@ Renderer::~Renderer()
 
 
 // ウィンドウ生成とGL初期化
-bool Renderer::Initialize(std::string title, float scWidth, float scHeight)
+bool Renderer::Initialize(std::string title, float scWidth, float scHeight, bool iSFullScreen)
 {
-    mStrTitle        = title;    // ウィンドウタイトル
-    mScreenWidth     = scWidth;  // スクリーン幅
-    mScreenHeight    = scHeight; // スクリーン高さ
+    mStrTitle       = title;    // ウィンドウタイトル
+    mScreenWidth    = scWidth;  // スクリーン幅
+    mScreenHeight   = scHeight; // スクリーン高さ
+    mIsFullScreen   = iSFullScreen;
     
     
     // OpenGL プロファイル, バージョン
@@ -61,14 +61,12 @@ bool Renderer::Initialize(std::string title, float scWidth, float scHeight)
     // ハードウェアアクセラレーション有効化
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
     
-
-#ifdef __FULLSCREEN__
-    unsigned int WINDOW_FLAGS = SDL_WINDOW_OPENGL || SDL_WINDOW_FULLSCREEN;
-#else
     unsigned int WINDOW_FLAGS = SDL_WINDOW_OPENGL;
-#endif // __FULLSCREEN__
+    if (mIsFullScreen)
+    {
+        WINDOW_FLAGS =  WINDOW_FLAGS | SDL_WINDOW_FULLSCREEN;
+    }
 
-    
     //ウインドウ生成
     mWindow = SDL_CreateWindow(mStrTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, static_cast<int>(mScreenWidth), static_cast<int>(mScreenHeight), WINDOW_FLAGS);
     
@@ -132,12 +130,10 @@ void Renderer::Draw()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     
-    
+    // 各コンポーネント描画
     DrawBackGround();
     DrawMesh();
-#ifdef __GAME_DEBUG
     DrawDebugger();
-#endif // __GAME_DEBUG
     DrawParticle();
     DrawBillboard();
     DrawSprite();
@@ -278,6 +274,9 @@ void Renderer::DrawSprite()
 void Renderer::DrawDebugger()
 {
 
+    // デバッグモードでない場合キャンセル
+    if (!mIsDebugMode) return;
+    
     // デバッガー用の描画
     mSolidShader->SetActive();
     mSolidShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);

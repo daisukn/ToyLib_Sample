@@ -26,14 +26,14 @@ ParticleComponent::ParticleComponent(Actor* a, int drawOrder)
 , mPartSpeed(2.0f)
 , mIsBlendAdd(false)
 {
-    mOwner->GetApp()->GetRenderer()->AddParticleComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->AddParticleComp(this);
 }
 // デストラクタ
 ParticleComponent::~ParticleComponent()
 {
     // レンダラーからRemoveする
     mParts.clear();
-    mOwner->GetApp()->GetRenderer()->RemoveParticleComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->RemoveParticleComp(this);
 }
 
 // 描画（Rendererから呼ばれる）
@@ -51,11 +51,11 @@ void ParticleComponent::Draw(Shader *shader)
         
         
         // Ownerのマトリックスを取得（Positionでも良いかもしれない。）
-        Matrix4 mat = mOwner->GetWorldTransform();
+        Matrix4 mat = mOwnerActor->GetWorldTransform();
         
         // ビルボーディング
         // ビューマトリックスの逆行列の座標を差し替えて流用
-        Matrix4 invVew = mOwner->GetApp()->GetRenderer()->GetInvViewMatrix();
+        Matrix4 invVew = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
         // 座標差し替え
         invVew.mat[3][0] = mat.mat[3][0];
         invVew.mat[3][1] = mat.mat[3][1];
@@ -63,7 +63,7 @@ void ParticleComponent::Draw(Shader *shader)
         
         // スケールを復元
         Matrix4 scaleMat = Matrix4::CreateScale(mPartSize, mPartSize, 1);
-        Matrix4 world = scaleMat * Matrix4::CreateScale(mOwner->GetScale()) * invVew;
+        Matrix4 world = scaleMat * Matrix4::CreateScale(mOwnerActor->GetScale()) * invVew;
 
         // シェーダー に送る
         shader->SetMatrixUniform("uWorldTransform", world);

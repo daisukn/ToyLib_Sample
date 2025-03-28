@@ -14,26 +14,26 @@ MoveComponent::MoveComponent(class Actor* a, int updateOrder)
 
 void MoveComponent::Update(float deltaTime)
 {
-    Quaternion rot = mOwner->GetRotation();
+    Quaternion rot = mOwnerActor->GetRotation();
     if (!Math::NearZero(mAngularSpeed))
     {
         float angle = Math::ToRadians(mAngularSpeed * deltaTime);
         Quaternion inc(Vector3::UnitY, angle);
         rot = Quaternion::Concatenate(rot, inc);
-        mOwner->SetRotation(rot);
+        mOwnerActor->SetRotation(rot);
     }
 
-    Vector3 pos = mOwner->GetPosition();
+    Vector3 pos = mOwnerActor->GetPosition();
     if (!Math::NearZero(mForwardSpeed))
-        pos += mOwner->GetForward() * mForwardSpeed * deltaTime;
+        pos += mOwnerActor->GetForward() * mForwardSpeed * deltaTime;
 
     if (!Math::NearZero(mRightSpeed))
-        pos += mOwner->GetRight() * mRightSpeed * deltaTime;
+        pos += mOwnerActor->GetRight() * mRightSpeed * deltaTime;
 
     if (!Math::NearZero(mVerticalSpeed))
-        pos += mOwner->GetUpward() * mVerticalSpeed * deltaTime;
+        pos += mOwnerActor->GetUpward() * mVerticalSpeed * deltaTime;
 
-    mOwner->SetPosition(pos);
+    mOwnerActor->SetPosition(pos);
 }
 
 void MoveComponent::Reset()

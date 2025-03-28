@@ -16,10 +16,9 @@ const int NUM_VERTEX = 12;
 
 // コンストラクタ
 BoundingVolumeComponent::BoundingVolumeComponent(Actor* a)
-//    : Component(a)
 : DebuggerComponent(a)
 , mRadius(0.0f)
-, mIsVisible(false)
+, mIsVisible(true)
 {
     mBoundingBox = std::make_unique<Cube>();
     mObb = std::make_unique<OBB>();
@@ -37,12 +36,12 @@ BoundingVolumeComponent::~BoundingVolumeComponent()
 void BoundingVolumeComponent::OnUpdateWorldTransform()
 {
     // バウンディングボックスパラメータをセット
-    mObb->pos = mOwner->GetPosition();
-    float sc1 = mOwner->GetScale();
+    mObb->pos = mOwnerActor->GetPosition();
+    float sc1 = mOwnerActor->GetScale();
     mObb->max = mBoundingBox->max * sc1;
     mObb->min = mBoundingBox->min * sc1;
     
-    Quaternion q1 = mOwner->GetRotation();
+    Quaternion q1 = mOwnerActor->GetRotation();
     Matrix4 mRot1 = Matrix4::CreateFromQuaternion(q1);
       
     mObb->axisX = mRot1.GetXAxis();
@@ -243,7 +242,7 @@ void BoundingVolumeComponent::Draw(Shader* shader)
     if (mIsVisible)
     {
         // WorldマトリックスをShaderに送る
-        shader->SetMatrixUniform("uWorldTransform", mOwner->GetWorldTransform());
+        shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
         // SpecPowerを送る
         shader->SetFloatUniform("uSpecPower", 1);

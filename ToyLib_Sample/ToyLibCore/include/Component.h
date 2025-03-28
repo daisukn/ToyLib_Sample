@@ -26,12 +26,12 @@ public:
     // ポジションを返す
     virtual Vector3 GetPosition() const;
     
-    class Actor* GetOwner() const { return mOwner; }
+    class Actor* GetOwner() const { return mOwnerActor; }
 
     
 protected:
     // オーナーとなるActor
-    class Actor* mOwner;
+    class Actor* mOwnerActor;
 	// アップデートオーダー
 	int mUpdateOrder;
     

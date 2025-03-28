@@ -41,8 +41,7 @@ struct OBB
 
 
 // バウンディングボリューム管理
-class BoundingVolumeComponent : //public Component,
-                                public DebuggerComponent
+class BoundingVolumeComponent : public DebuggerComponent
 {
 public:
     // コンストラクタ
@@ -63,7 +62,7 @@ public:
     void OnUpdateWorldTransform() override;
     
     // 描画 override
-    void Draw(class Shader* shader) override;
+    void Draw(class Shader* shader);// override;
     
     // バウンディングボックス取得
     struct Cube* GetBoundingBox() const { return mBoundingBox.get(); }

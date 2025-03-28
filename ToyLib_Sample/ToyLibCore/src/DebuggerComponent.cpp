@@ -7,10 +7,10 @@
 DebuggerComponent::DebuggerComponent(Actor* a)
 : Component(a)
 {
-    mOwner->GetApp()->GetRenderer()->AddDebuggerComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->AddDebuggerComp(this);
 }
 
 DebuggerComponent::~DebuggerComponent()
 {
-    mOwner->GetApp()->GetRenderer()->RemoveDebuggerComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->RemoveDebuggerComp(this);
 }

@@ -29,13 +29,13 @@ MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
     switch(mMeshType)
     {
         case MESH_EFFECT:
-            mOwner->GetApp()->GetRenderer()->AddEffectMeshComp(this);
+            mOwnerActor->GetApp()->GetRenderer()->AddEffectMeshComp(this);
             break;
         case MESH_BG:
-            mOwner->GetApp()->GetRenderer()->AddBackGroudMeshComp(this);
+            mOwnerActor->GetApp()->GetRenderer()->AddBackGroudMeshComp(this);
             break;
         case MESH_NORMAL:
-            mOwner->GetApp()->GetRenderer()->AddMeshComp(this);
+            mOwnerActor->GetApp()->GetRenderer()->AddMeshComp(this);
             break;
     }
 }
@@ -43,18 +43,18 @@ MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
 // デストラクタ
 MeshComponent::~MeshComponent()
 {
-    if (mOwner && mOwner->GetApp() && mOwner->GetApp()->GetRenderer())
+    if (mOwnerActor && mOwnerActor->GetApp() && mOwnerActor->GetApp()->GetRenderer())
     {
         switch(mMeshType)
         {
             case MESH_EFFECT:
-                mOwner->GetApp()->GetRenderer()->RemoveEffectMeshComp(this);
+                mOwnerActor->GetApp()->GetRenderer()->RemoveEffectMeshComp(this);
                 break;
             case MESH_BG:
-                mOwner->GetApp()->GetRenderer()->RemoveBackGroudMeshComp(this);
+                mOwnerActor->GetApp()->GetRenderer()->RemoveBackGroudMeshComp(this);
                 break;
             case MESH_NORMAL:
-                mOwner->GetApp()->GetRenderer()->RemoveMeshComp(this);
+                mOwnerActor->GetApp()->GetRenderer()->RemoveMeshComp(this);
                 break;
         }
     }
@@ -72,7 +72,7 @@ void MeshComponent::Draw(Shader* s)
         
         // WorldマトリックスをShaderに送る
         Matrix4 m = Matrix4::CreateScale(mScale);
-        s->SetMatrixUniform("uWorldTransform", m * mOwner->GetWorldTransform());
+        s->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
 
 		// SpecPowerを送る
         s->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
@@ -96,7 +96,7 @@ void MeshComponent::Draw(Shader* s)
         {
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
-            s->SetMatrixUniform("uWorldTransform", m * mOwner->GetWorldTransform());
+            s->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             s->SetVectorUniform("uSolColor", Vector3(0.f, 0.f, 0.f));
             for (auto v : va)
             {/*
@@ -117,7 +117,7 @@ void MeshComponent::Draw(Shader* s)
             glBlendFunc(GL_ONE, GL_ONE);
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
-            s->SetMatrixUniform("uWorldTransform", m * mOwner->GetWorldTransform());
+            s->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             for (auto v : va)
             {
                 Texture* t = mMesh->GetTexture(v->GetTextureID());
