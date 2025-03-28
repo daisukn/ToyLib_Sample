@@ -35,9 +35,9 @@ void Game::InitGame()
     mc->SetAnimID(6, PLAY_CYCLIC);
     mc->SetToonRender(true, 1.02f);
     
-    a->SetPosition(Vector3(-4,-2,10));
+    a->SetPosition(Vector3(-3,-2,10));
     a->SetScale(0.5f);
-    Quaternion q = Quaternion(Vector3::UnitY, Math::ToRadians(30));
+    Quaternion q = Quaternion(Vector3::UnitY, Math::ToRadians(-30));
     a->SetRotation(q);
 
     cc->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
@@ -45,6 +45,14 @@ void Game::InitGame()
     cc->GetBoundingVolume()->CreateVArray();
     cc->SetDisp(true);
     cc->SetColliderType(C_WALL);
+    
+    
+    auto b = CreateActor<Actor>();
+    auto g = b->CreateComponent<MeshComponent>();
+    g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
+    b->SetPosition(Vector3(0,-2,20));
+    g->SetScale(0.15);
+    
     
     
     CreateActor<HeroActor>();

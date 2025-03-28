@@ -445,7 +445,7 @@ void Renderer::SetLightUniforms(Shader* shader)
     mAmbientLight = Vector3(1,1,1);
     shader->SetVectorUniform("uAmbientLight", mAmbientLight);
     // Directional light
-    mDirLight.Direction = Vector3(-0.5f, -1.f, -0.3);
+    mDirLight.Direction = Vector3(-0.5f, -1.f, 0.3);
     mDirLight.DiffuseColor = Vector3(0.8f, 0.8f, 0.8f);
     mDirLight.SpecColor = Vector3(0.1f, 0.1f, 0.1f);
     shader->SetVectorUniform("uDirLight.mDirection", mDirLight.Direction);
