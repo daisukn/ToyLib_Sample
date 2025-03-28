@@ -75,7 +75,7 @@ void Mesh::SetAnimID(int id, PlayMode m)
         mIsPlaying = true;
     }
 
-    mPrevAnimID = mAnimID;
+    mPrevAnimID = mAnimID % mNumAnimations;
     mAnimID = id;
     mPlayMode = m;
 }
