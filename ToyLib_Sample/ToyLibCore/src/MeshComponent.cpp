@@ -61,7 +61,7 @@ MeshComponent::~MeshComponent()
 }
 
 // 描画
-void MeshComponent::Draw(Shader* s)
+void MeshComponent::Draw(Shader* shader)
 {
 	if (mMesh)
 	{
@@ -72,10 +72,10 @@ void MeshComponent::Draw(Shader* s)
         
         // WorldマトリックスをShaderに送る
         Matrix4 m = Matrix4::CreateScale(mScale);
-        s->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
+        shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
 
 		// SpecPowerを送る
-        s->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
+        shader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
 
 
 		// Vertex Array
@@ -96,20 +96,17 @@ void MeshComponent::Draw(Shader* s)
         {
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
-            s->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
-            s->SetVectorUniform("uSolColor", Vector3(0.f, 0.f, 0.f));
+            shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
+            shader->SetBooleanUniform("uOverrideColor", true);
+            shader->SetVectorUniform("uUniformColor", Vector3(0.f, 0.f, 0.f));
+            
             for (auto v : va)
-            {/*
-                Texture* t = mOwner->GetApp()->GetRenderer()->GetTexture("Assets/black.png");
-                if (t)
-                {
-                    //t->SetActive();
-                }
-              */
+            {
                 v->SetActive();
                 glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
             }
             glFrontFace(GL_CCW);
+            shader->SetBooleanUniform("uOverrideColor", false);
         }
         
         if (mIsGlory)
@@ -117,7 +114,7 @@ void MeshComponent::Draw(Shader* s)
             glBlendFunc(GL_ONE, GL_ONE);
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
-            s->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
+            shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             for (auto v : va)
             {
                 Texture* t = mMesh->GetTexture(v->GetTextureID());

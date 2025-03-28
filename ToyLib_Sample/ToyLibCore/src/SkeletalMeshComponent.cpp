@@ -56,20 +56,22 @@ void SkeletalMeshComponent::Draw(Shader* shader)
 //            glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
         }
         
+        
         if (mIsToon)
         {
             glFrontFace(GL_CW);
             Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
             shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
+            shader->SetBooleanUniform("uOverrideColor", true);
+            shader->SetVectorUniform("uUniformColor", Vector3(0.f, 0.f, 0.f));
+            
             for (auto v : va)
             {
-                auto blackShader = mOwnerActor->GetApp()->GetRenderer()->GetSolidShader();
-                blackShader->SetMatrixUniforms("uMatrixPalette", transform.data(), (unsigned int)transform.size());
-                blackShader->SetVectorUniform("uSolColor", Vector3(0.f, 0.f, 0.f));
-                blackShader->SetActive();
+                v->SetActive();
                 glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
             }
             glFrontFace(GL_CCW);
+            shader->SetBooleanUniform("uOverrideColor", false);
         }
         
         if (mIsGlory)

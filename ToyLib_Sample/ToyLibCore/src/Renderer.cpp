@@ -454,13 +454,13 @@ void Renderer::SetLightUniforms(Shader* shader)
     
     
     // フォグ
-    shader->SetFloatUniform("uFoginfo.maxDist", 1000000);
+    shader->SetFloatUniform("uFoginfo.maxDist", 40);
     shader->SetFloatUniform("uFoginfo.minDist", 0.0001);
     
 //    shader->SetVectorUniform("uFoginfo.color", Vector3(0.75f, 0.96f, 0.99f) );
 //    shader->SetVectorUniform("uFoginfo.color", Vector3(0.69f, 0.859f, 0.894f) );
 //    shader->SetVectorUniform("uFoginfo.color", Vector3(0.69f, 0.859f, 0.894f) );
-    shader->SetVectorUniform("uFoginfo.color", Vector3(1.f, 1.f, 1.f) );
+    shader->SetVectorUniform("uFoginfo.color", Vector3(0.f, 0.f, 0.25f) );
 
 
 }

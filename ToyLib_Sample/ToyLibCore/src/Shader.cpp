@@ -90,6 +90,13 @@ void Shader::SetFloatUniform(const char* name, float value)
     glUniform1f(loc, value);
 }
 
+// Bool値を送る
+void Shader::SetBooleanUniform(const char *name, bool value)
+{
+    GLuint loc = glGetUniformLocation(mShaderProgramID, name);
+    glUniform1i(loc, value);
+}
+
 
 // コンパイル
 bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader){

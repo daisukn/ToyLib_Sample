@@ -27,6 +27,7 @@ public:
     void SetMatrixUniforms(const char* name, Matrix4* matrices, unsigned count);
     void SetVectorUniform(const char* name, const Vector3& vector);
     void SetFloatUniform(const char* name, float value);
+    void SetBooleanUniform(const char* name, bool value);
     
     
 private:

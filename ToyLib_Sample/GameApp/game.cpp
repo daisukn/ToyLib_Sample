@@ -48,6 +48,8 @@ void Game::InitGame()
     
     
     CreateActor<HeroActor>();
+    
+    GetRenderer()->SetDebugMode(false);
 }
 
 void Game::UpdateGame(float deltaTime)

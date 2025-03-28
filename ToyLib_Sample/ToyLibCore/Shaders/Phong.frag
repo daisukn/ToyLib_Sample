@@ -14,6 +14,13 @@ out vec4 outColor;
 // テクスチャ
 uniform sampler2D uTexture;
 
+
+// 色のUniform（この色がセットされていれば、強制的に塗りつぶし）
+uniform vec3 uUniformColor; // 色を指定するUniform
+// 強制的に塗りつぶす場合の条件
+uniform bool uOverrideColor; // trueで色が強制的に適用される
+
+
 // ディレクショナルライト
 struct DirectionalLight
 {
@@ -48,6 +55,21 @@ uniform FogInfo uFoginfo;
 void main()
 {
     
+    // フォグの値を計算
+    float dist = length(uCameraPos.xyz - fragWorldPos.xyz);
+    float fogFactor = (uFoginfo.maxDist - dist) / (uFoginfo.maxDist - uFoginfo.minDist);
+    fogFactor = clamp(fogFactor, 0.0f, 1.0f);
+    
+    // 条件がtrueの場合、ライトやテクスチャを無視して色を強制的に塗りつぶし
+    if (uOverrideColor)
+    {
+        // 強制的に塗りつぶす色をセット
+
+        outColor = vec4(mix(uFoginfo.color, uUniformColor, fogFactor), 1.0f);
+        return;
+    }
+    
+    
     // 法線ベクトル
     vec3 N = normalize(fragNormal);
     // ライティング計算
@@ -57,10 +79,7 @@ void main()
     // 反射角度
     vec3 R = normalize(reflect(-L, N));
 
-    // フォグの値を計算
-    float dist = length(uCameraPos.xyz - fragWorldPos.xyz);
-    float fogFactor = (uFoginfo.maxDist - dist) / (uFoginfo.maxDist - uFoginfo.minDist);
-    fogFactor = clamp(fogFactor, 0.0f, 1.0f);
+
     
     
     // 反射光を計算
