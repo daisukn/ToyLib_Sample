@@ -1,16 +1,16 @@
-#include "DebuggerComponent.h"
+#include "WireframeComponent.h"
 #include "Actor.h"
 #include "Application.h"
 #include "Renderer.h"
 
 
-DebuggerComponent::DebuggerComponent(Actor* a)
+WireframeComponent::WireframeComponent(Actor* a)
 : Component(a)
 {
-    mOwnerActor->GetApp()->GetRenderer()->AddDebuggerComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->AddWireframeComp(this);
 }
 
-DebuggerComponent::~DebuggerComponent()
+WireframeComponent::~WireframeComponent()
 {
-    mOwnerActor->GetApp()->GetRenderer()->RemoveDebuggerComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->RemoveWireframeComp(this);
 }

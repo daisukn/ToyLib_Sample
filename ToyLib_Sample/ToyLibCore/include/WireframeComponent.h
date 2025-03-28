@@ -3,12 +3,12 @@
 #include "Component.h"
 
 
-// デバッガー用の表示などを管理
-class DebuggerComponent : public Component
+// ワイヤーフレームの表示用
+class WireframeComponent : public Component
 {
 public:
-    DebuggerComponent(class Actor* a);
-    virtual ~DebuggerComponent();
+    WireframeComponent(class Actor* a);
+    virtual ~WireframeComponent();
     
     virtual void Draw(class Shader* s) { }
 };

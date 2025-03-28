@@ -16,7 +16,7 @@ const int NUM_VERTEX = 12;
 
 // コンストラクタ
 BoundingVolumeComponent::BoundingVolumeComponent(Actor* a)
-: DebuggerComponent(a)
+: WireframeComponent(a)
 , mRadius(0.0f)
 , mIsVisible(true)
 {
@@ -97,8 +97,6 @@ void BoundingVolumeComponent::ComputeBoundingVolume(const std::vector<VertexArra
 void BoundingVolumeComponent::CreatePolygons()
 {
 
-
-    
     // 0, 1, 3
     mPolygons[0].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
     mPolygons[0].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z);
@@ -226,31 +224,22 @@ void BoundingVolumeComponent::CreateVArray()
 
     };
     
-    
-    //mVertexArray = new VertexArray(BBverts, 8, (unsigned int*)BBindex, (unsigned int)36);
     mVertexArray = std::make_unique<VertexArray>(BBverts, 8, (unsigned int*)BBindex, (unsigned int)36);
-    // マテリアル非対応なのでTextureで代用
-    //texture = owner->GetApp()->GetRenderer()->GetTexture("Assets/BoundingVolume.png");
-    
-    //isVisible = true;
+
 }
 
 
 // バウンディングボリューム表示（ワイヤフレーム）
 void BoundingVolumeComponent::Draw(Shader* shader)
 {
-    if (mIsVisible)
-    {
-        // WorldマトリックスをShaderに送る
-        shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
+    if (!mIsVisible) return;
+    
+    // WorldマトリックスをShaderに送る
+    shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
-        // SpecPowerを送る
-        shader->SetFloatUniform("uSpecPower", 1);
+    // SpecPowerを送る
+    shader->SetFloatUniform("uSpecPower", 1);
 
-
-        //texture->SetActive();
-            
-        mVertexArray->SetActive();
-        glDrawElements(GL_LINE_STRIP, 36, GL_UNSIGNED_INT, nullptr);
-    }
+    mVertexArray->SetActive();
+    glDrawElements(GL_LINE_STRIP, 36, GL_UNSIGNED_INT, nullptr);
 }

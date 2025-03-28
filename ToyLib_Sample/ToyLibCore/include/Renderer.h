@@ -87,8 +87,8 @@ public:
     void AddBillboardComp(class BillboardComponent* billboard);
     void RemoveBillboardComp(class BillboardComponent* billboard);
     // デバッガーコンポーネント登録・削除
-    void AddDebuggerComp(class DebuggerComponent* dbg);
-    void RemoveDebuggerComp(class DebuggerComponent* dbg);
+    void AddWireframeComp(class WireframeComponent* wireframe);
+    void RemoveWireframeComp(class WireframeComponent* wireframe);
 
     // デバッグモード設定
     void SetDebugMode(const bool b) { mIsDebugMode = b; }
@@ -172,7 +172,7 @@ private:
     std::vector<class SkeletalMeshComponent*> mSkeletalMeshes;
     std::vector<class ParticleComponent*> mParticleComps;
     std::vector<class BillboardComponent*> mBillboardComps;
-    std::vector<class DebuggerComponent*> mDbgComps;
+    std::vector<class WireframeComponent*> mWireframeComps;
     
     
     // ライト

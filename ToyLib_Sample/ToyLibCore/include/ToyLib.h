@@ -26,6 +26,7 @@
 #include "SpriteComponent.h"
 #include "BillboardComponent.h"
 #include "ParticleComponent.h"
+#include "WireframeComponent.h"
 
 // --- Utility ---
 #include "MathUtils.h"
@@ -41,8 +42,6 @@
 #include "CameraComponent.h"
 #include "FollowCamera.h"
 
-// --- Debugging ---
-#include "DebuggerComponent.h"
 
 // --- Optional system-level ---
 #include "ApplicationEntry.h"

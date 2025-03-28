@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Component.h"
-#include "DebuggerComponent.h"
+#include "WireframeComponent.h"
 
 #include "MathUtils.h"
 
@@ -41,7 +41,7 @@ struct OBB
 
 
 // バウンディングボリューム管理
-class BoundingVolumeComponent : public DebuggerComponent
+class BoundingVolumeComponent : public WireframeComponent
 {
 public:
     // コンストラクタ
@@ -62,7 +62,7 @@ public:
     void OnUpdateWorldTransform() override;
     
     // 描画 override
-    void Draw(class Shader* shader);// override;
+    void Draw(class Shader* shader) override;
     
     // バウンディングボックス取得
     struct Cube* GetBoundingBox() const { return mBoundingBox.get(); }

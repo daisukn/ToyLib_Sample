@@ -9,7 +9,7 @@
 #include "ParticleComponent.h"
 #include "BillboardComponent.h"
 
-#include "DebuggerComponent.h"
+#include "WireframeComponent.h"
 
 #include <GL/glew.h>
 #include <algorithm>
@@ -283,10 +283,9 @@ void Renderer::DrawDebugger()
     mSolidShader->SetVectorUniform("uSolColor", Vector3(1.f, 1.f, 1.f));
     // Update lighting uniforms
     SetLightUniforms(mSolidShader.get());
-    for (auto dg : mDbgComps)
+    for (auto wf : mWireframeComps)
     {
-        dg->Draw(mSolidShader.get());
-
+        wf->Draw(mSolidShader.get());
     }
 
 }
@@ -723,18 +722,18 @@ void Renderer::RemoveBillboardComp(BillboardComponent* billboard)
 
 
 // デバッガーコンポーネント登録
-void Renderer::AddDebuggerComp(DebuggerComponent* dbg)
+void Renderer::AddWireframeComp(WireframeComponent* wf)
 {
-    mDbgComps.emplace_back(dbg);
+    mWireframeComps.emplace_back(wf);
 }
 
 // パーティクルコンポーネント登録
-void Renderer::RemoveDebuggerComp(DebuggerComponent* dbg)
+void Renderer::RemoveWireframeComp(WireframeComponent* wf)
 {
-    auto iter = std::find(mDbgComps.begin(), mDbgComps.end(), dbg);
-    if (iter != mDbgComps.end())
+    auto iter = std::find(mWireframeComps.begin(), mWireframeComps.end(), wf);
+    if (iter != mWireframeComps.end())
     { // 要素が見つかった場合のみ削除
-        mDbgComps.erase(iter);
+        mWireframeComps.erase(iter);
     }
 }
 
