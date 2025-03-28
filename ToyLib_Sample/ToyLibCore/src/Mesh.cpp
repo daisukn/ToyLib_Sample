@@ -10,8 +10,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-const unsigned int ASSIMP_LOAD_FLAGS = aiProcess_Triangulate  | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeMeshes | aiProcess_MakeLeftHanded;
-
 
 #include <vector>
 #include <memory>
@@ -512,8 +510,19 @@ void Mesh::CreateMesh(const aiMesh* m)
 }
 
 // Assimpを使ったモデルデータロード
-bool Mesh::Load(const std::string& fileName, class Renderer* r)
+bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
 {
+    
+    unsigned int ASSIMP_LOAD_FLAGS = aiProcess_Triangulate  | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeMeshes;
+    
+    if (isRightHanded)
+    {
+        ASSIMP_LOAD_FLAGS = ASSIMP_LOAD_FLAGS | aiProcess_FlipWindingOrder;
+    }
+    else
+    {
+        ASSIMP_LOAD_FLAGS = ASSIMP_LOAD_FLAGS | aiProcess_MakeLeftHanded;
+    }
     
     // 読み込み（全データはaiSceneに格納される）
     mScene = mImporter.ReadFile(fileName.c_str(), ASSIMP_LOAD_FLAGS);

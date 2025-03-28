@@ -96,7 +96,7 @@ public:
     
     
     // メッシュ登録
-    class Mesh* GetMesh(const std::string& fileName);
+    class Mesh* GetMesh(const std::string& fileName, bool isRightHanded = false);
     // テクスチャ登録
     class Texture* GetTexture(const std::string& fileName);
 

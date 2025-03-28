@@ -27,11 +27,14 @@ void Game::InitGame()
     // DebugMode
     GetRenderer()->SetDebugMode(true);
     
+    
+    auto hero = CreateActor<HeroActor>();
+    
     // stan
     auto a = CreateActor<Actor>();
     auto mc = a->CreateComponent<SkeletalMeshComponent>();
     auto cc = a->CreateComponent<ColliderComponent>();
-    mc->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf"));
+    mc->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf", true));
     mc->SetAnimID(6, PLAY_CYCLIC);
     mc->SetToonRender(true, 1.02f);
     
@@ -46,7 +49,13 @@ void Game::InitGame()
     cc->SetDisp(true);
     cc->SetColliderType(C_WALL);
     
+    auto move = a->CreateComponent<FollowMoveComponent>();
+    move->SetTarget(hero);
+    move->SetFollowSpeed(1);
+
     
+    
+    // 地面
     auto b = CreateActor<Actor>();
     auto g = b->CreateComponent<MeshComponent>();
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
@@ -55,7 +64,7 @@ void Game::InitGame()
     
     
     
-    CreateActor<HeroActor>();
+
     
     GetRenderer()->SetDebugMode(false);
 }

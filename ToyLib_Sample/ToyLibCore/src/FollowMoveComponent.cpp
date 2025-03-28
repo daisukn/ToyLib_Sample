@@ -5,8 +5,8 @@
 FollowMoveComponent::FollowMoveComponent(Actor* owner, int updateOrder)
     : MoveComponent(owner, updateOrder)
     , mTarget(nullptr)
-    , mFollowDistance(300.0f)
-    , mFollowSpeed(150.0f)
+    , mFollowDistance(3.0f)
+    , mFollowSpeed(200.0f)
     , mRotationSpeed(90.0f)
 {
 }

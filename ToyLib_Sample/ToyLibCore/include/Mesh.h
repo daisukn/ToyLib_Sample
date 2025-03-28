@@ -22,7 +22,7 @@ public:
     ~Mesh();
 
     // メッシュファイルロード
-    virtual bool Load(const std::string& fileName, class Renderer* renderer);
+    virtual bool Load(const std::string& fileName, class Renderer* renderer, bool isRightHanded = false);
     // アンロード
     void Unload();
 

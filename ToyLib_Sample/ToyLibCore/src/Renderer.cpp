@@ -571,7 +571,7 @@ void Renderer::CreateSpriteVerts()
 
 
 // メッシュ取り出し
-Mesh* Renderer::GetMesh(const std::string& fileName)
+Mesh* Renderer::GetMesh(const std::string& fileName, bool isRightHanded)
 {
     Mesh* m = nullptr;
     auto iter = mMeshes.find(fileName);
@@ -583,7 +583,7 @@ Mesh* Renderer::GetMesh(const std::string& fileName)
     {
         std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>();
         
-        if (mesh->Load(fileName, this))
+        if (mesh->Load(fileName, this, isRightHanded))
         {
             m = mesh.get();
             mMeshes.emplace(fileName, std::move(mesh));
