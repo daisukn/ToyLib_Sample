@@ -176,7 +176,6 @@ void Renderer::DrawBackGround()
 void Renderer::DrawMesh()
 {
     // メッシュ描画
-    mMeshShader->SetActive();
     for (auto mc : mMeshComps)
     {
         if (mc->GetVisible())
@@ -199,15 +198,27 @@ void Renderer::DrawMesh()
     }
 
     // スキンメッシュ描画
-    mSkinnedShaderToon->SetActive();
-    mSkinnedShaderToon->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    // Update lighting uniforms
-    SetLightUniforms(mSkinnedShaderToon.get());
+
     for (auto sk : mSkeletalMeshes)
     {
         if (sk->GetVisible())
         {
-            sk->Draw(mSkinnedShaderToon.get());
+            if (sk->GetToon())
+            {
+                mSkinnedShaderToon->SetActive();
+                mSkinnedShaderToon->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+                // Update lighting uniforms
+                SetLightUniforms(mSkinnedShaderToon.get());
+                sk->Draw(mSkinnedShaderToon.get());
+            }
+            else
+            {
+                mSkinnedShader->SetActive();
+                mSkinnedShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+                // Update lighting uniforms
+                SetLightUniforms(mSkinnedShader.get());
+                sk->Draw(mSkinnedShader.get());
+            }
         }
     }
 
@@ -220,8 +231,6 @@ void Renderer::DrawParticle()
     // Zバッファに書き込まない
     glDepthMask(GL_FALSE);
     //加算合成
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    //glBlendFunc(GL_ONE, GL_ONE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     mSpriteVerts->SetActive();
@@ -445,13 +454,13 @@ void Renderer::SetLightUniforms(Shader* shader)
     
     
     // フォグ
-    shader->SetFloatUniform("uFoginfo.maxDist", 1000.0f);
-    shader->SetFloatUniform("uFoginfo.minDist", 400.0f);
+    shader->SetFloatUniform("uFoginfo.maxDist", 1000000);
+    shader->SetFloatUniform("uFoginfo.minDist", 0.0001);
     
 //    shader->SetVectorUniform("uFoginfo.color", Vector3(0.75f, 0.96f, 0.99f) );
 //    shader->SetVectorUniform("uFoginfo.color", Vector3(0.69f, 0.859f, 0.894f) );
 //    shader->SetVectorUniform("uFoginfo.color", Vector3(0.69f, 0.859f, 0.894f) );
-    shader->SetVectorUniform("uFoginfo.color", Vector3(0.7f, 0.7f, 0.7f) );
+    shader->SetVectorUniform("uFoginfo.color", Vector3(1.f, 1.f, 1.f) );
 
 
 }

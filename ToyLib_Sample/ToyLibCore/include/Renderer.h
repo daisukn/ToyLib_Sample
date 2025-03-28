@@ -108,6 +108,9 @@ public:
     void SetAmbientLight(const Vector3& ambient) { mAmbientLight = ambient; }
     DirectionalLight& GetDirectionalLight() { return mDirLight; }
     
+    // 単色シェーダー取得
+    class Shader* GetSolidShader() { return mSolidShader.get(); }
+    
     
 private:
     // ウィンドウタイトル

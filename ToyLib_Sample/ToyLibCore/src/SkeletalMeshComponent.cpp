@@ -63,12 +63,10 @@ void SkeletalMeshComponent::Draw(Shader* shader)
             shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             for (auto v : va)
             {
-                Texture* t = mOwnerActor->GetApp()->GetRenderer()->GetTexture("Assets/black.png");
-                if (t)
-                {
-                    t->SetActive();
-                }
-                v->SetActive();
+                auto blackShader = mOwnerActor->GetApp()->GetRenderer()->GetSolidShader();
+                blackShader->SetMatrixUniforms("uMatrixPalette", transform.data(), (unsigned int)transform.size());
+                blackShader->SetVectorUniform("uSolColor", Vector3(0.f, 0.f, 0.f));
+                blackShader->SetActive();
                 glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
             }
             glFrontFace(GL_CCW);

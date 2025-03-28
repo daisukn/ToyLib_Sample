@@ -83,5 +83,5 @@ void main()
 
     vec3 c = mix(uFoginfo.color, col.xyz, fogFactor);
     outColor = vec4(c, 1.0f);
-    outColor = col;//vec4(c, 1.0f);
+    //outColor = col;//vec4(c, 1.0f);
 }

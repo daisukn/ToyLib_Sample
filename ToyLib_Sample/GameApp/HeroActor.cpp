@@ -45,8 +45,8 @@ HeroActor::HeroActor(Application* a)
 
     bool useToon = false;
     float outline = 1.02f;
-    JsonHelper::GetBool(json, "toon_render", useToon);
-    JsonHelper::GetFloat(json, "toon_outline", outline);
+    JsonHelper::GetBool(json["mesh"], "toon_render", useToon);
+    JsonHelper::GetFloat(json["mesh"], "toon_outline", outline);
     meshComp->SetToonRender(useToon, outline);
 
     // --- Transform設定 ---
