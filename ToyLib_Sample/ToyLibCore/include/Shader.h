@@ -28,7 +28,7 @@ public:
     void SetVectorUniform(const char* name, const Vector3& vector);
     void SetFloatUniform(const char* name, float value);
     void SetBooleanUniform(const char* name, bool value);
-    
+    void SetTextureUniform(const char* name, GLuint textureUnit);
     
 private:
     // 頂点シェーダーのID

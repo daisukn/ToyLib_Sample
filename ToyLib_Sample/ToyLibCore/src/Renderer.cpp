@@ -92,9 +92,12 @@ bool Renderer::Initialize(std::string title, float scWidth, float scHeight, bool
     /*シェーダー のロードなどはここでやる*/
     LoadShaders();
     CreateSpriteVerts();
- 
-    //
-    SetClearColor(0.596f, 0.733f, 0.858f);
+    // シャドウマップデバッグ用
+    CreateShadowDebugQuad();
+    
+    // シャドウマッピング初期化
+    InitializeShadowMapping(1024, 1024);
+    // クリアカラーのデフォルト値
     SetClearColor(0.0f, 0.0f, 0.3f);
 
     return true;
@@ -116,12 +119,14 @@ void::Renderer::SetClearColor(float r,float g, float b)
 // 描画処理
 void Renderer::Draw()
 {
-//    glClearColor(0.596f, 0.733f, 0.858f, 1.0f);
+    
+    // シャドウマップレンダー
+    RenderShadowMap();
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     //Culling設定
-    glEnable( GL_CULL_FACE );
-    glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW); // 左手座標系
 
     
     /* 描画処理 メッシュ、スプライト*/
@@ -138,6 +143,33 @@ void Renderer::Draw()
     DrawBillboard();
     DrawSprite();
 
+    // シャドウマップデバッグ用
+    // --- シャドウマップのデバッグ表示（画面左下） ---
+/*
+    glViewport(0, 0, 500, 500);
+    glDisable(GL_DEPTH_TEST);
+    // アルファブレンディング
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+
+    Matrix4 world = Matrix4::Identity;
+    
+    // シェーダー に送る
+    mSpriteShader->SetMatrixUniform("uWorldTransform", world);
+    
+    glActiveTexture(GL_TEXTURE1);
+    mSpriteShader->SetActive();
+    mSpriteShader->SetTextureUniform("uShadowMap", 1);
+    mShadowDebugVAO->SetActive();
+    glBindTexture(GL_TEXTURE_2D, 1);
+    glActiveTexture(GL_TEXTURE0);
+    
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    // ビューポート戻す
+    glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
+*/
 
     SDL_GL_SwapWindow(mWindow);
 
@@ -180,6 +212,7 @@ void Renderer::DrawMesh()
     {
         if (mc->GetVisible())
         {
+            /*
             if(mc->GetToon())
             {
                 mMeshShaderToon->SetActive();
@@ -192,6 +225,24 @@ void Renderer::DrawMesh()
                 mMeshShader->SetActive();
                 SetLightUniforms(mMeshShader.get());
                 mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+                mc->Draw(mMeshShader.get());
+            }*/
+            // 通常メッシュの描画部分
+            if (!mc->GetToon())
+            {
+                mMeshShader->SetActive();
+                // シャドウマップをバインド（ユニット0）
+                glActiveTexture(GL_TEXTURE1);
+                mMeshShader->SetTextureUniform("uShadowMap", 1);
+                mShadowMapTexture->SetActive(); // ← Textureクラスの SetActive()
+                glActiveTexture(GL_TEXTURE0);
+
+                SetLightUniforms(mMeshShader.get());
+
+                // ライト空間マトリックスとシャドウマップ設定（追加）
+                mMeshShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
+                mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+                
                 mc->Draw(mMeshShader.get());
             }
         }
@@ -422,10 +473,27 @@ bool Renderer::LoadShaders()
     }
     mSolidShader->SetActive();
     
-
+    // シャドウマッピング用シェーダー生成
+    mShadowSkinnedShader = std::make_unique<Shader>();
+    vShaderName = LIBRARY_PATH + "Shaders/ShadowMapping_Skinned.vert";
+    fShaderName = LIBRARY_PATH + "Shaders/ShadowMapping_Skinned.frag";
+    if (!mShadowSkinnedShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    mShadowSkinnedShader->SetActive();
+    
+    // シャドウマップデバッグ用
+    mShadowDebugShader = std::make_unique<Shader>();
+    std::string v = LIBRARY_PATH + "Shaders/ShadowDebug.vert";
+    std::string f = LIBRARY_PATH + "Shaders/ShadowDebug.frag";
+    if (!mShadowDebugShader->Load(v.c_str(), f.c_str()))
+    {
+        return false;
+    }
     
     // ビューマトリックス、プロジェクションマトリックス（デフォルト値）
-    mViewMatrix = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+    mViewMatrix = Matrix4::CreateLookAt(Vector3(0, 0.5f, 0), Vector3(0, 0, 10), Vector3::UnitY);
     mProjectionMatrix = Matrix4::CreatePerspectiveFOV(Math::ToRadians(mPerspectiveFOV), mScreenWidth, mScreenHeight, 1.0f, 2000.0f);
 
     
@@ -759,3 +827,99 @@ void Renderer::UnloadData()
     
 }
 
+// シャドウマッピング
+bool Renderer::InitializeShadowMapping(int width, int height)
+{
+    mShadowWidth = width;
+    mShadowHeight = height;
+
+    // シャドウマップ用のFBO作成
+    glGenFramebuffers(1, &mShadowFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, mShadowFBO);
+
+    // シャドウ用テクスチャ生成
+    mShadowMapTexture = std::make_unique<Texture>();
+    mShadowMapTexture->CreateShadowMap(width, height);
+
+    // FBOにアタッチ
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           mShadowMapTexture->GetTextureID(), 0);
+
+    // 確認用
+    GLint compareMode;
+    glBindTexture(GL_TEXTURE_2D, mShadowMapTexture->GetTextureID());
+    glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, &compareMode);
+    SDL_Log("Compare mode: %d", compareMode); // GL_COMPARE_REF_TO_TEXTUREでなければNG（値は 34894）
+    
+    // カラーバッファなし（深度のみ）
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    // 完成チェック
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cerr << "Error: Shadow framebuffer is not complete!" << std::endl;
+        return false;
+    }
+
+    // FBOのバインド解除
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return true;
+}
+
+// シャドウマップのレンダリング
+void Renderer::RenderShadowMap()
+{
+    
+
+    // FBOバインドして深度バッファだけ描画
+    glBindFramebuffer(GL_FRAMEBUFFER, mShadowFBO);
+    glViewport(0, 0, static_cast<GLsizei>(mShadowWidth), static_cast<GLsizei>(mShadowHeight));
+    
+    glEnable(GL_DEPTH_TEST);  // ← これ必要！！
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // ビュー・プロジェクション行列をライトから構築
+    Vector3 lightPos = Vector3(0, 10, -10);
+    Vector3 targetPos = Vector3(0, 0, 10);
+    Matrix4 lightViewMatrix = Matrix4::CreateLookAt(lightPos, targetPos, Vector3::UnitY);
+    Matrix4 lightProjMatrix = Matrix4::CreateOrtho(20.0f, 20.0f, 1.f, 100.0f);
+    //mLightSpaceMatrix =  lightProjMatrix * lightViewMatrix;
+    mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
+    // スキンメッシュのシャドウ描画（他のメッシュも追加してOK）
+    mShadowSkinnedShader->SetActive();
+    mShadowSkinnedShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
+
+    for (auto& mesh : mSkeletalMeshes)
+    {
+        if (mesh->GetVisible())
+        {
+            mesh->DrawShadow(mShadowSkinnedShader.get(), mLightSpaceMatrix);
+        }
+    }
+
+
+
+    // ビューポートを戻す（スクリーンサイズ）
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
+}
+void Renderer::CreateShadowDebugQuad()
+{
+
+    const float vertices[] = {
+        -512.f, 512.f, 0.f, 0.f, 0.f, 0.0f, 0.f, 0.f, // top left
+        512.0f, 512.0f, 0.f, 0.f, 0.f, 0.0f, 1.f, 0.f, // top right
+        512.f, -512.0f, 0.f, 0.f, 0.f, 0.0f, 1.f, 1.f, // bottom right
+        -512.f, -512.f, 0.f, 0.f, 0.f, 0.0f, 0.f, 1.f  // bottom left
+    };
+
+    
+    
+    const unsigned int indices[] = {
+        2, 1, 0,
+        0, 3, 2
+    };
+    mShadowDebugVAO = std::make_unique<VertexArray>((float*)vertices, (unsigned int)4, (unsigned int*)indices, (unsigned int)6);
+    
+}

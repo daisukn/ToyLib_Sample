@@ -3,6 +3,7 @@
 // Uniforms
 uniform mat4 uWorldTransform;
 uniform mat4 uViewProj;
+uniform mat4 uLightSpaceMatrix;
 
 // Attribute（頂点座標、法線、UV）
 layout(location = 0) in vec3 inPosition;
@@ -15,7 +16,8 @@ out vec2 fragTexCoord;
 out vec3 fragNormal;
 // フラグメントシェーダーに渡す頂点座標
 out vec3 fragWorldPos;
-
+// ライト空間座標を出力
+out vec4 fragPosLightSpace;
 void main()
 {
 	// コンバート
@@ -33,4 +35,5 @@ void main()
 
 	// UV座標
 	fragTexCoord = inTexCoord;
+    fragPosLightSpace = uLightSpaceMatrix * pos;
 }
