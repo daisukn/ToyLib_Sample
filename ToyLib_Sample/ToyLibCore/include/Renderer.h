@@ -8,7 +8,7 @@
 #include <memory>
 #include <unordered_map>
 #include <SDL2/SDL.h>
-
+#include <GL/glew.h>
 
 // ディレクショナルライト
 struct DirectionalLight
@@ -162,6 +162,18 @@ private:
     // Lightsingをシェーダーに送る
     void SetLightUniforms(class Shader* shader);
     
+    
+    // シャドウマッピング関連処理とパラメータ
+    int mShadowWidth;
+    int mShadowHeight;
+    GLuint mShadowFBO;
+    bool InitializeShadowMapping(int width, int height);
+    void RenderShadowMap();
+    Matrix4 mLightSpaceMatrix;
+    std::unique_ptr<class Texture> mShadowMapTexture;
+    std::unique_ptr<class Shader> mShadowSkinnedShader;
+    
+    
     // アセット
     std::unordered_map<std::string, std::unique_ptr<class Texture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<class Mesh>> mMeshes;
@@ -183,6 +195,10 @@ private:
     DirectionalLight mDirLight;
     
 
+    // デバッグ用
+    void CreateShadowDebugQuad();
+    std::unique_ptr<class VertexArray> mShadowDebugVAO;
+    std::unique_ptr<class Shader> mShadowDebugShader;
 
 
 };

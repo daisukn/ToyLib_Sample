@@ -97,6 +97,12 @@ void Shader::SetBooleanUniform(const char *name, bool value)
     glUniform1i(loc, value);
 }
 
+// テクスチャを送る
+void Shader::SetTextureUniform(const char* name, GLuint textureUnit)
+{
+    GLuint loc = glGetUniformLocation(mShaderProgramID, name);
+    glUniform1i(loc, textureUnit);  // ユニフォーム変数にテクスチャユニットを設定
+}
 
 // コンパイル
 bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader){

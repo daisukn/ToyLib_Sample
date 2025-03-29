@@ -77,7 +77,6 @@ void MeshComponent::Draw(Shader* shader)
 		// SpecPowerを送る
         shader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
 
-
 		// Vertex Array
         std::vector<VertexArray*> va = mMesh->GetVertexArray();
         for (auto v : va)

@@ -37,9 +37,23 @@
 		7EE0295D2D90A9120048EF67 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		7E86A5422D978F4400940ED0 /* Exceptions for "ToyLib_Sample" folder in "Compile Sources" phase from "ToyLib_Sample" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 7EE028EB2D90A8200048EF67 /* Sources */;
+			membershipExceptions = (
+				ToyLibCore/Shaders/ShadowDebug.frag,
+				ToyLibCore/Shaders/ShadowMapping_Skinned.vert,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7EE028F12D90A8200048EF67 /* ToyLib_Sample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7E86A5422D978F4400940ED0 /* Exceptions for "ToyLib_Sample" folder in "Compile Sources" phase from "ToyLib_Sample" target */,
+			);
 			path = ToyLib_Sample;
 			sourceTree = "<group>";
 		};
@@ -168,6 +182,7 @@
 				TargetAttributes = {
 					7EE028EE2D90A8200048EF67 = {
 						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
@@ -319,6 +334,7 @@
 		7EE028F72D90A8200048EF67 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = (
 					/opt/homebrew/include,
@@ -336,12 +352,15 @@
 					"-lSDL2_image",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
 		7EE028F82D90A8200048EF67 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = (
 					/opt/homebrew/include,
@@ -359,6 +378,7 @@
 					"-lSDL2_image",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};

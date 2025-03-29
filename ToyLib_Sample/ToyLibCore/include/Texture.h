@@ -23,11 +23,17 @@ public:
     int GetWidth() const { return mWidth; }
     int GetHeight() const { return mHeight; }
 
+    
+    // シャドウマップ用テクスチャ生成
+    void CreateShadowMap(int width, int height);
+    unsigned int GetTextureID() const { return mTextureID; }
+    
 private:
     // OpenGLが管理するID
 	unsigned int mTextureID;
 	int mWidth;
 	int mHeight;
+
 };
 
 

@@ -61,6 +61,7 @@ void Game::InitGame()
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
     b->SetPosition(Vector3(0,-2,20));
     g->SetScale(0.15);
+    g->SetToonRender(false);
     
     
     
