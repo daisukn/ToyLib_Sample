@@ -25,7 +25,7 @@ Game::~Game()
 void Game::InitGame()
 {
     // DebugMode
-    GetRenderer()->SetDebugMode(true);
+    GetRenderer()->SetDebugMode(false);
     
     
     auto hero = CreateActor<HeroActor>();
@@ -55,12 +55,29 @@ void Game::InitGame()
 
     
     
+    // 建物
+    auto towerActor = CreateActor<Actor>();
+    auto towerMesh = towerActor->CreateComponent<MeshComponent>();
+    towerMesh->SetMesh(GetRenderer()->GetMesh("Assets/house.x"));
+    //towerMesh->SetScale(0.001f);
+    
+    auto towerCollider = towerActor->CreateComponent<ColliderComponent>();
+    towerCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/house.x")->GetVertexArray());
+    towerCollider->GetBoundingVolume()->CreateVArray();
+    towerCollider->SetDisp(true);
+    towerCollider->SetColliderType(C_WALL);
+    
+    towerActor->SetPosition(Vector3(8, -2, 15));
+    towerActor->SetScale(0.001f);
+    q = Quaternion(Vector3::UnitY, Math::ToRadians(180));
+    towerActor->SetRotation(q);
+    
     // 地面
     auto b = CreateActor<Actor>();
     auto g = b->CreateComponent<MeshComponent>();
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
     b->SetPosition(Vector3(0,-2,20));
-    g->SetScale(0.15);
+    b->SetScale(0.5);
     g->SetToonRender(false);
     
     

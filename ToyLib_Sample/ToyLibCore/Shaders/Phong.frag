@@ -1,6 +1,5 @@
 #version 410
 
-// === 入力 ===
 // 頂点シェーダーから受け取るデータ
 in vec2 fragTexCoord;
 in vec3 fragNormal;
@@ -12,7 +11,6 @@ out vec4 outColor;
 // === Uniforms ===
 // テクスチャ
 uniform sampler2D uTexture;
-
 // 強制塗りつぶしカラー
 uniform vec3 uUniformColor;
 uniform bool uOverrideColor;
@@ -86,26 +84,6 @@ void main()
     float bias = 0.001;
     //float bias = max(0.005 * (1.0 - dot(N, L)), 0.001);
     float shadow = textureProj(uShadowMap, vec4(projCoords.xy, projCoords.z - bias, 1.0));
-    //float shadow = texture(uShadowMap, vec3(projCoords.xy, projCoords.z - bias),1);
-    //float shadow = 1;
-    /*float shadow = 1.0;
-    if (projCoords.x >= 0.0 && projCoords.x <= 1.0 &&
-        projCoords.y >= 0.0 && projCoords.y <= 1.0 &&
-        projCoords.z >= 0.0 && projCoords.z <= 1.0)
-    {
-        shadow = textureProj(uShadowMap, vec4(projCoords.xy, projCoords.z - bias, 1.0));
-        //float closestDepth = texture(uShadowMap, projCoords.xy).r;
-        //float currentDepth = projCoords.z;
-        
-        //float bias = 0.005;
-        //shadow = currentDepth - bias > closestDepth ? 0.0 : 1.0;
-    }
-    */
-    if (shadow == 0)
-    {
-        //outColor = vec4(0, 1, 0, 1);
-        //return;
-    }
     shadow = mix(0.3, 1.0, shadow);
     // === テクスチャカラー計算 ===
     vec4 texColor = texture(uTexture, fragTexCoord);
@@ -114,6 +92,5 @@ void main()
     // === フォグ適用 ===
     vec3 finalColor = mix(uFoginfo.color, texColor.rgb, fogFactor);
     outColor = vec4(finalColor, texColor.a);
-    //outColor = texColor;
- 
+
 }

@@ -2,6 +2,7 @@
 
 #include "Component.h"
 #include "Animation.h"
+#include "MathUtils.h"
 //#include <cstddef>
 
 enum MeshType
@@ -40,17 +41,19 @@ public:
     void SetGlory(bool b) { mIsGlory = b; }
     bool GetGlory() const { return mIsGlory; }
     
-    void SetScale(float f) { mScale = f; }
-    float GetScale() const { return mScale; }
+    //void SetScale(float f) { mScale = f; }
+    //float GetScale() const { return mScale; }
     
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
     virtual void SetAnimID(const unsigned int animID, const PlayMode mode){}
+    
+    void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
     
 protected:
     class Mesh* mMesh;      // メッシュ
     unsigned int mTextureIndex;    // TextureID
     
-    float mScale;
+    //float mScale;
     
     bool mIsVisible;
     bool mIsSkeletal;

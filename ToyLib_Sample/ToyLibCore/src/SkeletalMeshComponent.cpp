@@ -30,8 +30,7 @@ void SkeletalMeshComponent::Draw(Shader* shader)
     {
 
         // ワールドマトリックスを送る
-        Matrix4 m = Matrix4::CreateScale(mScale);
-        shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
+        shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
         std::vector<Matrix4> transform;
         mMesh->BoneTransform(mAnimTime, transform);
@@ -60,7 +59,7 @@ void SkeletalMeshComponent::Draw(Shader* shader)
         if (mIsToon)
         {
             glFrontFace(GL_CW);
-            Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
+            Matrix4 m = Matrix4::CreateScale(mContourFactor);
             shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             shader->SetBooleanUniform("uOverrideColor", true);
             shader->SetVectorUniform("uUniformColor", Vector3(0.f, 0.f, 0.f));
@@ -104,8 +103,7 @@ void SkeletalMeshComponent::DrawShadow(Shader* shader, const Matrix4& lightSpace
     
     
     // ワールドマトリックスを送る
-    Matrix4 m = Matrix4::CreateScale(mScale);
-    shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
+    shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
     std::vector<Matrix4> transform;
     mMesh->BoneTransform(0, transform);

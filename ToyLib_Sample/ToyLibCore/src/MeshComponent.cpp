@@ -23,7 +23,6 @@ MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
 , mIsBlendAdd(false)
 , mIsGlory(false)
 , mMeshType(type)
-, mScale(1.0f)
 {
 
     switch(mMeshType)
@@ -71,8 +70,7 @@ void MeshComponent::Draw(Shader* shader)
         }
         
         // WorldマトリックスをShaderに送る
-        Matrix4 m = Matrix4::CreateScale(mScale);
-        shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
+        shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
 		// SpecPowerを送る
         shader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
@@ -94,7 +92,7 @@ void MeshComponent::Draw(Shader* shader)
         if (mIsToon)
         {
             glFrontFace(GL_CW);
-            Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
+            Matrix4 m = Matrix4::CreateScale(mContourFactor);
             shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             shader->SetBooleanUniform("uOverrideColor", true);
             shader->SetVectorUniform("uUniformColor", Vector3(0.f, 0.f, 0.f));
@@ -112,7 +110,7 @@ void MeshComponent::Draw(Shader* shader)
         {
             glBlendFunc(GL_ONE, GL_ONE);
             glFrontFace(GL_CW);
-            Matrix4 m = Matrix4::CreateScale(mContourFactor * mScale);
+            Matrix4 m = Matrix4::CreateScale(mContourFactor);
             shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
             for (auto v : va)
             {
@@ -143,3 +141,32 @@ VertexArray* MeshComponent::GetVertexArray(int id) const
     return mMesh->GetVertexArray()[id];
 }
 
+
+void MeshComponent::DrawShadow(Shader* shader, const Matrix4& lightSpaceMatrix)
+{
+    if (!mMesh) return;
+    
+    
+    // ワールドマトリックスを送る
+    shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
+    
+
+    //shader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
+    shader->SetMatrixUniform("uLightSpaceMatrix", lightSpaceMatrix);
+    
+    // Vertex Arrayを描画
+    std::vector<VertexArray*> va = mMesh->GetVertexArray();
+    for (auto v : va)
+    {
+        Texture* t = mMesh->GetTexture(v->GetTextureID());
+        
+        if (t)
+        {
+            //t->SetActive();
+        }
+        
+        v->SetActive();
+        glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+        //            glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+    }
+}

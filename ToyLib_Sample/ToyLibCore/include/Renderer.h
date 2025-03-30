@@ -151,6 +151,11 @@ private:
     std::unique_ptr<class Shader> mParticleShader;
     // ワイヤーフレーム用　単色シェーダー
     std::unique_ptr<class Shader> mSolidShader;
+    // シャドウマップ用シェーダー
+    std::unique_ptr<class Shader> mShadowSkinnedShader;
+    // シャドウマップ用シェーダー
+    std::unique_ptr<class Shader> mShadowMeshShader;
+
     // シェーダー一括ロード
     bool LoadShaders();
 
@@ -171,8 +176,7 @@ private:
     void RenderShadowMap();
     Matrix4 mLightSpaceMatrix;
     std::unique_ptr<class Texture> mShadowMapTexture;
-    std::unique_ptr<class Shader> mShadowSkinnedShader;
-    
+
     
     // アセット
     std::unordered_map<std::string, std::unique_ptr<class Texture>> mTextures;
@@ -194,11 +198,6 @@ private:
     Vector3 mAmbientLight;
     DirectionalLight mDirLight;
     
-
-    // デバッグ用
-    void CreateShadowDebugQuad();
-    std::unique_ptr<class VertexArray> mShadowDebugVAO;
-    std::unique_ptr<class Shader> mShadowDebugShader;
 
 
 };
