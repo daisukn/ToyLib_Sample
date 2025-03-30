@@ -42,7 +42,8 @@ public:
     // 終了
     void Shutdown();
 
-    void SetClearColor(float r, float g, float b);
+    // クリア色を設定
+    void SetClearColor(const Vector3 color);
 
 
     // ビューマトリックスを設定する
@@ -113,6 +114,8 @@ public:
     
     // ディレクショナルライト設定
     void SetDirectionalLightPosition(const Vector3& pos, const Vector3& target);
+    // フォグ情報設定
+    void SetFogInfo(const float max, const float min, Vector3 color);
     
 private:
     // ウィンドウタイトル
@@ -201,6 +204,14 @@ private:
     DirectionalLight mDirLight;
     Vector3 mDirLightPosition;
     Vector3 mDirLightTarget;
+    
+    // フォグ
+    float mFogMaxDist;
+    float mFogMinDist;
+    Vector3 mFogColor;
+    
+    // クリア色
+    Vector3 mClearColor;
     
 };
 

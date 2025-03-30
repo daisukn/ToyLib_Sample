@@ -28,8 +28,12 @@ Renderer::Renderer()
 , mPerspectiveFOV(45.f)
 , mCameraPosition(Vector3(0.f, 0.f, 0.f))
 , mIsDebugMode(false)
+, mClearColor(Vector3(0.2f, 0.5f, 0.8f))
 , mDirLightPosition(Vector3(20, 20, -5))
 , mDirLightTarget(Vector3(0, 0, 0))
+, mFogMaxDist(100.f)
+, mFogMinDist(0.001f)
+, mFogColor(Vector3(0.2f, 0.5f, 0.8f))
 {
 }
 
@@ -99,7 +103,7 @@ bool Renderer::Initialize(std::string title, float scWidth, float scHeight, bool
     // シャドウマッピング初期化
     InitializeShadowMapping(1024, 1024);
     // クリアカラーのデフォルト値
-    SetClearColor(0.0f, 0.0f, 0.3f);
+    SetClearColor(mClearColor);
 
     return true;
 }
@@ -112,9 +116,10 @@ void Renderer::Shutdown()
 
 }
 
-void::Renderer::SetClearColor(float r,float g, float b)
+void::Renderer::SetClearColor(const Vector3 color)
 {
-    glClearColor(r, g, b, 1.0f);
+    mClearColor = color;
+    glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, 1.0f);
 }
 
 // 描画処理
@@ -442,16 +447,16 @@ void Renderer::SetLightUniforms(Shader* shader)
     shader->SetVectorUniform("uAmbientLight", mAmbientLight);
     // Directional light
     mDirLight.Direction = Vector3::Normalize(mDirLightTarget - mDirLightPosition);;
-    mDirLight.DiffuseColor = Vector3(0.8f, 0.8f, 0.8f);
-    mDirLight.SpecColor = Vector3(0.1f, 0.1f, 0.1f);
+    mDirLight.DiffuseColor = Vector3(0.4f, 0.4f, 0.4f);
+    mDirLight.SpecColor = Vector3(0.00f, 0.0f, 0.0f);
     shader->SetVectorUniform("uDirLight.mDirection", mDirLight.Direction);
     shader->SetVectorUniform("uDirLight.mDiffuseColor", mDirLight.DiffuseColor);
     shader->SetVectorUniform("uDirLight.mSpecColor", mDirLight.SpecColor);
     
     // フォグ
-    shader->SetFloatUniform("uFoginfo.maxDist", 100);
-    shader->SetFloatUniform("uFoginfo.minDist", 0.0001);
-    shader->SetVectorUniform("uFoginfo.color", Vector3(0.f, 0.f, 0.25f) );
+    shader->SetFloatUniform("uFoginfo.maxDist", mFogMaxDist);
+    shader->SetFloatUniform("uFoginfo.minDist", mFogMinDist);
+    shader->SetVectorUniform("uFoginfo.color", mFogColor);
 }
 
 // スプライトコンポーネントの登録
@@ -820,4 +825,11 @@ void Renderer::SetDirectionalLightPosition(const Vector3 &pos, const Vector3 &ta
 {
     mDirLightPosition = pos;
     mDirLightTarget = target;
+}
+
+void Renderer::SetFogInfo(const float max, const float min, Vector3 color)
+{
+    mFogMaxDist = max;
+    mFogMinDist = min;
+    mFogColor = color;
 }
