@@ -26,9 +26,10 @@ public:
     HeroActor(class Application* a);
     virtual ~HeroActor();
     void UpdateActor(float deltaTime) override;
-    void ActorInput(const struct InputState& state);
+    void ActorInput(const struct InputState& state) override;
 private:
     enum HeroMotion mAnimID;
     class MoveComponent* mMoveComp;
     class SkeletalMeshComponent* meshComp;
+    bool mMovable;
 };

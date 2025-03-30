@@ -28,6 +28,8 @@ Renderer::Renderer()
 , mPerspectiveFOV(45.f)
 , mCameraPosition(Vector3(0.f, 0.f, 0.f))
 , mIsDebugMode(false)
+, mDirLightPosition(Vector3(20, 20, -5))
+, mDirLightTarget(Vector3(0, 0, 0))
 {
 }
 
@@ -280,9 +282,8 @@ void Renderer::DrawSprite()
 
 void Renderer::DrawDebugger()
 {
-
     // デバッグモードでない場合キャンセル
-    //if (!mIsDebugMode) return;
+    if (!mIsDebugMode) return;
     
     // デバッガー用の描画
     mSolidShader->SetActive();
@@ -294,7 +295,6 @@ void Renderer::DrawDebugger()
     {
         wireframe->Draw(mSolidShader.get());
     }
-
 }
 
 void Renderer::DrawEffect()
@@ -428,7 +428,6 @@ bool Renderer::LoadShaders()
     mProjectionMatrix = Matrix4::CreatePerspectiveFOV(Math::ToRadians(mPerspectiveFOV), mScreenWidth, mScreenHeight, 1.0f, 2000.0f);
 
     return true;
-
 }
 
 // ライト設定
@@ -442,7 +441,7 @@ void Renderer::SetLightUniforms(Shader* shader)
     mAmbientLight = Vector3(1,1,1);
     shader->SetVectorUniform("uAmbientLight", mAmbientLight);
     // Directional light
-    mDirLight.Direction = Vector3(-0.5f, -1.f, 0.3);
+    mDirLight.Direction = Vector3::Normalize(mDirLightTarget - mDirLightPosition);;
     mDirLight.DiffuseColor = Vector3(0.8f, 0.8f, 0.8f);
     mDirLight.SpecColor = Vector3(0.1f, 0.1f, 0.1f);
     shader->SetVectorUniform("uDirLight.mDirection", mDirLight.Direction);
@@ -450,7 +449,7 @@ void Renderer::SetLightUniforms(Shader* shader)
     shader->SetVectorUniform("uDirLight.mSpecColor", mDirLight.SpecColor);
     
     // フォグ
-    shader->SetFloatUniform("uFoginfo.maxDist", 40);
+    shader->SetFloatUniform("uFoginfo.maxDist", 100);
     shader->SetFloatUniform("uFoginfo.minDist", 0.0001);
     shader->SetVectorUniform("uFoginfo.color", Vector3(0.f, 0.f, 0.25f) );
 }
@@ -497,7 +496,6 @@ void Renderer::AddBackGroundSprite(SpriteComponent* sprite)
             break;
         }
     }
-
     // 見つけた箇所に挿入
     mBgSpriteComps.insert(iter, sprite);
 }
@@ -643,7 +641,6 @@ void Renderer::AddEffectMeshComp(MeshComponent* mesh)
     mEffectMesh.emplace_back(mesh);
 }
 
-
 // BGメッシュコンポーネント削除
 void Renderer::RemoveEffectMeshComp(MeshComponent* mesh)
 {
@@ -652,7 +649,6 @@ void Renderer::RemoveEffectMeshComp(MeshComponent* mesh)
     { // 要素が見つかった場合のみ削除
         mEffectMesh.erase(iter);
     }
- 
 }
 
 // パーティクルコンポーネント登録
@@ -697,8 +693,6 @@ void Renderer::AddBillboardComp(BillboardComponent* billboard)
 
     // 見つけた箇所に挿入
     mBillboardComps.insert(iter, billboard);
-    
-    
 }
 
 // パーティクルコンポーネント登録
@@ -732,10 +726,9 @@ void Renderer::UnloadData()
 {
     // テクスチャ削除
     mTextures.clear();
-    
     // メッシュ削除
     mMeshes.clear();
-    
+    mSkeletalMeshes.clear();
 }
 
 // シャドウマッピング
@@ -781,8 +774,6 @@ bool Renderer::InitializeShadowMapping(int width, int height)
 // シャドウマップのレンダリング
 void Renderer::RenderShadowMap()
 {
-    
-
     // FBOバインドして深度バッファだけ描画
     glBindFramebuffer(GL_FRAMEBUFFER, mShadowFBO);
     glViewport(0, 0, static_cast<GLsizei>(mShadowWidth), static_cast<GLsizei>(mShadowHeight));
@@ -791,10 +782,10 @@ void Renderer::RenderShadowMap()
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // ビュー・プロジェクション行列をライトから構築
-    Vector3 lightPos = Vector3(50, 50, -30);
-    Vector3 targetPos = Vector3(0, 0, 10);
-    Matrix4 lightViewMatrix = Matrix4::CreateLookAt(lightPos, targetPos, Vector3::UnitY);
-    Matrix4 lightProjMatrix = Matrix4::CreateOrtho(30.0f, 30.0f, 1.f, 200.0f);
+    //Vector3 lightPos = Vector3(50, 50, -30);
+    //Vector3 targetPos = Vector3(0, 0, 10);
+    Matrix4 lightViewMatrix = Matrix4::CreateLookAt(mDirLightPosition, mDirLightTarget, Vector3::UnitY);
+    Matrix4 lightProjMatrix = Matrix4::CreateOrtho(50.0f, 50.0f, 10.f, 180.0f);
     mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
     // スキンメッシュのシャドウ描画
     mShadowSkinnedShader->SetActive();
@@ -823,4 +814,10 @@ void Renderer::RenderShadowMap()
     // ビューポートを戻す（スクリーンサイズ）
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
+}
+
+void Renderer::SetDirectionalLightPosition(const Vector3 &pos, const Vector3 &target)
+{
+    mDirLightPosition = pos;
+    mDirLightTarget = target;
 }

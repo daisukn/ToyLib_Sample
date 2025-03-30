@@ -107,20 +107,15 @@ void Texture::CreateShadowMap(int width, int height)
     glGenTextures(1, &mTextureID);
     glBindTexture(GL_TEXTURE_2D, mTextureID);
 
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-    //             width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-
     // 内部フォーマットとデータ型
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, // ★明示的な内部フォーマット
                  width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     
     
     // フィルター（まずはNEARESTで明示的に挙動を確認）
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
     // ラップモード
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

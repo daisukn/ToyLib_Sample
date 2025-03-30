@@ -4,6 +4,7 @@
 HeroActor::HeroActor(Application* a)
 : Actor(a)
 , mAnimID(H_Stand)
+, mMovable(true)
 {
     /*
     meshComp = CreateComponent<SkeletalMeshComponent>();
@@ -86,17 +87,93 @@ void HeroActor::ActorInput(const InputState &state)
     float forwardSpeed = 0.0f;
     float angularSpeed = 0.0f;
     float speed = 5.0f;
+    float turn = 180.f;
       
  
+    if(mMovable)
+    {
+        forwardSpeed = speed * state.Controller.GetLeftStick().y;
+        angularSpeed = turn * state.Controller.GetLeftStick().x;
+        
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EHeld)
+        {
+            angularSpeed = -turn;
+        }
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EHeld)
+        {
+            angularSpeed = turn;
+        }
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EHeld)
+        {
+            forwardSpeed = speed;
+        }
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EHeld)
+        {
+            forwardSpeed = -speed;
+        }
+        mAnimID = H_Run;
+        if ( forwardSpeed == 0.0f && angularSpeed == 0.0f )
+        {
+            mAnimID = H_Stand;
+        }
 
+    }
+    
+
+    if(mMovable)
+    {
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
+            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed )
+        {
+            mMovable = false;
+            mAnimID = H_Jump;
+
+        }
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed ||
+            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_B) == EPressed )
+        {
+            mMovable = false;
+            mAnimID = H_Slash;
+        }
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_C) == EPressed ||
+            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed )
+        {
+            mMovable = false;
+            mAnimID = H_Spin;
+        }
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_V) == EPressed ||
+            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed )
+        {
+            mMovable = false;
+            mAnimID = H_Stab;
+        }
+        
+    }
+    else
+    {
+        if ( !meshComp->GetIsPlaing() )
+        {
+            if (mAnimID == H_Slash)
+            {
+
+
+            }
+            mMovable = true;
+        }
+
+    }
+    
+    
+
+    /*
     
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EHeld)
     {
-        angularSpeed = -100;
+        angularSpeed = -180;
     }
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EHeld)
     {
-        angularSpeed = 100;
+        angularSpeed = 180;
     }
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EHeld)
     {
@@ -112,7 +189,16 @@ void HeroActor::ActorInput(const InputState &state)
         mAnimID = H_Stand;
 
     }
-    meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
+     */
+    if (mAnimID == H_Run || mAnimID == H_Stand)
+    {
+        meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
+    }
+    else
+    {
+        meshComp->SetAnimID(mAnimID, PLAY_ONCE);
+    }
+
     mMoveComp->SetAngularSpeed(angularSpeed);
     mMoveComp->SetForwardSpeed(forwardSpeed);
     

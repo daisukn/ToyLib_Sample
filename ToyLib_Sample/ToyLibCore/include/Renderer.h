@@ -86,7 +86,7 @@ public:
     // ビルボード登録・削除
     void AddBillboardComp(class BillboardComponent* billboard);
     void RemoveBillboardComp(class BillboardComponent* billboard);
-    // デバッガーコンポーネント登録・削除
+    // ワイヤーフレームコンポーネント登録・削除
     void AddWireframeComp(class WireframeComponent* wireframe);
     void RemoveWireframeComp(class WireframeComponent* wireframe);
 
@@ -111,6 +111,8 @@ public:
     // 単色シェーダー取得
     class Shader* GetSolidShader() { return mSolidShader.get(); }
     
+    // ディレクショナルライト設定
+    void SetDirectionalLightPosition(const Vector3& pos, const Vector3& target);
     
 private:
     // ウィンドウタイトル
@@ -197,8 +199,8 @@ private:
     // ライト
     Vector3 mAmbientLight;
     DirectionalLight mDirLight;
+    Vector3 mDirLightPosition;
+    Vector3 mDirLightTarget;
     
-
-
 };
 
