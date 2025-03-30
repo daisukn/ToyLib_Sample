@@ -123,9 +123,34 @@ void PhysWorld::Test()
         if (!c1->GetDisp()) continue;
         for (auto c2 : mCollWall)
         {
+            if (c1->GetOwner() == c2->GetOwner()) continue;
+            
             if (!c2->GetDisp()) continue;
             if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
             {
+                // 押し戻し処理
+                Vector3 pushDir = ComputePushBackDirection(c1, c2);
+                Vector3 newPos = c1->GetOwner()->GetPosition() + pushDir;
+                    
+                c1->GetOwner()->SetPosition(newPos);
+                    
+                c1->Collided(c2);
+                c2->Collided(c1);
+            }
+        }
+    }
+    
+    // Enemy vs Wall
+    for (auto c1 : mCollEnemy)
+    {
+        if (!c1->GetDisp()) continue;
+        for (auto c2 : mCollWall)
+        {
+            if (c1->GetOwner() == c2->GetOwner()) continue;
+            if (!c2->GetDisp()) continue;
+            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
+            {
+
                 // 押し戻し処理
                 Vector3 pushDir = ComputePushBackDirection(c1, c2);
                 Vector3 newPos = c1->GetOwner()->GetPosition() + pushDir;

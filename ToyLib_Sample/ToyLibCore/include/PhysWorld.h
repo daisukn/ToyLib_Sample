@@ -65,10 +65,9 @@ private:
     bool IsInPolygon(const struct Polygon* pl, const struct Vector3 p);
     float PolygonHeight(const struct Polygon* pl, const struct Vector3 p);
 
-    // 物理計算をするアクターを保持
+    // 物理計算をするコライダーを保持
     //std::vector<class Actor*> actors;
     std::vector<class ColliderComponent*> mColliders;
-    
     std::vector<class ColliderComponent*> mCollPlayer;
     std::vector<class ColliderComponent*> mCollEnemy;
     std::vector<class ColliderComponent*> mCollLaser;

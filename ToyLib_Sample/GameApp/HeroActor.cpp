@@ -65,7 +65,7 @@ HeroActor::HeroActor(Application* a)
         JsonHelper::GetVector3(json["collider"], "bounding_box_scale"));
     cc->GetBoundingVolume()->CreateVArray();
     cc->GetBoundingVolume()->SetVisible(true);
-    cc->SetColliderType(C_PLAYER);
+    cc->SetColliderType(C_ENEMY);
     cc->SetDisp(true);
 
     // --- 移動コンポーネント ---

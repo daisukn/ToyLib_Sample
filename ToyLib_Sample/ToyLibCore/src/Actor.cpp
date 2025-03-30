@@ -16,7 +16,6 @@ Actor::Actor(Application* a)
 , mIsRecomputeWorldTransform(true)
 {
 
-    
 }
 
 // デストラクタ

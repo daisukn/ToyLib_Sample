@@ -25,7 +25,7 @@ Game::~Game()
 void Game::InitGame()
 {
     // DebugMode
-    GetRenderer()->SetDebugMode(false);
+    GetRenderer()->SetDebugMode(true);
     
     
     auto hero = CreateActor<HeroActor>();
@@ -42,12 +42,20 @@ void Game::InitGame()
     a->SetScale(0.5f);
     Quaternion q = Quaternion(Vector3::UnitY, Math::ToRadians(-30));
     a->SetRotation(q);
-
+    
     cc->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
     cc->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
     cc->GetBoundingVolume()->CreateVArray();
     cc->SetDisp(true);
     cc->SetColliderType(C_WALL);
+    
+    auto cc2 = a->CreateComponent<ColliderComponent>();
+    cc2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
+    cc2->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
+    cc2->GetBoundingVolume()->CreateVArray();
+    cc2->SetDisp(true);
+    cc2->SetColliderType(C_ENEMY);
+
     
     auto move = a->CreateComponent<FollowMoveComponent>();
     move->SetTarget(hero);
@@ -80,11 +88,7 @@ void Game::InitGame()
     b->SetScale(0.5);
     g->SetToonRender(false);
     
-    
-    
 
-    
-    GetRenderer()->SetDebugMode(false);
 }
 
 void Game::UpdateGame(float deltaTime)
