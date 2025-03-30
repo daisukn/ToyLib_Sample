@@ -36,7 +36,7 @@ void Game::InitGame()
     auto cc = a->CreateComponent<ColliderComponent>();
     mc->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf", true));
     mc->SetAnimID(6, PLAY_CYCLIC);
-    mc->SetToonRender(true, 1.02f);
+    mc->SetToonRender(false, 1.02f);
     
     a->SetPosition(Vector3(-3,-2,10));
     a->SetScale(0.5f);

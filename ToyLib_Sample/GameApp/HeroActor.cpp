@@ -48,7 +48,7 @@ HeroActor::HeroActor(Application* a)
     float outline = 1.02f;
     JsonHelper::GetBool(json["mesh"], "toon_render", useToon);
     JsonHelper::GetFloat(json["mesh"], "toon_outline", outline);
-    meshComp->SetToonRender(useToon, outline);
+    meshComp->SetToonRender(false, outline);
 
     // --- Transform設定 ---
     SetPosition(JsonHelper::GetVector3(json, "position"));

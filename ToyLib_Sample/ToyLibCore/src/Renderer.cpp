@@ -790,7 +790,7 @@ void Renderer::RenderShadowMap()
     //Vector3 lightPos = Vector3(50, 50, -30);
     //Vector3 targetPos = Vector3(0, 0, 10);
     Matrix4 lightViewMatrix = Matrix4::CreateLookAt(mDirLightPosition, mDirLightTarget, Vector3::UnitY);
-    Matrix4 lightProjMatrix = Matrix4::CreateOrtho(50.0f, 50.0f, 10.f, 180.0f);
+    Matrix4 lightProjMatrix = Matrix4::CreateOrtho(50.0f, 50.0f, 10.f, 150.0f);
     mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
     // スキンメッシュのシャドウ描画
     mShadowSkinnedShader->SetActive();
