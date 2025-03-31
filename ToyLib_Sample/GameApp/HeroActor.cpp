@@ -51,8 +51,12 @@ HeroActor::HeroActor(Application* a)
     meshComp->SetToonRender(useToon, outline);
 
     // --- Transform設定 ---
-    SetPosition(JsonHelper::GetVector3(json, "position"));
-    SetRotation(JsonHelper::GetQuaternionFromEuler(json, "rotation_deg"));
+    Vector3 pos;
+    JsonHelper::GetVector3(json, "position", pos);
+    SetPosition(pos);
+    Quaternion q;
+    JsonHelper::GetQuaternionFromEuler(json, "rotation_deg", q);
+    SetRotation(q);
     float scale = 1.0f;
     JsonHelper::GetFloat(json, "scale", scale);
     SetScale(scale);
@@ -60,9 +64,11 @@ HeroActor::HeroActor(Application* a)
     // --- コライダー ---
     auto cc = CreateComponent<ColliderComponent>();
     cc->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
-    cc->GetBoundingVolume()->AdjustBoundingBox(
-        JsonHelper::GetVector3(json["collider"], "bounding_box_offset"),
-        JsonHelper::GetVector3(json["collider"], "bounding_box_scale"));
+    Vector3 vOffset;
+    JsonHelper::GetVector3(json["collider"], "bounding_box_offset", vOffset);
+    Vector3 vScale;
+    JsonHelper::GetVector3(json["collider"], "bounding_box_scale", vScale);
+    cc->GetBoundingVolume()->AdjustBoundingBox(vOffset, vScale);
     cc->GetBoundingVolume()->CreateVArray();
     cc->GetBoundingVolume()->SetVisible(true);
     cc->SetColliderType(C_PLAYER);

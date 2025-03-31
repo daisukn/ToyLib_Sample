@@ -154,11 +154,11 @@ void Application::UnloadData()
 void Application::LoadData()
 {
     // ライト
-    mRenderer->SetAmbientLight(Vector3(0.9f, 0.9f, 0.9f));
-    DirectionalLight& dir = mRenderer->GetDirectionalLight();
-    dir.Direction = Vector3(0.f, 0.f, -1.f);
-    dir.DiffuseColor = Vector3(0.4f, 0.4f, 0.4f);
-    dir.SpecColor = Vector3(0.1f, 0.1f, 0.1f);
+    //mRenderer->SetAmbientColor(Vector3(0.9f, 0.9f, 0.9f));
+    //DirectionalLight& dir = mRenderer->GetDirectionalLight();
+    //dir.Direction = Vector3(0.f, 0.f, -1.f);
+    //dir.DiffuseColor = Vector3(0.4f, 0.4f, 0.4f);
+    //dir.SpecColor = Vector3(0.1f, 0.1f, 0.1f);
     
 
 }

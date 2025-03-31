@@ -23,17 +23,27 @@ Renderer::Renderer()
 : mStrTitle("ToyLib App")
 , mScreenWidth(0.f)
 , mScreenHeight(0.f)
-, mWindow(nullptr)
-, mGLContext(nullptr)
+, mIsFullScreen(false)
 , mPerspectiveFOV(45.f)
 , mCameraPosition(Vector3(0.f, 0.f, 0.f))
 , mIsDebugMode(false)
 , mClearColor(Vector3(0.2f, 0.5f, 0.8f))
+, mAmbientColor(Vector3(0.7f, 0.7f, 0.7f))
 , mDirLightPosition(Vector3(20, 20, -5))
 , mDirLightTarget(Vector3(0, 0, 0))
+, mDiffuseColor(Vector3(0.5f, 0.5f, 0.5f))
+, mSpecColor(Vector3(0.1f, 0.1f, 0.1f))
 , mFogMaxDist(100.f)
 , mFogMinDist(0.001f)
 , mFogColor(Vector3(0.2f, 0.5f, 0.8f))
+, mShadowNear(10.f)
+, mShadowFar(100)
+, mShadowOrthoWidth(100.f)
+, mShadowOrthoHeight(100.f)
+, mShadowFBOWidth(4096)
+, mShadowFBOHeight(4096)
+, mWindow(nullptr)
+, mGLContext(nullptr)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -102,7 +112,7 @@ bool Renderer::Initialize()
 
     
     // シャドウマッピング初期化
-    InitializeShadowMapping(1024, 1024);
+    InitializeShadowMapping();
     // クリアカラーのデフォルト値
     SetClearColor(mClearColor);
 
@@ -216,6 +226,7 @@ void Renderer::DrawMesh()
     {
         if (!sk->GetVisible()) continue;
 
+        mSkinnedShader->SetActive();
         mSkinnedShader->SetActive();
 
         // ユニフォーム設定
@@ -444,12 +455,12 @@ void Renderer::SetLightUniforms(Shader* shader)
     invView.Invert();
     shader->SetVectorUniform("uCameraPos", invView.GetTranslation());
     // Ambient light
-    mAmbientLight = Vector3(1,1,1);
-    shader->SetVectorUniform("uAmbientLight", mAmbientLight);
+    //mAmbientLight = Vector3(0.5f,0.5f,0.5f);
+    shader->SetVectorUniform("uAmbientLight", mAmbientColor);
     // Directional light
-    mDirLight.Direction = Vector3::Normalize(mDirLightTarget - mDirLightPosition);;
-    mDirLight.DiffuseColor = Vector3(0.4f, 0.4f, 0.4f);
-    mDirLight.SpecColor = Vector3(0.00f, 0.0f, 0.0f);
+    mDirLight.Direction = Vector3::Normalize(mDirLightTarget - mDirLightPosition);
+    mDirLight.DiffuseColor = mDiffuseColor;//Vector3(0.4f, 0.4f, 0.4f);
+    mDirLight.SpecColor = mSpecColor;//Vector3(1.f, 1.f, 1.f);
     shader->SetVectorUniform("uDirLight.mDirection", mDirLight.Direction);
     shader->SetVectorUniform("uDirLight.mDiffuseColor", mDirLight.DiffuseColor);
     shader->SetVectorUniform("uDirLight.mSpecColor", mDirLight.SpecColor);
@@ -738,10 +749,8 @@ void Renderer::UnloadData()
 }
 
 // シャドウマッピング
-bool Renderer::InitializeShadowMapping(int width, int height)
+bool Renderer::InitializeShadowMapping()
 {
-    mShadowWidth = width;
-    mShadowHeight = height;
 
     // シャドウマップ用のFBO作成
     glGenFramebuffers(1, &mShadowFBO);
@@ -749,11 +758,10 @@ bool Renderer::InitializeShadowMapping(int width, int height)
 
     // シャドウ用テクスチャ生成
     mShadowMapTexture = std::make_unique<Texture>();
-    mShadowMapTexture->CreateShadowMap(width, height);
+    mShadowMapTexture->CreateShadowMap(mShadowFBOWidth, mShadowFBOHeight);
 
     // FBOにアタッチ
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           mShadowMapTexture->GetTextureID(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mShadowMapTexture->GetTextureID(), 0);
 
     // 確認用
     GLint compareMode;
@@ -782,7 +790,7 @@ void Renderer::RenderShadowMap()
 {
     // FBOバインドして深度バッファだけ描画
     glBindFramebuffer(GL_FRAMEBUFFER, mShadowFBO);
-    glViewport(0, 0, static_cast<GLsizei>(mShadowWidth), static_cast<GLsizei>(mShadowHeight));
+    glViewport(0, 0, static_cast<GLsizei>(mShadowFBOWidth), static_cast<GLsizei>(mShadowFBOHeight));
     
     glEnable(GL_DEPTH_TEST);  // ← これ必要！！
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -791,7 +799,7 @@ void Renderer::RenderShadowMap()
     //Vector3 lightPos = Vector3(50, 50, -30);
     //Vector3 targetPos = Vector3(0, 0, 10);
     Matrix4 lightViewMatrix = Matrix4::CreateLookAt(mDirLightPosition, mDirLightTarget, Vector3::UnitY);
-    Matrix4 lightProjMatrix = Matrix4::CreateOrtho(50.0f, 50.0f, 10.f, 100.0f);
+    Matrix4 lightProjMatrix = Matrix4::CreateOrtho(mShadowOrthoWidth, mShadowOrthoHeight, mShadowNear, mShadowFar);
     mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
     // スキンメッシュのシャドウ描画
     mShadowSkinnedShader->SetActive();

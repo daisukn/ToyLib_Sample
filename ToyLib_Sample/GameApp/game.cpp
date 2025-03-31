@@ -18,9 +18,7 @@ Game::~Game()
 
 void Game::InitGame()
 {
-    // DebugMode
-    GetRenderer()->SetDebugMode(false);
-    
+
     
     auto hero = CreateActor<HeroActor>();
     

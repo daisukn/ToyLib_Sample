@@ -106,7 +106,7 @@ public:
     void UnloadData();
     
     // アンビエントライト設定
-    void SetAmbientLight(const Vector3& ambient) { mAmbientLight = ambient; }
+    void SetAmbientColor(const Vector3& ambient) { mAmbientColor = ambient; }
     DirectionalLight& GetDirectionalLight() { return mDirLight; }
     
     // 単色シェーダー取得
@@ -120,29 +120,60 @@ public:
 private:
     // セッティング読み込み
     bool LoadSettings(const std::string& filePath);
+    
+    // レンダラーパラメーター //
     // ウィンドウタイトル
     std::string mStrTitle;
+    //スクリーンサイズ
+    float mScreenWidth;
+    float mScreenHeight;
+    bool mIsFullScreen;
+    // 視野角(度)
+    float mPerspectiveFOV;
+    // カメラポジション
+    Vector3 mCameraPosition;
+    // デバッグモード
+    bool mIsDebugMode;
+    // クリア色
+    Vector3 mClearColor;
+    // ライト
+    Vector3 mAmbientColor;
+    Vector3 mDiffuseColor;
+    Vector3 mSpecColor;
+    Vector3 mDirLightPosition;
+    Vector3 mDirLightTarget;
+    // フォグ
+    float mFogMaxDist;
+    float mFogMinDist;
+    Vector3 mFogColor;
+    // シャドウマップ
+    float mShadowNear;
+    float mShadowFar;
+    float mShadowOrthoWidth;
+    float mShadowOrthoHeight;
+    int mShadowFBOWidth;
+    int mShadowFBOHeight;
+    
+
+    
+
+    
+
+    // ビューマトリックス
+    Matrix4 mViewMatrix;
+    Matrix4 mInvView;
+    // プロジェクションマトリックス
+    Matrix4 mProjectionMatrix;
+
+    // DirectionalLight管理
+    DirectionalLight mDirLight;
+
+    
     // Windowハンドラ
     SDL_Window* mWindow;
     // GLコンテキスト
     SDL_GLContext mGLContext;
 
-    // ビューマトリックス
-    Matrix4 mViewMatrix;
-    Matrix4 mInvView;
-    Vector3 mCameraPosition;
-    
-    // 視野角(度)
-    float mPerspectiveFOV;
-    // プロジェクションマトリックス
-    Matrix4 mProjectionMatrix;
-    //スクリーンサイズ
-    float mScreenWidth;
-    float mScreenHeight;
-    bool mIsFullScreen;
-    // デバッグモード
-    bool mIsDebugMode;
-    
     // メッシュ用シェーダー
     std::unique_ptr<class Shader> mMeshShader;
     std::unique_ptr<class Shader> mMeshShaderToon;
@@ -176,10 +207,8 @@ private:
     
     
     // シャドウマッピング関連処理とパラメータ
-    int mShadowWidth;
-    int mShadowHeight;
     GLuint mShadowFBO;
-    bool InitializeShadowMapping(int width, int height);
+    bool InitializeShadowMapping();
     void RenderShadowMap();
     Matrix4 mLightSpaceMatrix;
     std::unique_ptr<class Texture> mShadowMapTexture;
@@ -201,19 +230,6 @@ private:
     std::vector<class WireframeComponent*> mWireframeComps;
     
     
-    // ライト
-    Vector3 mAmbientLight;
-    DirectionalLight mDirLight;
-    Vector3 mDirLightPosition;
-    Vector3 mDirLightTarget;
-    
-    // フォグ
-    float mFogMaxDist;
-    float mFogMinDist;
-    Vector3 mFogColor;
-    
-    // クリア色
-    Vector3 mClearColor;
-    
+
 };
 

@@ -13,7 +13,7 @@ namespace JsonHelper
     bool GetString(const nlohmann::json& obj, const char* key, std::string& out);
 
     // 数学型（Vectorなど）
-    Vector2 GetVector2(const nlohmann::json& obj, const char* key, const Vector2& defaultValue = Vector2::Zero);
-    Vector3 GetVector3(const nlohmann::json& obj, const char* key, const Vector3& defaultValue = Vector3::Zero);
-    Quaternion GetQuaternionFromEuler(const nlohmann::json& obj, const char* key, const Quaternion& defaultValue = Quaternion::Identity);
+    bool GetVector2(const nlohmann::json& obj, const char* key, Vector2& out);
+    bool GetVector3(const nlohmann::json& obj, const char* key, Vector3& out);
+    bool GetQuaternionFromEuler(const nlohmann::json& obj, const char* key, Quaternion& out);
 }

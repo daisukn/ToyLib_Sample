@@ -42,34 +42,37 @@ namespace JsonHelper
         return false;
     }
     // Vector2
-    Vector2 GetVector2(const nlohmann::json& obj, const char* key, const Vector2& defaultValue)
+    bool GetVector2(const nlohmann::json& obj, const char* key, Vector2& out)
     {
         if (obj.contains(key))
         {
-            auto& jv = obj[key];
-            return Vector2(
-                           jv.value("x", defaultValue.x),
-                           jv.value("y", defaultValue.y));
+            const auto& jv = obj[key];
+            out =  Vector2(
+                           jv[0].get<float>(),
+                           jv[1].get<float>()
+                           );
+            return true;
         }
-        return defaultValue;
+        return false;
     }
 
     // Vector3
-    Vector3 GetVector3(const nlohmann::json& obj, const char* key, const Vector3& defaultValue)
+    bool GetVector3(const nlohmann::json& obj, const char* key, Vector3& out)
     {
         if (obj.contains(key) && obj[key].is_array() && obj[key].size() == 3)
         {
             const auto& jv = obj[key];
-            return Vector3(
+            out = Vector3(
                 jv[0].get<float>(),  // x
                 jv[1].get<float>(),  // y
                 jv[2].get<float>()   // z
             );
+            return true;
         }
-        return defaultValue;
+        return false;
     }
 
-    Quaternion GetQuaternionFromEuler(const nlohmann::json& obj, const char* key, const Quaternion& defaultValue)
+    bool GetQuaternionFromEuler(const nlohmann::json& obj, const char* key, Quaternion& out)
     {
         if (obj.contains(key) && obj[key].is_array() && obj[key].size() == 3)
         {
@@ -91,8 +94,9 @@ namespace JsonHelper
             Quaternion qz(Vector3::UnitZ, roll);  // ロール
 
             // クォータニオンの結合 (順番が重要)
-            return Quaternion::Concatenate(qz, Quaternion::Concatenate(qy, qx));
+            out =  Quaternion::Concatenate(qz, Quaternion::Concatenate(qy, qx));
+            return true;
         }
-        return defaultValue;
+        return false;
     }
 }

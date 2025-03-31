@@ -38,7 +38,7 @@ bool Renderer::LoadSettings(const std::string& filePath)
     JsonHelper::GetFloat(data, "perspectiveFOV", mPerspectiveFOV);
 
     // カメラ位置
-    mCameraPosition = JsonHelper::GetVector3(data["camera"], "position", Vector3::Zero);
+    JsonHelper::GetVector3(data["camera"], "position", mCameraPosition);
 
     // デバッグモード
     if (data.contains("debug"))
@@ -47,13 +47,18 @@ bool Renderer::LoadSettings(const std::string& filePath)
     }
 
     // クリアカラー
-    mClearColor = JsonHelper::GetVector3(data, "clearColor", Vector3(0.2f, 0.5f, 0.8f));
+    JsonHelper::GetVector3(data, "clearColor", mClearColor);
 
     // ライト設定
+    JsonHelper::GetVector3(data, "ambient", mAmbientColor);
+    JsonHelper::GetVector3(data, "specular", mSpecColor);
+
+    
     if (data.contains("directionalLight"))
     {
-        mDirLightPosition = JsonHelper::GetVector3(data["directionalLight"], "position", Vector3(20, 20, -5));
-        mDirLightTarget   = JsonHelper::GetVector3(data["directionalLight"], "target", Vector3::Zero);
+        JsonHelper::GetVector3(data["directionalLight"], "diffuse", mDiffuseColor);
+        JsonHelper::GetVector3(data["directionalLight"], "position", mDirLightPosition);
+        JsonHelper::GetVector3(data["directionalLight"], "target", mDirLightTarget);
     }
 
     // フォグ設定
@@ -61,7 +66,18 @@ bool Renderer::LoadSettings(const std::string& filePath)
     {
         JsonHelper::GetFloat(data["fog"], "maxDist", mFogMaxDist);
         JsonHelper::GetFloat(data["fog"], "minDist", mFogMinDist);
-        mFogColor = JsonHelper::GetVector3(data["fog"], "color", Vector3(0.2f, 0.5f, 0.8f));
+        JsonHelper::GetVector3(data["fog"], "color", mFogColor);
+    }
+    
+    // シャドウ設定
+    if (data.contains("shadow"))
+    {
+        JsonHelper::GetFloat(data["shadow"], "near", mShadowNear);
+        JsonHelper::GetFloat(data["shadow"], "far", mShadowFar);
+        JsonHelper::GetFloat(data["shadow"], "ortho_width", mShadowOrthoWidth);
+        JsonHelper::GetFloat(data["shadow"], "ortho_height", mShadowOrthoHeight);
+        JsonHelper::GetInt(data["shadow"], "resolution_width", mShadowFBOWidth);
+        JsonHelper::GetInt(data["shadow"], "resolution_height", mShadowFBOHeight);
     }
 
     SDL_Log("Loaded Renderer settings from %s", filePath.c_str());
