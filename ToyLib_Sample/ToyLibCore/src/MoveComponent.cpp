@@ -8,6 +8,7 @@ MoveComponent::MoveComponent(class Actor* a, int updateOrder)
 , mForwardSpeed(0.0f)
 , mRightSpeed(0.0f)
 , mVerticalSpeed(0.0f)
+, mIsMovable(true)
 {
 	
 }

@@ -20,6 +20,9 @@ public:
     void SetForwardSpeed(float speed) { mForwardSpeed = speed; }
     void SetRightSpeed(float speed) { mRightSpeed = speed;}
     void SetVerticalSpeed(float speed) { mVerticalSpeed = speed; }
+    
+    void SetIsMovable(const float b) { mIsMovable = b; if(!b)Reset(); }
+    bool GetIsMovable() const { return mIsMovable; }
 
     
     void Reset();
@@ -30,5 +33,7 @@ protected:
     float mForwardSpeed;     // 前後
     float mRightSpeed;       // 左右
     float mVerticalSpeed;    // 上下 （正＝上昇、負＝落下）
+    
+    bool mIsMovable;        // 移動可能な状態か
 
 };

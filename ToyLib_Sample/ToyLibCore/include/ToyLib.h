@@ -14,6 +14,8 @@
 #include "FollowMoveComponent.h"
 #include "OrbitMoveComponent.h"
 #include "InertiaMoveComponent.h"
+#include "DirMoveComponent.h"
+#include "FPSMoveComponent.h"
 
 // --- Collider & Volume ---
 #include "ColliderComponent.h"
@@ -37,6 +39,7 @@
 #include "Font.h"
 #include "Polygon.h"
 #include "Mesh.h"
+#include "Material.h"
 
 // --- Camera / View ---
 #include "CameraComponent.h"
