@@ -1,8 +1,8 @@
 {
   "title": "ToyLib Game",
   "screen": {
-    "width": 1600.0,
-    "height": 900.0,
+    "width": 3840.0,
+    "height": 2160.0,
     "fullscreen": true
   },
   "perspectiveFOV": 45.0,
