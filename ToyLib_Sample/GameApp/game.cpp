@@ -44,7 +44,6 @@ void Game::InitGame()
     auto cc2 = a->CreateComponent<ColliderComponent>();
     cc2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
     cc2->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
-    cc2->GetBoundingVolume()->CreateVArray();
     cc2->SetDisp(true);
     cc2->SetColliderType(C_ENEMY);
 

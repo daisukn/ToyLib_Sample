@@ -323,6 +323,7 @@
 				HEADER_SEARCH_PATHS = (
 					/opt/homebrew/include,
 					/usr/local/include,
+					"($SRCROOT)ToyLib_Sample/ToyLibCore/include",
 				);
 				LD_RUNPATH_SEARCH_PATHS = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -346,6 +347,7 @@
 				HEADER_SEARCH_PATHS = (
 					/opt/homebrew/include,
 					/usr/local/include,
+					"($SRCROOT)ToyLib_Sample/ToyLibCore/include",
 				);
 				LD_RUNPATH_SEARCH_PATHS = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (

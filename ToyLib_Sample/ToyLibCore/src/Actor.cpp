@@ -116,3 +116,21 @@ void Actor::RemoveComponent(Component* component)
     }
 }
 
+void Actor::SetForward(const Vector3 dir)
+{
+    // Y成分を無視（XZ平面に投影）
+    Vector3 flatDir = Vector3(dir.x, 0.0f, dir.z);
+
+    if (flatDir.LengthSq() == 0.0f)
+        return; // 方向なし
+
+    flatDir = Vector3::Normalize(flatDir);
+
+    // atan2(x, z) で Yaw を取得（Zが前提、Xが右）
+    float yaw = std::atan2(flatDir.x, flatDir.z);
+
+    // YawからQuaternion生成（Pitch = 0, Roll = 0）
+    Quaternion rot = Quaternion::FromEulerDegrees(Vector3(0.0f, yaw, 0.f));
+
+    SetRotation(rot);
+}

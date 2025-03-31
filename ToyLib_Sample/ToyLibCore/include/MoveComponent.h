@@ -25,7 +25,7 @@ public:
     void Reset();
 
 
-private:
+protected:
     float mAngularSpeed;     // 回転
     float mForwardSpeed;     // 前後
     float mRightSpeed;       // 左右

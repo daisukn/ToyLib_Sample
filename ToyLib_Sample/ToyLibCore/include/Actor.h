@@ -58,7 +58,10 @@ public:
     virtual Vector3 GetRight() { return Vector3::Transform(Vector3::UnitX, mRotation);}
     // 上方向を取得（Y）
     virtual Vector3 GetUpward() { return Vector3::Transform(Vector3::UnitY, mRotation); }
-
+    
+    // 前方向（Z方向）をベクトルに合わせる
+    void SetForward(const Vector3 dir);
+    
     // ステータスを操作
 	State GetState() const { return mStatus; }
 	void SetState(State state) { mStatus = state; }

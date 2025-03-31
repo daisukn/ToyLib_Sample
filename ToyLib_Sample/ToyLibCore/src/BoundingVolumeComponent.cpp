@@ -179,6 +179,7 @@ void BoundingVolumeComponent::AdjustBoundingBox(const Vector3 pos, const Vector3
     mBoundingBox->min.y *= sc.y;
     mBoundingBox->max.z *= sc.z;
     mBoundingBox->min.z *= sc.z;
+    CreateVArray();
 
 }
 

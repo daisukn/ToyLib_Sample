@@ -69,7 +69,6 @@ HeroActor::HeroActor(Application* a)
     Vector3 vScale;
     JsonHelper::GetVector3(json["collider"], "bounding_box_scale", vScale);
     cc->GetBoundingVolume()->AdjustBoundingBox(vOffset, vScale);
-    cc->GetBoundingVolume()->CreateVArray();
     cc->GetBoundingVolume()->SetVisible(true);
     cc->SetColliderType(C_PLAYER);
     cc->SetDisp(true);
@@ -169,33 +168,7 @@ void HeroActor::ActorInput(const InputState &state)
 
     }
     
-    
 
-    /*
-    
-    if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EHeld)
-    {
-        angularSpeed = -180;
-    }
-    if (state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EHeld)
-    {
-        angularSpeed = 180;
-    }
-    if (state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EHeld)
-    {
-        forwardSpeed = speed;
-    }
-    if (state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EHeld)
-    {
-        forwardSpeed = -speed;
-    }
-    mAnimID = H_Run;
-    if ( forwardSpeed == 0.0f && angularSpeed == 0.0f )
-    {
-        mAnimID = H_Stand;
-
-    }
-     */
     if (mAnimID == H_Run || mAnimID == H_Stand)
     {
         meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
