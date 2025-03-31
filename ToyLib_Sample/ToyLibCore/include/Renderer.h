@@ -118,6 +118,8 @@ public:
     void SetFogInfo(const float max, const float min, Vector3 color);
     
 private:
+    // セッティング読み込み
+    bool LoadSettings(const std::string& filePath);
     // ウィンドウタイトル
     std::string mStrTitle;
     // Windowハンドラ

@@ -36,7 +36,7 @@ void Game::InitGame()
     auto cc = a->CreateComponent<ColliderComponent>();
     mc->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf", true));
     mc->SetAnimID(6, PLAY_CYCLIC);
-    mc->SetToonRender(false, 1.02f);
+    mc->SetToonRender(true, 1.015f);
     
     a->SetPosition(Vector3(-3,-2,10));
     a->SetScale(0.5f);
@@ -77,7 +77,7 @@ void Game::InitGame()
     
     towerActor->SetPosition(Vector3(8, -2, 15));
     towerActor->SetScale(0.001f);
-    q = Quaternion(Vector3::UnitY, Math::ToRadians(180));
+    q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
     
     // 地面
@@ -86,7 +86,7 @@ void Game::InitGame()
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
     b->SetPosition(Vector3(0,-2,20));
     b->SetScale(0.5);
-    g->SetToonRender(false);
+    g->SetToonRender(true);
     
 
 }

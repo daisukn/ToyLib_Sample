@@ -48,7 +48,7 @@ HeroActor::HeroActor(Application* a)
     float outline = 1.02f;
     JsonHelper::GetBool(json["mesh"], "toon_render", useToon);
     JsonHelper::GetFloat(json["mesh"], "toon_outline", outline);
-    meshComp->SetToonRender(false, outline);
+    meshComp->SetToonRender(useToon, outline);
 
     // --- Transform設定 ---
     SetPosition(JsonHelper::GetVector3(json, "position"));
@@ -86,7 +86,7 @@ void HeroActor::ActorInput(const InputState &state)
 {
     float forwardSpeed = 0.0f;
     float angularSpeed = 0.0f;
-    float speed = 5.0f;
+    float speed = 7.0f;
     float turn = 180.f;
       
  

@@ -86,7 +86,7 @@ float ComputeShadow(vec3 worldPos)
     }
 
     float shadow = textureProj(uShadowMap, vec4(projCoords.xy, projCoords.z - uShadowBias, 1.0));
-    return mix(0.3, 1.0, shadow); // ソフトシャドウ効果
+    return mix(0.5, 1.0, shadow); // ソフトシャドウ効果
 }
 
 // === メイン ===
