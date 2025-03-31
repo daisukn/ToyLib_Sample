@@ -31,6 +31,7 @@ bool Renderer::LoadSettings(const std::string& filePath)
     {
         JsonHelper::GetFloat(data["screen"], "width", mScreenWidth);
         JsonHelper::GetFloat(data["screen"], "height", mScreenHeight);
+        JsonHelper::GetBool(data["screen"], "fullscreen", mIsFullScreen);
     }
 
     // FOV

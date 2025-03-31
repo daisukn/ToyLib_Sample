@@ -808,7 +808,7 @@ public:
 		};
 		return Matrix4(temp);
 	}
-
+/*
 	static Matrix4 CreateOrtho(float width, float height, float near, float far)
 	{
 		float temp[4][4] =
@@ -820,7 +820,7 @@ public:
 		};
 		return Matrix4(temp);
 	}
-/*
+*/
     static Matrix4 CreateOrtho(float width, float height, float near, float far)
     {
         float temp[4][4] =
@@ -832,7 +832,7 @@ public:
         };
         return Matrix4(temp);
     }
- */
+ 
 	static Matrix4 CreatePerspectiveFOV(float fovY, float width, float height, float near, float far)
 	{
 		float yScale = Math::Cot(fovY / 2.0f);

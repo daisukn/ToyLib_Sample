@@ -11,7 +11,7 @@ class Application
 {
 public:
     // コンストラクタ
-    Application(std::string title, float scWidth = 1280.f, float scHeight = 720.f, bool isFullScreen = false);
+    Application();
     // デストラクタ
     virtual ~Application();
 

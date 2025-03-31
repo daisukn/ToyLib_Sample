@@ -8,14 +8,10 @@
 
 
 // コンストラクタ
-Application::Application(std::string title, float scWidth, float scHeight, bool isFullScreen)
+Application::Application()
 : mIsActive(false)
 , mIsUpdatingActors(false)
 , mIsPause(false)
-, mApplicationTitle(title)
-, mIsFullScreen(isFullScreen)
-, mScreenW(scWidth)
-, mScreenH(scHeight)
 {
     mRenderer = std::make_unique<class Renderer>();
     mInputSys = std::make_unique<class InputSystem>();
@@ -41,7 +37,7 @@ bool Application::Initialize()
     }
     
     // Renderer初期化
-    mRenderer->Initialize(mApplicationTitle, mScreenW, mScreenH, mIsFullScreen);
+    mRenderer->Initialize();
 
     // 入力システム初期化
     mInputSys->Initialize();

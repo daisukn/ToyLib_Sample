@@ -20,7 +20,7 @@ const std::string LIBRARY_PATH = "ToyLibCore/";
 
 // コンストラクタ
 Renderer::Renderer()
-: mStrTitle("")
+: mStrTitle("ToyLib App")
 , mScreenWidth(0.f)
 , mScreenHeight(0.f)
 , mWindow(nullptr)
@@ -45,13 +45,13 @@ Renderer::~Renderer()
 
 
 // ウィンドウ生成とGL初期化
-bool Renderer::Initialize(std::string title, float scWidth, float scHeight, bool iSFullScreen)
+bool Renderer::Initialize()
 {
-    mStrTitle       = title;    // ウィンドウタイトル
+/*    mStrTitle       = title;    // ウィンドウタイトル
     mScreenWidth    = scWidth;  // スクリーン幅
     mScreenHeight   = scHeight; // スクリーン高さ
     mIsFullScreen   = iSFullScreen;
-    
+  */
     
     // OpenGL プロファイル, バージョン
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);

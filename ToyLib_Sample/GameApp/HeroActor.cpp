@@ -45,7 +45,7 @@ HeroActor::HeroActor(Application* a)
     meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
 
     bool useToon = false;
-    float outline = 1.02f;
+    float outline = 1.00f;
     JsonHelper::GetBool(json["mesh"], "toon_render", useToon);
     JsonHelper::GetFloat(json["mesh"], "toon_outline", outline);
     meshComp->SetToonRender(useToon, outline);
@@ -65,7 +65,7 @@ HeroActor::HeroActor(Application* a)
         JsonHelper::GetVector3(json["collider"], "bounding_box_scale"));
     cc->GetBoundingVolume()->CreateVArray();
     cc->GetBoundingVolume()->SetVisible(true);
-    cc->SetColliderType(C_ENEMY);
+    cc->SetColliderType(C_PLAYER);
     cc->SetDisp(true);
 
     // --- 移動コンポーネント ---

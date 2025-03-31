@@ -2,20 +2,14 @@
 #include "ApplicationEntry.h"
 #include "HeroActor.h"
 
-TOYLIB_REGISTER_APP_WITH_ARGS(Game, "sample game", 1600, 900, false)
+TOYLIB_REGISTER_APP_WITH_ARGS(Game)
 
 
-Game::Game(std::string name)
-: Application(name)
+Game::Game()
+: Application()
 {
     
 }
-Game::Game(std::string name, float w, float h, bool b)
-: Application(name, w, h, b)
-{
-    
-}
-
 
 Game::~Game()
 {
