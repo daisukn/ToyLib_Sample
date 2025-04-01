@@ -36,7 +36,6 @@ public:
     // ポジションを操作
     const Vector3& GetPosition() const { return mPosition; }
     void SetPosition(const Vector3& pos) { mPosition = pos; mIsRecomputeWorldTransform = true; }
-    const Vector3& GetPrevPosition() const { return mPrevPosition; }
 
     // スケールを操作
     float GetScale() const { return mScale; }
@@ -107,7 +106,6 @@ private:
     // マトリックス
     Matrix4     mWorldTransform;
     Vector3     mPosition;
-    Vector3     mPrevPosition;
     Quaternion  mRotation;
     float       mScale;
     // turueの時のみマトリックスを再計算

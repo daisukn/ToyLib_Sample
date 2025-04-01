@@ -8,6 +8,7 @@
 DirMoveComponent::DirMoveComponent(class Actor* a, int order)
 : MoveComponent(a, order)
 , mSpeed(7.f)
+, mPrevPosition(Vector3::Zero)
 {
     
 }
@@ -56,6 +57,7 @@ void DirMoveComponent::ProcessInput(const struct InputState& state)
 {
 
     if(!mIsMovable) return;
+    mPrevPosition = mOwnerActor->GetPosition();
 
     
     mForwardSpeed = mSpeed * state.Controller.GetLeftStick().y;
@@ -84,7 +86,7 @@ void DirMoveComponent::ProcessInput(const struct InputState& state)
 void DirMoveComponent::AdjustDir()
 {
     // 移動ベクトルから向きを調整
-    Vector3 moveVal = mOwnerActor->GetPosition() - mOwnerActor->GetPrevPosition();
+    Vector3 moveVal = mOwnerActor->GetPosition() - mPrevPosition;
     
     if (moveVal.x != 0.0f || moveVal.z != 0.0f)
     {

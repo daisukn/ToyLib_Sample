@@ -28,6 +28,13 @@ struct TCube
 };
 */
 
+struct MTVResult
+{
+    Vector3 axis = Vector3::Zero;
+    float depth = Math::Infinity;
+    bool valid = false;
+};
+
 // 物理計算系のクラス
 class PhysWorld
 {
@@ -59,7 +66,8 @@ private:
     
     Vector3 ComputePushBackDirection(class ColliderComponent* a, class ColliderComponent* b);
 
-    
+    bool CompareLengthOBB_MTV(const OBB* cA, const OBB* cB, const Vector3& vSep, const Vector3& vDistance, MTVResult& mtv);
+    bool IsCollideBoxOBB_MTV(const OBB* cA, const OBB* cB, MTVResult& mtv);
     
 ///地表計算系
     bool IsInPolygon(const struct Polygon* pl, const struct Vector3 p);

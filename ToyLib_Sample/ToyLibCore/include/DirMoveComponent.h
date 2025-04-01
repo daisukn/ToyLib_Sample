@@ -11,4 +11,5 @@ public:
 private:
     float mSpeed;
     void AdjustDir();
+    Vector3 mPrevPosition;
 };
