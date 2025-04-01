@@ -35,5 +35,5 @@ void main()
 
 	// UV座標
 	fragTexCoord = inTexCoord;
-    fragPosLightSpace = uLightSpaceMatrix * pos;
+    fragPosLightSpace = pos * uLightSpaceMatrix;
 }

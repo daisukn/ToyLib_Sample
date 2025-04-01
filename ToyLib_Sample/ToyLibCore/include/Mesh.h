@@ -30,6 +30,10 @@ public:
     std::vector<class VertexArray*> GetVertexArray() { return mVertexArrayPtr; }
     // Textureを取得
     class Texture* GetTexture(size_t index);
+    
+    // マテリアル取得
+    std::shared_ptr<class Material> GetMaterial(size_t index);
+    
     // シェーダー名取得
     const std::string& GetShaderName() const { return mShaderName; }
     // Specurer（未実装
@@ -102,6 +106,9 @@ private:
     // VertexArrayのVector
     std::vector<class VertexArray*> mVertexArrayPtr;
     std::vector<std::unique_ptr<class VertexArray>> mVertexArray;
+    
+    // MatrialのVector
+    std::vector<std::shared_ptr<class Material>> mMaterials;
 
     // シェーダー名
     std::string mShaderName;

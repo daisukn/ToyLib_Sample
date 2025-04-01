@@ -4,6 +4,7 @@
 #include "VertexArray.h"
 #include "Bone.h"
 #include "Polygon.h"
+#include "Material.h"
 
 // Assimp用
 #include <assimp/scene.h>
@@ -15,6 +16,9 @@
 #include <memory>
 #include <iostream>
 #include <cassert>
+#include <string>
+
+const std::string ASSETS_PATH = "Assets/";
 
 
 // aiMatrix4x4からMatrix4へ変換
@@ -558,25 +562,74 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
     }
     
 
-    // テクスチャ読み込み
-    for (unsigned int cnt = 0; cnt < mScene->mNumMaterials; cnt++){
-    
-        aiString Path;
+    // マテリアル読み込み
+  
+    for (unsigned int cnt = 0; cnt < mScene->mNumMaterials; cnt++)
+    {
         aiMaterial* pMaterial = mScene->mMaterials[cnt];
+
+        // マテリアル作成
+        std::shared_ptr<Material> mat = std::make_shared<Material>();
+
+        // カラー情報
+        aiColor3D color(0.f, 0.f, 0.f);
+        if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_AMBIENT, color))
+        {
+            mat->SetAmbientColor(Vector3(color.r, color.g, color.b));
+        }
+        if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color))
+        {
+            mat->SetDiffuseColor(Vector3(color.r, color.g, color.b));
+        }
+        if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_SPECULAR, color))
+        {
+            mat->SetSpecularColor(Vector3(color.r, color.g, color.b));
+        }
+
+        // Shininess
+        float shininess = 32.0f;
+        if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, shininess))
+        {
+            mat->SetSpecPower(shininess);
+        }
+
+        // Diffuse テクスチャ
+        aiString path;
+        if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
+        {
+            std::string textureFile = ASSETS_PATH + std::string(path.C_Str());
+            Texture* tex = r->GetTexture(textureFile);
+            if (tex)
+            {
+                mat->SetDiffuseMap(std::shared_ptr<Texture>(tex, [](Texture*) {})); // 非所有共有
+            }
+        }
+
+        mMaterials.push_back(mat);
+    }
+    
+/*
+    for (unsigned int cnt = 0; cnt < mScene->mNumMaterials; cnt++){
+        aiMaterial* pMaterial = mScene->mMaterials[cnt];
+        auto mat = std::make_shared<Material>();
+        
+        // Dffuseテクスチャ
+        aiString Path;
         Texture* t;
         if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
         {
             std::string texturefilename = Path.data;
             // テクスチャ読み込み
-            t = r->GetTexture("Assets/" + texturefilename);
+            t = r->GetTexture(ASSETS_PATH + texturefilename);
         }
         else
         {
-            t = r->GetTexture("Assets/Default.png");
+            t = r->GetTexture(ASSETS_PATH + "Default.png");
         }
         mTextures.push_back(t);
+        
     }
-    
+    */
     
     return true;
 }
@@ -600,6 +653,15 @@ Texture* Mesh::GetTexture(size_t index)
     {
         return nullptr;
     }
+}
+
+std::shared_ptr<Material> Mesh::GetMaterial(size_t index)
+{
+    if (index < mMaterials.size())
+    {
+        return mMaterials[index];
+    }
+    return nullptr;
 }
 
 

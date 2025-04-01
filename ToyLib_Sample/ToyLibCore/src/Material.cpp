@@ -1,5 +1,6 @@
 #include "Material.h"
 #include "Shader.h"
+#include "Texture.h"
 
 Material::Material()
     : mAmbientColor(0.2f, 0.2f, 0.2f)
@@ -7,48 +8,33 @@ Material::Material()
     , mSpecularColor(1.0f, 1.0f, 1.0f)
     , mShininess(32.0f)
     , mDiffuseMap(nullptr)
-    , mSpecularMap(nullptr)
-    , mNormalMap(nullptr)
+    , mOverrideColor(false)
+    , mUniformColor(Vector3::Zero)
 {
 }
 
-void Material::BindToShader(Shader* shader) const
+void Material::BindToShader(Shader* shader, int textureUnit) const
 {
-    if (!shader) return;
+    shader->SetBooleanUniform("uOverrideColor", mOverrideColor);
+    shader->SetVectorUniform("uUniformColor", mUniformColor);
 
-    // カラーや数値系を送る
-    shader->SetVectorUniform("uMaterial.ambientColor", mAmbientColor);
-    shader->SetVectorUniform("uMaterial.diffuseColor", mDiffuseColor);
-    shader->SetVectorUniform("uMaterial.specularColor", mSpecularColor);
-    shader->SetFloatUniform("uMaterial.shininess", mShininess);
-/*
-    // テクスチャ有無フラグを送る
-    shader->SetUniform("uMaterial.useDiffuseMap", mDiffuseMap != nullptr);
-    shader->SetUniform("uMaterial.useSpecularMap", mSpecularMap != nullptr);
-    shader->SetUniform("uMaterial.useNormalMap", mNormalMap != nullptr);
+    // カラー情報
+    shader->SetVectorUniform("uAmbientColor", mAmbientColor);
+    shader->SetVectorUniform("uDiffuseColor", mDiffuseColor);
+    shader->SetVectorUniform("uSpecColor", mSpecularColor);
+    shader->SetFloatUniform("uSpecPower", mShininess);
 
-    // 実際にバインド（使うテクスチャはユニット割り当て）
-    int textureUnit = 0;
-
+    // テクスチャ設定（基本は1枚のみ）
     if (mDiffuseMap)
     {
-        mDiffuseMap->Bind(textureUnit);
-        shader->SetUniform("uDiffuseMap", textureUnit);
-        ++textureUnit;
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        mDiffuseMap->SetActive();
+        shader->SetTextureUniform("uTexture", textureUnit);
     }
+}
 
-    if (mSpecularMap)
-    {
-        mSpecularMap->Bind(textureUnit);
-        shader->SetUniform("uSpecularMap", textureUnit);
-        ++textureUnit;
-    }
-
-    if (mNormalMap)
-    {
-        mNormalMap->Bind(textureUnit);
-        shader->SetUniform("uNormalMap", textureUnit);
-        ++textureUnit;
-    }
- */
+void Material::SetOverrideColor(bool enable, const Vector3& color)
+{
+    mOverrideColor = enable;
+    mUniformColor = color;
 }
