@@ -57,7 +57,7 @@ void main()
     // ふrグメントシェーダーにUVを送る
     fragTexCoord = inTexCoord;
     
-    fragPosLightSpace = uLightSpaceMatrix * skinnedPos;
+    fragPosLightSpace =  skinnedPos * uLightSpaceMatrix;
 }
 
 

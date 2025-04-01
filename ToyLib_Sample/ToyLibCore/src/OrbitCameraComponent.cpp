@@ -23,19 +23,19 @@ void OrbitCameraComponent::ProcessInput( const struct InputState& state )
     // キーボード（カメラ）
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_D) == EHeld)
     {
-        SetYawSpeed( angularSpeed );
+        SetYawSpeed( -angularSpeed );
     }
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_A) == EHeld)
     {
-        SetYawSpeed( -angularSpeed );
+        SetYawSpeed( angularSpeed );
     }
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_W) == EHeld)
     {
-        ChangeHeight(0.2);
+        ChangeHeight(-0.2);
     }
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_S) == EHeld)
     {
-        ChangeHeight(-0.2);
+        ChangeHeight(0.2);
     }
     
 
@@ -70,7 +70,6 @@ void OrbitCameraComponent::Update(float deltaTime)
     
     
     mOffset.y += mChangeOffset;
-    
     // 縦移動の範囲を絞る
     if(cameraPos.y < 0)
     {
@@ -81,16 +80,17 @@ void OrbitCameraComponent::Update(float deltaTime)
         }
         
     }
+    // 縦移動の範囲を絞る
     if(cameraPos.y > 10)
     {
         cameraPos.y = 10;
-        if( mChangeOffset > 10.0f)
+        if( mChangeOffset > 0.0f)
         {
             mOffset.y -= mChangeOffset;
-            mOffset.y = Math::Clamp(mOffset.y, -9.0f, 9.0f);
         }
         
     }
+
     mCameraPosition = cameraPos;
      
 
