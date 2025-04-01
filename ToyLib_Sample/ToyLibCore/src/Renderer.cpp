@@ -57,12 +57,6 @@ Renderer::~Renderer()
 // ウィンドウ生成とGL初期化
 bool Renderer::Initialize()
 {
-/*    mStrTitle       = title;    // ウィンドウタイトル
-    mScreenWidth    = scWidth;  // スクリーン幅
-    mScreenHeight   = scHeight; // スクリーン高さ
-    mIsFullScreen   = iSFullScreen;
-  */
-    
     // OpenGL プロファイル, バージョン
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -105,8 +99,7 @@ bool Renderer::Initialize()
         return false;
     }
    
-    
-    /*シェーダー のロードなどはここでやる*/
+    // シェーダー のロードなどはここでやる
     LoadShaders();
     CreateSpriteVerts();
 
@@ -450,22 +443,21 @@ bool Renderer::LoadShaders()
 // ライト設定
 void Renderer::SetLightUniforms(Shader* shader)
 {
-    // カメラポジション
+    // カメラポジション（ビュー行列の逆行列から取得）
     Matrix4 invView = mViewMatrix;
     invView.Invert();
     shader->SetVectorUniform("uCameraPos", invView.GetTranslation());
-    // Ambient light
-    //mAmbientLight = Vector3(0.5f,0.5f,0.5f);
+
+    // アンビエントライト
     shader->SetVectorUniform("uAmbientLight", mAmbientColor);
-    // Directional light
+
+    // ディレクショナルライト（方向・色）
     mDirLight.Direction = Vector3::Normalize(mDirLightTarget - mDirLightPosition);
-    mDirLight.DiffuseColor = mDiffuseColor;//Vector3(0.4f, 0.4f, 0.4f);
-    mDirLight.SpecColor = mSpecColor;//Vector3(1.f, 1.f, 1.f);
     shader->SetVectorUniform("uDirLight.mDirection", mDirLight.Direction);
-    shader->SetVectorUniform("uDirLight.mDiffuseColor", mDirLight.DiffuseColor);
-    shader->SetVectorUniform("uDirLight.mSpecColor", mDirLight.SpecColor);
-    
-    // フォグ
+    shader->SetVectorUniform("uDirLight.mDiffuseColor", mDiffuseColor);
+    shader->SetVectorUniform("uDirLight.mSpecColor", mSpecColor);
+
+    // フォグ情報
     shader->SetFloatUniform("uFoginfo.maxDist", mFogMaxDist);
     shader->SetFloatUniform("uFoginfo.minDist", mFogMinDist);
     shader->SetVectorUniform("uFoginfo.color", mFogColor);
@@ -528,7 +520,8 @@ void Renderer::RemoveBackGroundSprite(SpriteComponent* sprite)
 }
 
 // テクスチャ取り出し
-Texture* Renderer::GetTexture(const std::string &fileName){
+Texture* Renderer::GetTexture(const std::string &fileName)
+{
  
     Texture* tex = nullptr;
     auto iter = mTextures.find(fileName);

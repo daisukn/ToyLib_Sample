@@ -38,11 +38,6 @@ public:
     void SetBlendAdd(bool b) { mIsBlendAdd = b; }
     bool GetBlendAdd() const { return mIsBlendAdd; }
     
-    void SetGlory(bool b) { mIsGlory = b; }
-    bool GetGlory() const { return mIsGlory; }
-    
-    //void SetScale(float f) { mScale = f; }
-    //float GetScale() const { return mScale; }
     
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
     virtual void SetAnimID(const unsigned int animID, const PlayMode mode){}
@@ -53,8 +48,7 @@ protected:
     class Mesh* mMesh;      // メッシュ
     unsigned int mTextureIndex;    // TextureID
     
-    //float mScale;
-    
+
     bool mIsVisible;
     bool mIsSkeletal;
     
@@ -64,9 +58,6 @@ protected:
     // 輪郭強調
     bool mIsToon;
     float mContourFactor;
-    
-    // 後光
-    bool mIsGlory;
     
     // 加算合成するか
     bool mIsBlendAdd;

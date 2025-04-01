@@ -170,7 +170,7 @@ bool Shader::IsValidProgram()
         char buffer[512];
         memset(buffer, 0, 512);
         glGetProgramInfoLog(mShaderProgramID, 511, nullptr, buffer);
-        std::cout << "GLSL Link Status:\n%s \n" << std::endl;
+        std::cout << "GLSL Link Failed:\n" << buffer << "\n" << std::endl;
         return false;
     }
     

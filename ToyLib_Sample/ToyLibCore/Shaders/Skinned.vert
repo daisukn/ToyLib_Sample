@@ -3,8 +3,11 @@
 // Uniforms
 uniform mat4 uWorldTransform;
 uniform mat4 uViewProj;
+
 // Uniform（ボーンごとのマトリックス）
 uniform mat4 uMatrixPalette[96];
+
+uniform mat4 uLightSpaceMatrix;
 
 // Attributes （頂点座標、法線ベクトル、UV座標、ボーンID、ウェイト）
 layout(location = 0) in vec3 inPosition;
@@ -20,6 +23,7 @@ out vec2 fragTexCoord;
 out vec3 fragNormal;
 // フラグメントシェーダーに渡す頂点座標
 out vec3 fragWorldPos;
+out vec4 fragPosLightSpace;
 
 void main()
 {
@@ -52,6 +56,8 @@ void main()
 
     // ふrグメントシェーダーにUVを送る
     fragTexCoord = inTexCoord;
+    
+    fragPosLightSpace = uLightSpaceMatrix * skinnedPos;
 }
 
 
