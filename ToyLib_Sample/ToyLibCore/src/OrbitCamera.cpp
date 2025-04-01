@@ -31,11 +31,11 @@ void OrbitCamera::ProcessInput( const struct InputState& state )
     }
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_W) == EHeld)
     {
-        ChangeHeight(angularSpeed);
+        ChangeHeight(0.2);
     }
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_S) == EHeld)
     {
-        ChangeHeight(-angularSpeed);
+        ChangeHeight(-0.2);
     }
     
 }

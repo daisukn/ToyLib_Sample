@@ -67,7 +67,7 @@ void Game::InitGame()
     towerCollider->SetColliderType(C_WALL);
     
     towerActor->SetPosition(Vector3(8, -2, 15));
-    towerActor->SetScale(0.001f);
+    towerActor->SetScale(0.005f);
     q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
     

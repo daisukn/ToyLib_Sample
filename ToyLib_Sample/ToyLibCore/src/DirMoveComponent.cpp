@@ -27,6 +27,7 @@ void DirMoveComponent::Update(float deltaTime)
         // 移動マトリックスを設定
         Vector3 pos = mOwnerActor->GetPosition();
         Vector3 forward = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix().GetZAxis();
+        forward.y = 0;
         forward.Normalize();
         pos += forward * mForwardSpeed * deltaTime;
 
@@ -40,6 +41,7 @@ void DirMoveComponent::Update(float deltaTime)
         // 移動マトリックスを設定
         Vector3 pos = mOwnerActor->GetPosition();
         Vector3 forward = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix().GetXAxis();
+        forward.y = 0;
         forward.Normalize();
         pos += forward * mRightSpeed * deltaTime;
 
@@ -47,7 +49,7 @@ void DirMoveComponent::Update(float deltaTime)
         
     }
     
-
+    AdjustDir();
 }
 
 void DirMoveComponent::ProcessInput(const struct InputState& state)
@@ -75,7 +77,7 @@ void DirMoveComponent::ProcessInput(const struct InputState& state)
         mForwardSpeed = -mSpeed;
     }
 
-    AdjustDir();
+
     
 }
 
