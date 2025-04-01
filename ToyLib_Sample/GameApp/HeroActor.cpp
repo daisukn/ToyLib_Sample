@@ -67,12 +67,7 @@ HeroActor::~HeroActor()
 
 void HeroActor::UpdateActor(float deltaTime)
 {
-    bool isTurnable = true;
-    if (mCollComp->GetCollided() && mMoveComp->GetIsTurnable())
-    {
-        isTurnable = false;
-    }
-    mMoveComp->SetIsTurnable(isTurnable);
+    
 }
 
 void HeroActor::ActorInput(const InputState& state)

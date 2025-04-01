@@ -21,10 +21,10 @@ public:
     void SetRightSpeed(float speed) { mRightSpeed = speed;}
     void SetVerticalSpeed(float speed) { mVerticalSpeed = speed; }
     
-    void SetIsMovable(const bool b) { mIsMovable = b; if(!b)Reset(); }
+    void SetIsMovable(const bool b) { mIsMovable = b; if(!b)Reset(); } // 既に移動量がセットされていたらリセットする
     bool GetIsMovable() const { return mIsMovable; }
     
-    void SetIsTurnable(const bool b) { mIsTurnable = b; if(!b)Reset();}
+    void SetIsTurnable(const bool b) { mIsTurnable = b; }
     bool GetIsTurnable() const { return mIsTurnable; }
     
     void Reset();
