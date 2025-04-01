@@ -39,16 +39,16 @@ HeroActor::HeroActor(Application* a)
     SetScale(scale);
 
     // --- コライダー ---
-    auto cc = CreateComponent<ColliderComponent>();
-    cc->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
+    mCollComp = CreateComponent<ColliderComponent>();
+    mCollComp->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
     Vector3 vOffset;
     JsonHelper::GetVector3(json["collider"], "bounding_box_offset", vOffset);
     Vector3 vScale;
     JsonHelper::GetVector3(json["collider"], "bounding_box_scale", vScale);
-    cc->GetBoundingVolume()->AdjustBoundingBox(vOffset, vScale);
-    cc->GetBoundingVolume()->SetVisible(true);
-    cc->SetColliderType(C_PLAYER);
-    cc->SetDisp(true);
+    mCollComp->GetBoundingVolume()->AdjustBoundingBox(vOffset, vScale);
+    mCollComp->GetBoundingVolume()->SetVisible(true);
+    mCollComp->SetColliderType(C_PLAYER);
+    mCollComp->SetDisp(true);
 
     // --- 移動コンポーネント ---
     //mMoveComp = CreateComponent<MoveComponent>();
@@ -67,68 +67,79 @@ HeroActor::~HeroActor()
 
 void HeroActor::UpdateActor(float deltaTime)
 {
-    
+    bool isTurnable = true;
+    if (mCollComp->GetCollided() && mMoveComp->GetIsTurnable())
+    {
+        isTurnable = false;
+    }
+    mMoveComp->SetIsTurnable(isTurnable);
 }
 
-void HeroActor::ActorInput(const InputState &state)
+void HeroActor::ActorInput(const InputState& state)
 {
-    if(mMovable)
+    bool inputAttack = false;
+
+    if (mMovable)
     {
-        if (mMoveComp->GetForwardSpeed() == 0.0f &&
-            mMoveComp->GetAngularSpeed() == 0.0f &&
-            mMoveComp->GetRightSpeed() == 0.0f)
+        // 攻撃・ジャンプ入力判定
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
+            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed)
         {
-            mAnimID = H_Stand;
+            mAnimID = H_Jump;
+            inputAttack = true;
+        }
+        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed ||
+                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_B) == EPressed)
+        {
+            mAnimID = H_Slash;
+            inputAttack = true;
+        }
+        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_C) == EPressed ||
+                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed)
+        {
+            mAnimID = H_Spin;
+            inputAttack = true;
+        }
+        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_V) == EPressed ||
+                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
+        {
+            mAnimID = H_Stab;
+            inputAttack = true;
+        }
+
+        // 攻撃入力があれば移動ロック
+        if (inputAttack)
+        {
+            mMovable = false;
         }
         else
         {
-            mAnimID = H_Run;
+            // 攻撃入力なし → 通常移動状態に応じたアニメ設定
+            if (mMoveComp->GetForwardSpeed() == 0.0f &&
+                mMoveComp->GetAngularSpeed() == 0.0f &&
+                mMoveComp->GetRightSpeed() == 0.0f)
+            {
+                mAnimID = H_Stand;
+            }
+            else
+            {
+                mAnimID = H_Run;
+            }
         }
-        
-        if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
-            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed )
-        {
-            mAnimID = H_Jump;
-            mMovable = false;
-
-        }
-        if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed ||
-            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_B) == EPressed )
-        {
-            mAnimID = H_Slash;
-            mMovable = false;
-        }
-        if (state.Keyboard.GetKeyState(SDL_SCANCODE_C) == EPressed ||
-            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed )
-        {
-            mAnimID = H_Spin;
-            mMovable = false;
-        }
-        if (state.Keyboard.GetKeyState(SDL_SCANCODE_V) == EPressed ||
-            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed )
-        {
-            mAnimID = H_Stab;
-            mMovable = false;
-        }
-
     }
     else
     {
+        // 攻撃アニメーション終了で移動再開
         if (!mMeshComp->GetIsPlaing())
         {
             mMovable = true;
         }
     }
 
+    // アニメーション再生
+    mMeshComp->SetAnimID(mAnimID,
+        (mAnimID == H_Run || mAnimID == H_Stand) ? PLAY_CYCLIC : PLAY_ONCE);
 
-    if (mAnimID == H_Run || mAnimID == H_Stand)
-    {
-        mMeshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
-    }
-    else
-    {
-        mMeshComp->SetAnimID(mAnimID, PLAY_ONCE);
-    }
+    // 移動ロックをMoveComponentに伝える
     mMoveComp->SetIsMovable(mMovable);
-    
 }

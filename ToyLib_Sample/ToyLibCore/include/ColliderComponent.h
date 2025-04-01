@@ -31,8 +31,8 @@ public:
     // 衝突した
     void Collided(ColliderComponent* c);
     
-    const std::vector<ColliderComponent*>& GetTargetColliders() const { return targetColliders; }
-    void ClearCollidBuffer() { targetColliders.clear(); }
+    const std::vector<ColliderComponent*>& GetTargetColliders() const { return mTargetColliders; }
+    void ClearCollidBuffer() { mTargetColliders.clear(); }
     
     void Update(float deltaTime) override;
     
@@ -58,6 +58,6 @@ private:
     class BoundingVolumeComponent* mBoundingVolume;
     
     ColliderType mType;
-    std::vector<ColliderComponent*> targetColliders;
+    std::vector<ColliderComponent*> mTargetColliders;
     
 };

@@ -21,19 +21,22 @@ public:
     void SetRightSpeed(float speed) { mRightSpeed = speed;}
     void SetVerticalSpeed(float speed) { mVerticalSpeed = speed; }
     
-    void SetIsMovable(const float b) { mIsMovable = b; if(!b)Reset(); }
+    void SetIsMovable(const bool b) { mIsMovable = b; if(!b)Reset(); }
     bool GetIsMovable() const { return mIsMovable; }
-
+    
+    void SetIsTurnable(const bool b) { mIsTurnable = b; if(!b)Reset();}
+    bool GetIsTurnable() const { return mIsTurnable; }
     
     void Reset();
 
 
 protected:
-    float mAngularSpeed;     // 回転
-    float mForwardSpeed;     // 前後
-    float mRightSpeed;       // 左右
-    float mVerticalSpeed;    // 上下 （正＝上昇、負＝落下）
+    float mAngularSpeed;    // 回転
+    float mForwardSpeed;    // 前後
+    float mRightSpeed;      // 左右
+    float mVerticalSpeed;   // 上下 （正＝上昇、負＝落下）
     
     bool mIsMovable;        // 移動可能な状態か
+    bool mIsTurnable;       // 回転可能な状態か
 
 };

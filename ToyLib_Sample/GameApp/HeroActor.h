@@ -31,6 +31,7 @@ private:
     enum HeroMotion mAnimID;
     class MoveComponent* mMoveComp;
     class SkeletalMeshComponent* mMeshComp;
+    class ColliderComponent* mCollComp;
     class OrbitCamera* mCameraComp;
     bool mMovable;
 };

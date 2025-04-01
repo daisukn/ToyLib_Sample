@@ -28,6 +28,7 @@ void PhysWorld::Test()
     {
         c->ClearCollidBuffer();
     }
+
     
     // Player vs Enemy
     for (auto c1 : mCollPlayer)
@@ -111,7 +112,6 @@ void PhysWorld::Test()
                 // ヒットしたらコールバック発火
                 c1->Collided(c2);
                 c2->Collided(c1);
-
                 // デバッグ表示などにhitPointを使ってもOK
             }
         }
@@ -121,7 +121,6 @@ void PhysWorld::Test()
     for (auto c1 : mCollPlayer)
     {
         if (!c1->GetDisp()) continue;
-        
         Vector3 totalPush = Vector3::Zero;
         bool collided = false;
 
@@ -153,22 +152,29 @@ void PhysWorld::Test()
     for (auto c1 : mCollEnemy)
     {
         if (!c1->GetDisp()) continue;
+        Vector3 totalPush = Vector3::Zero;
+        bool collided = false;
+        
         for (auto c2 : mCollWall)
         {
             if (c1->GetOwner() == c2->GetOwner()) continue;
+            
             if (!c2->GetDisp()) continue;
             if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
             {
-
                 // 押し戻し処理
                 Vector3 pushDir = ComputePushBackDirection(c1, c2);
-                Vector3 newPos = c1->GetOwner()->GetPosition() + pushDir;
-
-                c1->GetOwner()->SetPosition(newPos);
-
+                totalPush += pushDir;
+                collided = true;
+                
                 c1->Collided(c2);
                 c2->Collided(c1);
             }
+        }
+        if (collided)
+        {
+            Vector3 newPos = c1->GetOwner()->GetPosition() + totalPush;
+            c1->GetOwner()->SetPosition(newPos);
         }
     }
     
@@ -460,41 +466,7 @@ bool PhysWorld::IsCollideBoxOBB_MTV(const OBB* cA, const OBB* cB, MTVResult& mtv
         CompareLengthOBB_MTV(cA, cB, Vector3::Cross(cA->axisZ, cB->axisY), vDistance, mtv) &&
         CompareLengthOBB_MTV(cA, cB, Vector3::Cross(cA->axisZ, cB->axisZ), vDistance, mtv);
 }
-/*
-Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderComponent* b)
-{
-    MTVResult mtv;
 
-    auto obb1 = a->GetBoundingVolume()->GetOBB();
-    auto obb2 = b->GetBoundingVolume()->GetOBB();
-
-    if (!IsCollideBoxOBB_MTV(obb1, obb2, mtv) || !mtv.valid)
-    {
-        // fallback
-        Vector3 delta = a->GetPosition() - b->GetPosition();
-        delta.y = 0.0f;
-        if (delta.LengthSq() > Math::NearZeroEpsilon)
-        {
-            delta.Normalize();
-        }
-        else
-        {
-            delta = Vector3::UnitZ;
-        }
-        return delta * 0.05f;
-    }
-
-    // MTVに基づく押し戻し（Y方向を除外して壁ずり対応）
-    mtv.axis.y = 0.0f;
-    if (mtv.axis.LengthSq() > Math::NearZeroEpsilon)
-    {
-        mtv.axis.Normalize();
-        return mtv.axis * (mtv.depth + 0.01f);
-    }
-
-    return Vector3::Zero;
-}
-*/
 Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderComponent* b)
 {
     MTVResult mtv;
@@ -522,7 +494,7 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
     Vector3 pushAxis = mtv.axis;
     pushAxis.y = 0.0f;
 
-    // 🧠 MTVの向きを修正：a→bの方向でなければ反転
+    // MTVの向きを修正：a→bの方向でなければ反転
     Vector3 dirAB = a->GetPosition() - b->GetPosition();
     if (Vector3::Dot(pushAxis, dirAB) < 0.0f)
     {

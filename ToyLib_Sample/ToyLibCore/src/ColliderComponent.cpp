@@ -25,16 +25,16 @@ ColliderComponent::~ColliderComponent()
 
 void ColliderComponent::Update(float deltaTime)
 {
-    //targetType.clear();
+    //mTargetColliders.clear();
 }
 
 
 // 衝突した
 void ColliderComponent::Collided(ColliderComponent* c)
 {
-    if (std::find(targetColliders.begin(), targetColliders.end(), c) == targetColliders.end())
+    if (std::find(mTargetColliders.begin(), mTargetColliders.end(), c) == mTargetColliders.end())
     {
-        targetColliders.emplace_back(c);
+        mTargetColliders.emplace_back(c);
         mIsCollided = true;
     }
 }

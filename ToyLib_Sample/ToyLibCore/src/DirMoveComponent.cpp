@@ -20,10 +20,8 @@ DirMoveComponent::~DirMoveComponent()
 
 void DirMoveComponent::Update(float deltaTime)
 {
-
-    
     // スピードがセットされていたら
-    if ( !Math::NearZero(mForwardSpeed) )
+    if (!Math::NearZero(mForwardSpeed))
     {
         // 移動マトリックスを設定
         Vector3 pos = mOwnerActor->GetPosition();
@@ -33,11 +31,10 @@ void DirMoveComponent::Update(float deltaTime)
         pos += forward * mForwardSpeed * deltaTime;
 
         mOwnerActor->SetPosition(pos);
-        
     }
     
     // スピードがセットされていたら
-    if ( !Math::NearZero(mRightSpeed) )
+    if (!Math::NearZero(mRightSpeed))
     {
         // 移動マトリックスを設定
         Vector3 pos = mOwnerActor->GetPosition();
@@ -47,10 +44,12 @@ void DirMoveComponent::Update(float deltaTime)
         pos += forward * mRightSpeed * deltaTime;
 
         mOwnerActor->SetPosition(pos);
-        
     }
     
-    AdjustDir();
+    if (mIsTurnable)
+    {
+        AdjustDir();
+    }
 }
 
 void DirMoveComponent::ProcessInput(const struct InputState& state)
@@ -59,7 +58,6 @@ void DirMoveComponent::ProcessInput(const struct InputState& state)
     if(!mIsMovable) return;
     mPrevPosition = mOwnerActor->GetPosition();
 
-    
     mForwardSpeed = mSpeed * state.Controller.GetLeftStick().y;
     mRightSpeed = mSpeed * state.Controller.GetLeftStick().x;
     if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EHeld)
@@ -79,8 +77,6 @@ void DirMoveComponent::ProcessInput(const struct InputState& state)
         mForwardSpeed = -mSpeed;
     }
 
-
-    
 }
 
 void DirMoveComponent::AdjustDir()

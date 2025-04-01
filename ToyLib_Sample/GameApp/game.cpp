@@ -66,8 +66,8 @@ void Game::InitGame()
     towerCollider->SetDisp(true);
     towerCollider->SetColliderType(C_WALL);
     
-    towerActor->SetPosition(Vector3(8, -2, 15));
-    towerActor->SetScale(0.005f);
+    towerActor->SetPosition(Vector3(15, -2, 15));
+    towerActor->SetScale(0.003f);
     q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
     
@@ -77,7 +77,7 @@ void Game::InitGame()
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
     b->SetPosition(Vector3(0,-2,20));
     b->SetScale(0.5);
-    g->SetToonRender(true);
+    g->SetToonRender(false);
     
 
 }
