@@ -29,7 +29,8 @@ public:
     void ActorInput(const struct InputState& state) override;
 private:
     enum HeroMotion mAnimID;
-    class FPSMoveComponent* mMoveComp;
-    class SkeletalMeshComponent* meshComp;
+    class MoveComponent* mMoveComp;
+    class SkeletalMeshComponent* mMeshComp;
+    class OrbitCamera* mCameraComp;
     bool mMovable;
 };

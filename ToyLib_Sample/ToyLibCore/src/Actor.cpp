@@ -10,6 +10,7 @@
 Actor::Actor(Application* a)
 : mStatus(EActive)
 , mPosition(Vector3::Zero)
+, mPrevPosition(Vector3::Zero)
 , mRotation(Quaternion::Identity)
 , mScale(1.0f)
 , mApp(a)
@@ -28,6 +29,7 @@ Actor::~Actor()
 // メインルーチン
 void Actor::Update(float deltaTime)
 {
+
     // EActiveの場合にComponentもUpdate
     if (mStatus == EActive)
     {
@@ -37,8 +39,9 @@ void Actor::Update(float deltaTime)
         UpdateComponents(deltaTime);
         // 座標系更新
         ComputeWorldTransform();
-
+        mPrevPosition = GetPosition();
     }
+
 }
 
 // コンポーネントのUpdateを呼ぶ

@@ -12,20 +12,20 @@ HeroActor::HeroActor(Application* a)
     file >> json;
 
     // --- スケルタルメッシュ ---
-    meshComp = CreateComponent<SkeletalMeshComponent>();
+    mMeshComp = CreateComponent<SkeletalMeshComponent>();
     std::string meshPath;
     if (json.contains("mesh") && json["mesh"].contains("file"))
     {
         JsonHelper::GetString(json["mesh"], "file", meshPath);
     }
-    meshComp->SetMesh(a->GetRenderer()->GetMesh(meshPath));
-    meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
+    mMeshComp->SetMesh(a->GetRenderer()->GetMesh(meshPath));
+    mMeshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
 
     bool useToon = false;
     float outline = 1.00f;
     JsonHelper::GetBool(json["mesh"], "toon_render", useToon);
     JsonHelper::GetFloat(json["mesh"], "toon_outline", outline);
-    meshComp->SetToonRender(useToon, outline);
+    mMeshComp->SetToonRender(useToon, outline);
 
     // --- Transform設定 ---
     Vector3 pos;
@@ -52,7 +52,12 @@ HeroActor::HeroActor(Application* a)
 
     // --- 移動コンポーネント ---
     //mMoveComp = CreateComponent<MoveComponent>();
-    mMoveComp = CreateComponent<FPSMoveComponent>();
+    //mMoveComp = CreateComponent<FPSMoveComponent>();
+    mMoveComp = CreateComponent<DirMoveComponent>();
+    
+    
+    // --- カメラコンポーネント ---
+    mCameraComp = CreateComponent<OrbitCamera>();
 }
 
 HeroActor::~HeroActor()
@@ -70,7 +75,8 @@ void HeroActor::ActorInput(const InputState &state)
     if(mMovable)
     {
         if (mMoveComp->GetForwardSpeed() == 0.0f &&
-            mMoveComp->GetAngularSpeed() == 0.0f )
+            mMoveComp->GetAngularSpeed() == 0.0f &&
+            mMoveComp->GetRightSpeed() == 0.0f)
         {
             mAnimID = H_Stand;
         }
@@ -108,7 +114,7 @@ void HeroActor::ActorInput(const InputState &state)
     }
     else
     {
-        if (!meshComp->GetIsPlaing())
+        if (!mMeshComp->GetIsPlaing())
         {
             mMovable = true;
         }
@@ -117,11 +123,11 @@ void HeroActor::ActorInput(const InputState &state)
 
     if (mAnimID == H_Run || mAnimID == H_Stand)
     {
-        meshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
+        mMeshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
     }
     else
     {
-        meshComp->SetAnimID(mAnimID, PLAY_ONCE);
+        mMeshComp->SetAnimID(mAnimID, PLAY_ONCE);
     }
     mMoveComp->SetIsMovable(mMovable);
     
