@@ -44,7 +44,7 @@
 // --- Camera / View ---
 #include "CameraComponent.h"
 #include "FollowCamera.h"
-#include "OrbitCamera.h"
+#include "OrbitCameraComponent.h"
 
 
 // --- Optional system-level ---

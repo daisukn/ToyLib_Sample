@@ -2,10 +2,10 @@
 #include "CameraComponent.h"
 #include "MathUtils.h"
 
-class OrbitCamera : public CameraComponent
+class OrbitCameraComponent : public CameraComponent
 {
 public:
-	OrbitCamera(class Actor* owner);
+    OrbitCameraComponent(class Actor* owner);
 
 	void Update(float deltaTime) override;
 

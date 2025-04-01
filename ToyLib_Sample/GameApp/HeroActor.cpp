@@ -57,7 +57,7 @@ HeroActor::HeroActor(Application* a)
     
     
     // --- カメラコンポーネント ---
-    mCameraComp = CreateComponent<OrbitCamera>();
+    mCameraComp = CreateComponent<OrbitCameraComponent>();
 }
 
 HeroActor::~HeroActor()

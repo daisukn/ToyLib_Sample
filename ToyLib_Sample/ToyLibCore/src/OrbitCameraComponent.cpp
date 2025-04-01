@@ -1,9 +1,9 @@
-#include "OrbitCamera.h"
+#include "OrbitCameraComponent.h"
 #include "Actor.h"
 #include "ColliderComponent.h"
 #include "InputSystem.h"
 
-OrbitCamera::OrbitCamera(Actor* actor)
+OrbitCameraComponent::OrbitCameraComponent(Actor* actor)
     : CameraComponent(actor)
     , mOffset(-0.0f, 2.0f, -10.0f)
     , mUpVector(Vector3::UnitY)
@@ -12,7 +12,7 @@ OrbitCamera::OrbitCamera(Actor* actor)
 {
 }
 
-void OrbitCamera::ProcessInput( const struct InputState& state )
+void OrbitCameraComponent::ProcessInput( const struct InputState& state )
 {
     float angularSpeed = 2.0f;
     
@@ -38,10 +38,12 @@ void OrbitCamera::ProcessInput( const struct InputState& state )
         ChangeHeight(-0.2);
     }
     
+
 }
 
-void OrbitCamera::Update(float deltaTime)
+void OrbitCameraComponent::Update(float deltaTime)
 {
+    
 	CameraComponent::Update(deltaTime);
 	// ヨー回転のクォータニオン
 	Quaternion yaw(Vector3::UnitY, mYawSpeed * deltaTime);
@@ -69,7 +71,7 @@ void OrbitCamera::Update(float deltaTime)
     
     mOffset.y += mChangeOffset;
     
-    // 地表に合わせる
+    // 縦移動の範囲を絞る
     if(cameraPos.y < 0)
     {
         cameraPos.y = 0;
@@ -84,7 +86,8 @@ void OrbitCamera::Update(float deltaTime)
         cameraPos.y = 10;
         if( mChangeOffset > 10.0f)
         {
-            mOffset.y += mChangeOffset;
+            mOffset.y -= mChangeOffset;
+            mOffset.y = Math::Clamp(mOffset.y, -9.0f, 9.0f);
         }
         
     }

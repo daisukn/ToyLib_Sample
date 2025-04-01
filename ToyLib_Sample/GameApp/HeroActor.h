@@ -32,6 +32,6 @@ private:
     class MoveComponent* mMoveComp;
     class SkeletalMeshComponent* mMeshComp;
     class ColliderComponent* mCollComp;
-    class OrbitCamera* mCameraComp;
+    class CameraComponent* mCameraComp;
     bool mMovable;
 };
