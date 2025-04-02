@@ -11,11 +11,12 @@ ColliderComponent::ColliderComponent(Actor* a)
 : Component(a)
 , mType(C_NONE)
 , mIsCollided(false)
-, mIsDisp(false)
+, mIsDisp(true)
 //, targetType(C_NONE)
 {
     mBoundingVolume = mOwnerActor->CreateComponent<BoundingVolumeComponent>();
     mOwnerActor->GetApp()->GetPhysWorld()->AddCollider(this);
+
 }
 
 ColliderComponent::~ColliderComponent()

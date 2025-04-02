@@ -71,6 +71,19 @@ void Game::InitGame()
     q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
     
+    
+    // 焚き火
+    auto fireActor = CreateActor<Actor>();
+    auto fireMesh = fireActor->CreateComponent<MeshComponent>();
+    fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
+    
+    fireActor->SetPosition(Vector3(-15, -2, 15));
+    fireActor->SetScale(0.03f);
+    auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
+    fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
+    fireCollider->SetDisp(true);
+    fireCollider->SetColliderType(C_WALL);
+    
     // 地面
     auto b = CreateActor<Actor>();
     auto g = b->CreateComponent<MeshComponent>();

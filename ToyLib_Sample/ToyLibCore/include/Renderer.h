@@ -100,7 +100,7 @@ public:
     class Mesh* GetMesh(const std::string& fileName, bool isRightHanded = false);
     // テクスチャ登録
     class Texture* GetTexture(const std::string& fileName);
-
+    class Texture* GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize);
 
     // データ解放
     void UnloadData();

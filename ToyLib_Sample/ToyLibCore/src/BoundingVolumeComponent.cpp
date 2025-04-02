@@ -96,7 +96,40 @@ void BoundingVolumeComponent::ComputeBoundingVolume(const std::vector<VertexArra
 // ポリゴンデータを生成
 void BoundingVolumeComponent::CreatePolygons()
 {
+    
+    Vector3 V0(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
+    Vector3 V1(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->min.z);
+    Vector3 V2(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->max.z);
+    Vector3 V3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
+    Vector3 V4(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z);
+    Vector3 V5(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
+    Vector3 V6(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
+    Vector3 V7(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->max.z);
 
+    // Z- 面（前）
+    mPolygons[0] = { V0, V4, V5 };
+    mPolygons[1] = { V0, V5, V1 };
+
+    // X+ 面（右）
+    mPolygons[2] = { V1, V5, V6 };
+    mPolygons[3] = { V1, V6, V2 };
+
+    // Z+ 面（背）
+    mPolygons[4] = { V2, V6, V7 };
+    mPolygons[5] = { V2, V7, V3 };
+
+    // X- 面（左）
+    mPolygons[6] = { V3, V7, V4 };
+    mPolygons[7] = { V3, V4, V0 };
+
+    // Y+ 面（上）
+    mPolygons[8] = { V4, V7, V6 };
+    mPolygons[9] = { V4, V6, V5 };
+
+    // Y- 面（下）
+    mPolygons[10] = { V3, V0, V1 };
+    mPolygons[11] = { V3, V1, V2 };
+/*
     // 0, 1, 3
     mPolygons[0].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
     mPolygons[0].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z);
@@ -122,7 +155,7 @@ void BoundingVolumeComponent::CreatePolygons()
     mPolygons[4].b = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->max.z);
     mPolygons[4].c = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
     
-    // 6, 7, 5
+    // 3, 7, 6
     mPolygons[5].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
     mPolygons[5].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->max.z);
     mPolygons[5].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
@@ -130,7 +163,7 @@ void BoundingVolumeComponent::CreatePolygons()
     // 0, 6, 7
     mPolygons[6].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
     mPolygons[6].b = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    mPolygons[6].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
+    mPolygons[6].c = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->max.z);
     
     // 7. 1. 0
     mPolygons[7].a = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
@@ -142,11 +175,11 @@ void BoundingVolumeComponent::CreatePolygons()
     mPolygons[8].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z);
     mPolygons[8].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
     
-    // 7, 5, 3
+    // 7, 6, 5
     mPolygons[9].a = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->max.z);
     mPolygons[9].b = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
     mPolygons[9].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
-
+    
     // 2, 4, 6
     mPolygons[10].a = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->min.z);
     mPolygons[10].b = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->max.z);
@@ -156,6 +189,7 @@ void BoundingVolumeComponent::CreatePolygons()
     mPolygons[11].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
     mPolygons[11].b = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
     mPolygons[11].c = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->min.z);
+*/
 }
 
 
@@ -237,10 +271,6 @@ void BoundingVolumeComponent::Draw(Shader* shader)
     
     // WorldマトリックスをShaderに送る
     shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
-
-    // SpecPowerを送る
-    shader->SetFloatUniform("uSpecPower", 1);
-
     mVertexArray->SetActive();
     glDrawElements(GL_LINE_STRIP, 36, GL_UNSIGNED_INT, nullptr);
 }

@@ -12,7 +12,10 @@ public:
 	
     // テクスチャ読み込み（SDL2_image）
 	bool Load(const std::string& fileName);
-    
+    // 埋め込みテクスチャ読み込み
+    bool LoadFromMemory(const void* data, int size);
+    bool LoadFromMemory(const void* data, int width, int height);
+
     void CreateForRendering(int w, int h, unsigned int format);
     
     // 削除

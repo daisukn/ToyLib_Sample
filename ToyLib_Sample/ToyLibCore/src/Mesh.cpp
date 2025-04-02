@@ -597,11 +597,37 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
         aiString path;
         if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
         {
-            std::string textureFile = ASSETS_PATH + std::string(path.C_Str());
-            Texture* tex = r->GetTexture(textureFile);
-            if (tex)
+            std::string texPath = path.C_Str();
+            
+            if (texPath[0] == '*') // 埋め込みテクスチャ
             {
-                mat->SetDiffuseMap(std::shared_ptr<Texture>(tex, [](Texture*) {})); // 非所有共有
+                int index = std::atoi(texPath.c_str() + 1);
+                if (index >= 0 && index < (int)mScene->mNumTextures)
+                {
+                    aiTexture* aiTex = mScene->mTextures[index];
+                    std::string key = "EMBED_" + std::to_string(index);
+                    
+                    const uint8_t* imageData = reinterpret_cast<const uint8_t*>(aiTex->pcData);
+                    size_t imageSize = (aiTex->mHeight == 0)
+                    ? aiTex->mWidth // compressed
+                    : aiTex->mWidth * aiTex->mHeight * 4; // uncompressed (RGBA8888)
+                    
+                    Texture* tex = r->GetEmbeddedTexture(key, imageData, imageSize);
+                    if (tex)
+                    {
+                        mat->SetDiffuseMap(std::shared_ptr<Texture>(tex, [](Texture*) {}));
+                    }
+                }
+            }
+            else
+            {
+                // 通常のファイルから読み込む
+                std::string textureFile = ASSETS_PATH + texPath;
+                Texture* tex = r->GetTexture(textureFile);
+                if (tex)
+                {
+                    mat->SetDiffuseMap(std::shared_ptr<Texture>(tex, [](Texture*) {}));
+                }
             }
         }
 

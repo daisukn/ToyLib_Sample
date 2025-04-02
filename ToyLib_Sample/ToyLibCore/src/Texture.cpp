@@ -71,6 +71,62 @@ bool Texture::Load(const std::string& fileName)
     SDL_FreeSurface(convertedImage);
     return true;
 }
+
+bool Texture::LoadFromMemory(const void* data, int size)
+{
+    SDL_RWops* rw = SDL_RWFromConstMem(data, size);
+    if (!rw)
+    {
+        SDL_Log("Failed to create RWops from memory: %s", SDL_GetError());
+        return false;
+    }
+
+    SDL_Surface* image = IMG_Load_RW(rw, 1); // 1: SDLにRWopsも解放させる
+    if (!image)
+    {
+        SDL_Log("Failed to load image from memory: %s", IMG_GetError());
+        return false;
+    }
+
+    // OpenGL テクスチャ作成
+    glGenTextures(1, &mTextureID);
+    glBindTexture(GL_TEXTURE_2D, mTextureID);
+
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA8,
+        image->w, image->h, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE, image->pixels
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    mWidth = image->w;
+    mHeight = image->h;
+
+    SDL_FreeSurface(image);
+    return true;
+}
+bool Texture::LoadFromMemory(const void* data, int width, int height)
+{
+    glGenTextures(1, &mTextureID);
+    glBindTexture(GL_TEXTURE_2D, mTextureID);
+
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA,
+        width, height, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE, data
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    mWidth = width;
+    mHeight = height;
+
+    return true;
+}
+
 // レンダリング用テクスチャを生成
 void Texture::CreateForRendering(int w, int h, unsigned int format)
 {

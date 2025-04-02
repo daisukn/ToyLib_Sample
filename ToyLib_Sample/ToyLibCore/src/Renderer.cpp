@@ -312,7 +312,6 @@ void Renderer::DrawEffect()
     // エフェクトメッシュ描画
     mMeshShader->SetActive();
     mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    // Update lighting uniforms
     SetLightUniforms(mMeshShader.get());
     for (auto mesh : mEffectMesh)
     {
@@ -542,6 +541,33 @@ Texture* Renderer::GetTexture(const std::string &fileName)
             tex = nullptr;
         }
     }
+    return tex;
+}
+
+// 埋め込みテクスチャ
+Texture* Renderer::GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize)
+{
+    Texture* tex = nullptr;
+
+    auto iter = mTextures.find(nameKey);
+    if (iter != mTextures.end())
+    {
+        tex = iter->second.get();
+    }
+    else
+    {
+        std::unique_ptr<Texture> t = std::make_unique<Texture>();
+        if (t->LoadFromMemory(data, static_cast<unsigned int>(dataSize)))
+        {
+            tex = t.get();
+            mTextures.emplace(nameKey, std::move(t));
+        }
+        else
+        {
+            tex = nullptr;
+        }
+    }
+
     return tex;
 }
 
@@ -785,13 +811,16 @@ void Renderer::RenderShadowMap()
     glBindFramebuffer(GL_FRAMEBUFFER, mShadowFBO);
     glViewport(0, 0, static_cast<GLsizei>(mShadowFBOWidth), static_cast<GLsizei>(mShadowFBOHeight));
     
-    glEnable(GL_DEPTH_TEST);  // ← これ必要！！
+    glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // ビュー・プロジェクション行列をライトから構築
-    //Vector3 lightPos = Vector3(50, 50, -30);
-    //Vector3 targetPos = Vector3(0, 0, 10);
-    Matrix4 lightViewMatrix = Matrix4::CreateLookAt(mDirLightPosition, mDirLightTarget, Vector3::UnitY);
+    // ビュー・プロジェクション行列
+    // カメラ追従
+    Vector3 camCenter = mInvView.GetTranslation() + mInvView.GetZAxis() * 30.0f;
+    Vector3 lightDir = Vector3::Normalize(mDirLight.Direction);
+    Vector3 lightPos = camCenter - lightDir * 50.0f;
+    
+    Matrix4 lightViewMatrix = Matrix4::CreateLookAt(lightPos, camCenter, Vector3::UnitY);
     Matrix4 lightProjMatrix = Matrix4::CreateOrtho(mShadowOrthoWidth, mShadowOrthoHeight, mShadowNear, mShadowFar);
     mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
     // スキンメッシュのシャドウ描画
