@@ -5,11 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
 
-# Assimpのパスを追加
-#set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/usr/local/lib/cmake/assimp-5.4")
-
 find_package(OpenGL REQUIRED)
-
 
 # ソースファイル収集
 file(GLOB_RECURSE SOURCES
