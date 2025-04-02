@@ -8,6 +8,7 @@
 #include "SkeletalMeshComponent.h"
 #include "ParticleComponent.h"
 #include "BillboardComponent.h"
+#include "VisualComponent.h"
 
 #include "WireframeComponent.h"
 
@@ -129,6 +130,26 @@ void::Renderer::SetClearColor(const Vector3 color)
 // 描画処理
 void Renderer::Draw()
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    RenderShadowMap();
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    DrawVisualLayer(VisualLayer::Background2D);
+    DrawMesh();
+    DrawVisualLayer(VisualLayer::Effect3D);
+    DrawDebugger();
+    DrawVisualLayer(VisualLayer::UI);
+
+    SDL_GL_SwapWindow(mWindow);
+}
+/*
+void Renderer::Draw()
+{
     
     // シャドウマップレンダー
     RenderShadowMap();
@@ -139,7 +160,7 @@ void Renderer::Draw()
     glFrontFace(GL_CCW); // 左手座標系
 
     
-    /* 描画処理 メッシュ、スプライト*/
+    // 描画処理 メッシュ、スプライト
     // アルファブレンディングを有効化
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -151,16 +172,17 @@ void Renderer::Draw()
     DrawDebugger();
     DrawParticle();
     DrawBillboard();
-    DrawSprite();
+    //DrawSprite();
 
 
     SDL_GL_SwapWindow(mWindow);
 
 }
-
+*/
 // 背景オブジェクトの描画
 void Renderer::DrawBackGround()
 {
+    /*
     // 背景スプライト
     glDisable(GL_DEPTH_TEST);
     mSpriteShader->SetActive();
@@ -169,7 +191,7 @@ void Renderer::DrawBackGround()
         sprite->Draw(mSpriteShader.get());
     }
     glEnable(GL_DEPTH_TEST);
- 
+ */
     
     
     // 背景用メッシュ描画
@@ -190,10 +212,10 @@ void Renderer::DrawBackGround()
 // メッシュの描画
 void Renderer::DrawMesh()
 {
-    // 共通シャドウマップ設定（ユニット1）
-    glActiveTexture(GL_TEXTURE1);
-    mShadowMapTexture->SetActive(); // ← Textureクラスの SetActive()
-    glActiveTexture(GL_TEXTURE0);   // メインテクスチャ用に戻す
+
+    mShadowMapTexture->SetActive(1); // 共通シャドウマップ用テクスチャ
+    //mShadowMapTexture->SetActive(0); // 通常テクスチャ
+
 
     // 通常メッシュ描画（スキンなし）
     for (auto mc : mMeshComps)
@@ -232,6 +254,8 @@ void Renderer::DrawMesh()
 
         sk->Draw(mSkinnedShader.get());
     }
+    
+    glActiveTexture(GL_TEXTURE0);
 }
 
 // パーティクル
@@ -274,7 +298,7 @@ void Renderer::DrawBillboard()
     glDepthMask(GL_TRUE);
     
 }
-
+/*
 void Renderer::DrawSprite()
 {
     // スプライト処理
@@ -289,6 +313,7 @@ void Renderer::DrawSprite()
     }
     glEnable(GL_DEPTH_TEST);
 }
+ */
 
 void Renderer::DrawDebugger()
 {
@@ -461,7 +486,7 @@ void Renderer::SetLightUniforms(Shader* shader)
     shader->SetFloatUniform("uFoginfo.minDist", mFogMinDist);
     shader->SetVectorUniform("uFoginfo.color", mFogColor);
 }
-
+/*
 // スプライトコンポーネントの登録
 void Renderer::AddSprite(SpriteComponent* sprite)
 {
@@ -517,6 +542,52 @@ void Renderer::RemoveBackGroundSprite(SpriteComponent* sprite)
         mBgSpriteComps.erase(iter);
     }
 }
+*/
+
+void Renderer::AddVisualComp(VisualComponent* comp)
+{
+    auto iter = mVisualComps.begin();
+    for (; iter != mVisualComps.end(); ++iter)
+    {
+        if (comp->GetDrawOrder() < (*iter)->GetDrawOrder())
+            break;
+    }
+    mVisualComps.insert(iter, comp);
+}
+
+void Renderer::RemoveVisualComp(VisualComponent* comp)
+{
+    auto iter = std::find(mVisualComps.begin(), mVisualComps.end(), comp);
+    if (iter != mVisualComps.end())
+        mVisualComps.erase(iter);
+}
+
+void Renderer::DrawVisualLayer(VisualLayer layer)
+{
+    
+    if (layer == VisualLayer::UI || layer == VisualLayer::Background2D)
+        glDisable(GL_DEPTH_TEST);
+    else
+        glEnable(GL_DEPTH_TEST);
+
+    
+    mSpriteVerts->SetActive();       // VAO
+    mSpriteShader->SetActive();      // Shader
+    mSpriteShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    for (auto comp : mVisualComps)
+    {
+        if (comp->IsVisible() && comp->GetLayer() == layer)
+        {
+            comp->Draw(mSpriteShader.get());
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST); // 念のため戻す
+}
+
+
 
 // テクスチャ取り出し
 Texture* Renderer::GetTexture(const std::string &fileName)

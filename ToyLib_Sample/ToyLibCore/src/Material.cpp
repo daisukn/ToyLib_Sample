@@ -27,8 +27,7 @@ void Material::BindToShader(Shader* shader, int textureUnit) const
     // テクスチャ設定（基本は1枚のみ）
     if (mDiffuseMap)
     {
-        glActiveTexture(GL_TEXTURE0 + textureUnit);
-        mDiffuseMap->SetActive();
+        mDiffuseMap->SetActive(textureUnit);
         shader->SetTextureUniform("uTexture", textureUnit);
     }
 }

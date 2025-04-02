@@ -8,6 +8,7 @@ public:
     ~Game();
 protected:
     void InitGame() override;
+    void LoadData();
     void UpdateGame(float deltaTime) override;
     void ShutdownGame() override;
 };

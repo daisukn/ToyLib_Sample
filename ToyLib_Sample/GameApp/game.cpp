@@ -18,39 +18,51 @@ Game::~Game()
 
 void Game::InitGame()
 {
+    LoadData();
+    auto spActor = CreateActor<Actor>();
+    spActor->SetPosition(Vector3(10.0f, 10.0f, 0.0f));
+    spActor->SetScale(1);
+    auto spSprite = spActor->CreateComponent<SpriteComponent>(100, VisualLayer::UI);
+    spSprite->SetTexture(GetRenderer()->GetTexture("Assets/HealthBar.png"));
+    spSprite->SetVisible(true);
+    
 
+}
+
+void Game::LoadData()
+{
     
     auto hero = CreateActor<HeroActor>();
     
     // stan
-    auto a = CreateActor<Actor>();
-    auto mc = a->CreateComponent<SkeletalMeshComponent>();
-    auto cc = a->CreateComponent<ColliderComponent>();
-    mc->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf", true));
-    mc->SetAnimID(6, PLAY_CYCLIC);
-    mc->SetToonRender(true, 1.015f);
+    auto stanActor = CreateActor<Actor>();
+    auto stanMesh = stanActor->CreateComponent<SkeletalMeshComponent>();
+    auto stanCllider = stanActor->CreateComponent<ColliderComponent>();
+    stanMesh->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf", true));
+    stanMesh->SetAnimID(6, PLAY_CYCLIC);
+    stanMesh->SetToonRender(true, 1.015f);
     
-    a->SetPosition(Vector3(-3,-2,10));
-    a->SetScale(0.5f);
+    stanActor->SetPosition(Vector3(-3,-2,10));
+    stanActor->SetScale(0.5f);
     Quaternion q = Quaternion(Vector3::UnitY, Math::ToRadians(-30));
-    a->SetRotation(q);
+    stanActor->SetRotation(q);
     
-    cc->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
-    cc->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
-    cc->GetBoundingVolume()->CreateVArray();
-    cc->SetDisp(true);
-    cc->SetColliderType(C_WALL);
+    stanCllider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
+    stanCllider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
+    stanCllider->GetBoundingVolume()->CreateVArray();
+    stanCllider->SetDisp(true);
+    stanCllider->SetColliderType(C_WALL);
     
-    auto cc2 = a->CreateComponent<ColliderComponent>();
-    cc2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
-    cc2->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
-    cc2->SetDisp(true);
-    cc2->SetColliderType(C_ENEMY);
+    auto stanCllider2 = stanActor->CreateComponent<ColliderComponent>();
+    stanCllider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
+    stanCllider2->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
+    stanCllider2->SetDisp(true);
+    stanCllider2->SetColliderType(C_ENEMY);
 
     
-    auto move = a->CreateComponent<FollowMoveComponent>();
-    move->SetTarget(hero);
-    move->SetFollowSpeed(1);
+    auto stanMove = stanActor->CreateComponent<FollowMoveComponent>();
+    stanMove->SetTarget(hero);
+    stanMove->SetFollowSpeed(1);
 
     
     
@@ -97,7 +109,8 @@ void Game::InitGame()
 
 void Game::UpdateGame(float deltaTime)
 {
-    
+    auto a = GetRenderer()->GetTexture("Assets/Stan_Texture.png");
+    std::cout << a->GetTextureID() << std::endl;
 }
 
 void Game::ShutdownGame()

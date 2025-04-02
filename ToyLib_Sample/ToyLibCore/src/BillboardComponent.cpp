@@ -5,69 +5,47 @@
 #include "Actor.h"
 #include "Renderer.h"
 
+#include <GL/glew.h>
+
 BillboardComponent::BillboardComponent(class Actor* a, int order)
-: Component(a)
-, mDrawOrder(order)
-, mScale(1.0f)
-, mIsBlendAdd(false)
-, mIsVisible(false)
+    : VisualComponent(a, VisualLayer::Effect3D)
+    , mScale(1.0f)
 {
-    mOwnerActor->GetApp()->GetRenderer()->AddBillboardComp(this);
+    mDrawOrder = order;
+    mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
 }
 
 BillboardComponent::~BillboardComponent()
 {
-    mOwnerActor->GetApp()->GetRenderer()->RemoveBillboardComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->RemoveVisualComp(this);
 }
-
 
 void BillboardComponent::Draw(Shader* shader)
 {
-    if(!mIsVisible) return;
-    
-    if (mTexture)
+    if (!mIsVisible || !mTexture) return;
+
+    if (mIsBlendAdd)
     {
-        if (mIsBlendAdd)
-        {
-            glBlendFunc(GL_ONE, GL_ONE);
-        }
-        
-        // Ownerのマトリックスを取得（Positionでも良いかもしれない。）
-        Matrix4 mat = mOwnerActor->GetWorldTransform();
-        
-        // ビルボーディング
-        // ビューマトリックスの逆行列の座標を差し替えて流用
-        Matrix4 invVew = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
-        // 座標差し替え
-        invVew.mat[3][0] = mat.mat[3][0];
-        invVew.mat[3][1] = mat.mat[3][1];
-        invVew.mat[3][2] = mat.mat[3][2];
-        
-        // スケールを復元
-        Matrix4 scaleMat = Matrix4::CreateScale(mTexture->GetWidth() * mScale, mTexture->GetHeight() * mScale, 1);
-        Matrix4 world = scaleMat * Matrix4::CreateScale(mOwnerActor->GetScale()) * invVew;
-
-        // シェーダー に送る
-        shader->SetMatrixUniform("uWorldTransform", world);
-        mTexture->SetActive();
-        
-
-        shader->SetVectorUniform("uPosition", Vector3(0,0,0));
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-        if (mIsBlendAdd)
-        {
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
+        glBlendFunc(GL_ONE, GL_ONE);
     }
-}
 
-void BillboardComponent::SetTexture(Texture* tex)
-{
-    mTexture = tex;
-}
+    Matrix4 mat = mOwnerActor->GetWorldTransform();
+    Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
+    invView.mat[3][0] = mat.mat[3][0];
+    invView.mat[3][1] = mat.mat[3][1];
+    invView.mat[3][2] = mat.mat[3][2];
 
-void BillboardComponent::Update(float deltaTime)
-{
-    
+    Matrix4 scaleMat = Matrix4::CreateScale(mTexture->GetWidth() * mScale, mTexture->GetHeight() * mScale, 1);
+    Matrix4 world = scaleMat * Matrix4::CreateScale(mOwnerActor->GetScale()) * invView;
+
+    shader->SetMatrixUniform("uWorldTransform", world);
+    mTexture->SetActive(0);
+    shader->SetVectorUniform("uPosition", Vector3(0, 0, 0));
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    if (mIsBlendAdd)
+    {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 }

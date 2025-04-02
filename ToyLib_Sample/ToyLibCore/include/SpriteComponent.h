@@ -1,7 +1,24 @@
 #pragma once
 
-#include "Component.h"
+#include "VisualComponent.h"
 
+class SpriteComponent : public VisualComponent
+{
+public:
+    SpriteComponent(class Actor* a, int drawOrder, VisualLayer layer = VisualLayer::UI);
+    ~SpriteComponent();
+
+    void Draw(class Shader* shader) override;
+
+    void SetScale(float w, float h) { mScaleWidth = w; mScaleHeight = h; }
+    void SetTexture(class Texture* tex) override;
+
+private:
+    float mScaleWidth, mScaleHeight;
+    int mTexWidth, mTexHeight;
+};
+
+/*
 // スプライト管理 Componentを継承
 class SpriteComponent : public Component
 {
@@ -41,5 +58,5 @@ protected:
     bool mIsBlendAdd;
 
 };
-
+*/
 

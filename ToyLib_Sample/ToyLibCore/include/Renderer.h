@@ -18,6 +18,12 @@ struct DirectionalLight
     Vector3 SpecColor;      // 反射色
 };
 
+enum class VisualLayer
+{
+    Background2D,
+    Effect3D,
+    UI
+};
 
 // 描画エンジン
 class Renderer
@@ -36,7 +42,7 @@ public:
     void DrawMesh();
     void DrawParticle();
     void DrawBillboard();
-    void DrawSprite();
+    //void DrawSprite();
     void DrawDebugger();
     void DrawEffect();
     // 終了
@@ -66,12 +72,17 @@ public:
     float GetScreenHeight() const { return mScreenHeight; }
       
     
+    // Visualコンポーネント
+    void AddVisualComp(class VisualComponent* comp);
+    void RemoveVisualComp(class VisualComponent* comp);
+    void DrawVisualLayer(VisualLayer layer);
+    
     // スプライトコンポーネント登録・削除
-    void AddSprite(class SpriteComponent* sprite);
-    void RemoveSprite(class SpriteComponent* sprite);
+    //void AddSprite(class SpriteComponent* sprite);
+    //void RemoveSprite(class SpriteComponent* sprite);
     // 背景スプライトコンポーネント登録・削除
-    void AddBackGroundSprite(class SpriteComponent* sprite);
-    void RemoveBackGroundSprite(class SpriteComponent* sprite);
+    //void AddBackGroundSprite(class SpriteComponent* sprite);
+    //void RemoveBackGroundSprite(class SpriteComponent* sprite);
     // メッシュコンポーネント登録・削除
     void AddMeshComp(class MeshComponent* mesh);
     void RemoveMeshComp(class MeshComponent* mesh);
@@ -219,8 +230,9 @@ private:
     std::unordered_map<std::string, std::unique_ptr<class Mesh>> mMeshes;
 
     // コンポーネント
-    std::vector<class SpriteComponent*> mSpriteComps;
-    std::vector<class SpriteComponent*> mBgSpriteComps;
+    std::vector<class VisualComponent*> mVisualComps;
+    //std::vector<class SpriteComponent*> mSpriteComps;
+    //std::vector<class SpriteComponent*> mBgSpriteComps;
     std::vector<class MeshComponent*> mMeshComps;
     std::vector<class MeshComponent*> mBgMesh;
     std::vector<class MeshComponent*> mEffectMesh;

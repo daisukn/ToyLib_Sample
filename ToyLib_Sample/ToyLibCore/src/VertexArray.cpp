@@ -142,7 +142,7 @@ VertexArray::VertexArray(const float* verts,unsigned int i_verts,
 
     
     // 頂点バッファー
-    glGenBuffers(1, mVertexBuffer);
+    glGenBuffers(1, &mVertexBuffer[0]);
     glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer[0]);
     glBufferData(GL_ARRAY_BUFFER, mNumVerts * vertexSize, verts, GL_STATIC_DRAW);
 

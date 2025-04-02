@@ -25,6 +25,7 @@
 // --- Visual Components ---
 #include "MeshComponent.h"
 #include "SkeletalMeshComponent.h"
+#include "VisualComponent.h"
 #include "SpriteComponent.h"
 #include "BillboardComponent.h"
 #include "ParticleComponent.h"

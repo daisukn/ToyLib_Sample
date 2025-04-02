@@ -1,17 +1,18 @@
 #pragma once
 
 #include "Component.h"
+#include "Renderer.h"
 
 
 class VisualComponent : public Component
 {
 public:
-    VisualComponent(class Actor* owner);
+    VisualComponent(class Actor* owner, VisualLayer layer = VisualLayer::Effect3D);
     virtual ~VisualComponent() {}
 
     virtual void Draw(class Shader* shader) = 0;
 
-    void SetTexture(class Texture* tex) { mTexture = tex; }
+    virtual void SetTexture(class Texture* tex) { mTexture = tex; }
     class Texture* GetTexture() const { return mTexture; }
 
     void SetVisible(bool v) { mIsVisible = v; }
@@ -20,9 +21,16 @@ public:
     void SetBlendAdd(bool b) { mIsBlendAdd = b; }
     bool IsBlendAdd() const { return mIsBlendAdd; }
 
+    void SetLayer(VisualLayer layer) { mLayer = layer; }
+    VisualLayer GetLayer() const { return mLayer; }
+
+    int GetDrawOrder() const { return mDrawOrder; }
+    void SetDrawOrder(int order) { mDrawOrder = order; }
+
 protected:
     class Texture* mTexture;
     bool mIsVisible;
     bool mIsBlendAdd;
+    VisualLayer mLayer;
+    int mDrawOrder;
 };
-
