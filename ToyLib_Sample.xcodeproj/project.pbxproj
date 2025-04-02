@@ -37,9 +37,22 @@
 		7EE0295D2D90A9120048EF67 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7E2D04A72D9D9F9C008B6393 /* Exceptions for "ToyLib_Sample" folder in "ToyLib_Sample" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ToyLibCore/src/VisualComponent.cpp,
+			);
+			target = 7EE028EE2D90A8200048EF67 /* ToyLib_Sample */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7EE028F12D90A8200048EF67 /* ToyLib_Sample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7E2D04A72D9D9F9C008B6393 /* Exceptions for "ToyLib_Sample" folder in "ToyLib_Sample" target */,
+			);
 			path = ToyLib_Sample;
 			sourceTree = "<group>";
 		};
