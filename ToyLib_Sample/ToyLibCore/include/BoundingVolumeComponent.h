@@ -27,7 +27,6 @@ struct OBB
     {
         OBB::min = src.min;
         OBB::max = src.max;
-        
         OBB::pos = src.pos;
         OBB::radius = src.radius;
         OBB::rot = src.rot;
