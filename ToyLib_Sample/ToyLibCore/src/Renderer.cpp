@@ -534,7 +534,8 @@ Texture* Renderer::GetEmbeddedTexture(const std::string& nameKey, const uint8_t*
 //スプライト用ポリゴン
 void Renderer::CreateSpriteVerts()
 {
-    const float vertices[] = {
+    const float vertices[] =
+    {
         -0.5f, 0.5f, 0.f, 0.f, 0.f, 0.0f, 0.f, 0.f, // top left
         0.5f, 0.5f, 0.f, 0.f, 0.f, 0.0f, 1.f, 0.f, // top right
         0.5f,-0.5f, 0.f, 0.f, 0.f, 0.0f, 1.f, 1.f, // bottom right
@@ -542,7 +543,8 @@ void Renderer::CreateSpriteVerts()
     };
     
 
-    const unsigned int indices[] = {
+    const unsigned int indices[] =
+    {
         2, 1, 0,
         0, 3, 2
     };

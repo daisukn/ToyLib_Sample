@@ -634,28 +634,7 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
         mMaterials.push_back(mat);
     }
     
-/*
-    for (unsigned int cnt = 0; cnt < mScene->mNumMaterials; cnt++){
-        aiMaterial* pMaterial = mScene->mMaterials[cnt];
-        auto mat = std::make_shared<Material>();
-        
-        // Dffuseテクスチャ
-        aiString Path;
-        Texture* t;
-        if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
-        {
-            std::string texturefilename = Path.data;
-            // テクスチャ読み込み
-            t = r->GetTexture(ASSETS_PATH + texturefilename);
-        }
-        else
-        {
-            t = r->GetTexture(ASSETS_PATH + "Default.png");
-        }
-        mTextures.push_back(t);
-        
-    }
-    */
+
     
     return true;
 }
