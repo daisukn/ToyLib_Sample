@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 
 BillboardComponent::BillboardComponent(class Actor* a, int drawOrder)
-: VisualComponent(a, drawOrder, VisualLayer::Effect3D)
+: VisualComponent(a, drawOrder, VisualLayer::Object3D)
 , mScale(1.0f)
 {
     mDrawOrder = drawOrder;

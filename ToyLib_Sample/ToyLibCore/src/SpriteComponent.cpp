@@ -34,10 +34,9 @@ void SpriteComponent::Draw(Shader* shader)
 {
 
     // 表示可能かチェック
-    if (!mIsVisible || mTexture == nullptr)
-        return;
-    SDL_Log("SpriteComponent TextureID: %u", mTexture->GetTextureID());
-    SDL_Log("Texture Size: %d x %d", mTexture->GetWidth(), mTexture->GetHeight());
+    if (!mIsVisible || mTexture == nullptr) return;
+    //SDL_Log("SpriteComponent TextureID: %u", mTexture->GetTextureID());
+    //SDL_Log("Texture Size: %d x %d", mTexture->GetWidth(), mTexture->GetHeight());
     
     
     glDisable(GL_DEPTH_TEST);           // UIなどZ不要な場合

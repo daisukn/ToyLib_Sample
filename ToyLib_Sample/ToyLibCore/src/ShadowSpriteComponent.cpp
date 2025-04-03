@@ -12,7 +12,7 @@ ShadowSpriteComponent::ShadowSpriteComponent(Actor* owner, int drawOrder)
     , mScaleWidth(1.0f)
     , mScaleHeight(1.0f)
 {
-    mLayer = VisualLayer::Effect3D; // 足元に描く
+    mLayer = VisualLayer::Object3D; // 足元に描く
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::ShadowSprite;
 }

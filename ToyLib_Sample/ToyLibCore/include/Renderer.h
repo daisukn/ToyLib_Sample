@@ -22,6 +22,7 @@ enum class VisualLayer
 {
     Background2D,
     Effect3D,
+    Object3D,
     UI
 };
 

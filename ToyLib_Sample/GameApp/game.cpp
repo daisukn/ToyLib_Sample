@@ -36,14 +36,23 @@ void Game::InitGame()
     treeBillboard->SetVisible(true);
 
     auto shadow = treeActor->CreateComponent<ShadowSpriteComponent>(10);
-    Texture* shadowTex = GetRenderer()->GetTexture("Assets/shadowcircle.png");
-    shadow->SetTexture(shadowTex);
+    shadow->SetTexture(GetRenderer()->GetTexture("Assets/shadowcircle.png"));
     shadow->SetVisible(true);
-    shadow->SetOffsetPosition(Vector3(0.0f, -4.4f, 0.0f));
+    shadow->SetOffsetPosition(Vector3(0.0f, -4.3f, 0.0f));
     shadow->SetOffsetScale(0.03f);
     
     
-    auto fireActor = CreateActor<Actor>();
+    auto particleActor = CreateActor<Actor>();
+    particleActor->SetPosition(Vector3(-15, -2, 15));
+    auto particleComp = particleActor->CreateComponent<ParticleComponent>();
+    particleComp->SetTexture(GetRenderer()->GetTexture("Assets/fire.png"));
+    particleComp->CreateParticles(Vector3(0, 1, 0),
+                                  10,
+                                  1000,
+                                  0.3,
+                                  1.5,
+                                  ParticleComponent::P_SMOKE);
+    particleComp->SetAddBlend(true);
 }
 
 void Game::LoadData()

@@ -1,7 +1,6 @@
+// ParticleComponent.h
 #pragma once
-
 #include "VisualComponent.h"
-#include "MathUtils.h"
 #include <vector>
 
 class ParticleComponent : public VisualComponent
@@ -23,25 +22,35 @@ public:
         bool isVisible;
     };
 
-    ParticleComponent(class Actor* a, int drawOrder);
+    ParticleComponent(class Actor* owner, int drawOrder = 20);
     ~ParticleComponent();
 
-    void Draw(class Shader* shader) override;
     void Update(float deltaTime) override;
+    void Draw(class Shader* shader) override;
 
     void SetTexture(class Texture* tex) override;
-    void CreateParticles(Vector3 pos, unsigned int num, float life, float part_life, float size, ParticleMode mode);
+    void CreateParticles(Vector3 pos, unsigned int num, float life, float partLife, float size, ParticleMode mode);
+
+    void SetAddBlend(bool b) { mIsBlendAdd = b; }
+    void SetSpeed(float speed) { mPartSpeed = speed; }
+
+    int GetDrawOrder() const { return mDrawOrder; }
 
 private:
     void GenerateParts();
 
+    Texture* mTexture;
     Vector3 mPosition;
+    std::vector<Particle> mParts;
+
+    int mDrawOrder;
     unsigned int mNumParts;
     float mLifeTime;
     float mTotalLife;
     float mPartLifecycle;
     float mPartSize;
     float mPartSpeed;
+
     ParticleMode mParticleMode;
-    std::vector<Particle> mParts;
+    bool mIsBlendAdd;
 };

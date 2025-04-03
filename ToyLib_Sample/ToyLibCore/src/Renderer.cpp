@@ -141,6 +141,7 @@ void Renderer::Draw()
 
     DrawVisualLayer(VisualLayer::Background2D);
     DrawMesh();
+    DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
     DrawDebugger();
     DrawVisualLayer(VisualLayer::UI);
@@ -151,17 +152,7 @@ void Renderer::Draw()
 // 背景オブジェクトの描画
 void Renderer::DrawBackGround()
 {
-    /*
-    // 背景スプライト
-    glDisable(GL_DEPTH_TEST);
-    mSpriteShader->SetActive();
-    for (auto sprite : mBgSpriteComps)
-    {
-        sprite->Draw(mSpriteShader.get());
-    }
-    glEnable(GL_DEPTH_TEST);
- */
-    
+   
     
     // 背景用メッシュ描画
     mBackGroundShader->SetActive();
@@ -537,15 +528,23 @@ void Renderer::RemoveVisualComp(VisualComponent* comp)
 
 void Renderer::DrawVisualLayer(VisualLayer layer)
 {
-    
     if (layer == VisualLayer::UI || layer == VisualLayer::Background2D)
     {
-        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);     // Zテスト不要
+        glDepthMask(GL_FALSE);        // 書き込みも不要（2D要素）
+    }
+    else if (layer == VisualLayer::Effect3D)
+    {
+        glEnable(GL_DEPTH_TEST);     // 粒同士のZ隠し合いを防ぐ
+        glDepthMask(GL_FALSE);        // Zバッファ汚さない
     }
     else
     {
-        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);      // 通常描画
+        glDepthMask(GL_TRUE);         // 書き込みON
     }
+    
+    
     
     mSpriteVerts->SetActive();       // VAO
 
@@ -559,6 +558,7 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
     }
 
     glEnable(GL_DEPTH_TEST); // 念のため戻す
+    glDepthMask(GL_TRUE);
 }
 
 class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
@@ -579,6 +579,9 @@ class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
             s = mBillboardShader.get();
             break;
         case VisualType::Particle:
+            mParticleShader->SetActive();
+            mParticleShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+            s = mParticleShader.get();
             break;
         case VisualType::ShadowSprite:
             mSpriteShader->SetActive();
