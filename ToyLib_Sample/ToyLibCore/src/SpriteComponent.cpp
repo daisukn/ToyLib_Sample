@@ -15,6 +15,7 @@ SpriteComponent::SpriteComponent(Actor* a, int drawOrder, VisualLayer layer)
 {
     mDrawOrder = drawOrder;
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
+    mType = VisualType::Sprite;
 }
 
 SpriteComponent::~SpriteComponent()

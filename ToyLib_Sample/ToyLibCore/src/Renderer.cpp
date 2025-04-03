@@ -147,38 +147,7 @@ void Renderer::Draw()
 
     SDL_GL_SwapWindow(mWindow);
 }
-/*
-void Renderer::Draw()
-{
-    
-    // シャドウマップレンダー
-    RenderShadowMap();
-    
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //Culling設定
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW); // 左手座標系
 
-    
-    // 描画処理 メッシュ、スプライト
-    // アルファブレンディングを有効化
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    
-    // 各コンポーネント描画
-    DrawBackGround();
-    DrawMesh();
-    DrawDebugger();
-    DrawParticle();
-    DrawBillboard();
-    //DrawSprite();
-
-
-    SDL_GL_SwapWindow(mWindow);
-
-}
-*/
 // 背景オブジェクトの描画
 void Renderer::DrawBackGround()
 {
@@ -298,9 +267,10 @@ void Renderer::DrawBillboard()
     glDepthMask(GL_TRUE);
     
 }
-/*
+
 void Renderer::DrawSprite()
 {
+    /*
     // スプライト処理
     glDisable(GL_DEPTH_TEST);
     // アルファブレンディング
@@ -312,8 +282,11 @@ void Renderer::DrawSprite()
         sprite->Draw(mSpriteShader.get());
     }
     glEnable(GL_DEPTH_TEST);
+     */
+    
+    
 }
- */
+ 
 
 void Renderer::DrawDebugger()
 {
@@ -569,22 +542,48 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
         glDisable(GL_DEPTH_TEST);
     else
         glEnable(GL_DEPTH_TEST);
-
     
     mSpriteVerts->SetActive();       // VAO
-    mSpriteShader->SetActive();      // Shader
-    mSpriteShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     for (auto comp : mVisualComps)
     {
         if (comp->IsVisible() && comp->GetLayer() == layer)
         {
-            comp->Draw(mSpriteShader.get());
+            auto s = GetVisualShader(comp);
+            //s->SetActive();
+            comp->Draw(s);
         }
     }
 
     glEnable(GL_DEPTH_TEST); // 念のため戻す
+
+
+}
+
+class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
+{
+    Shader* s = nullptr;
+    switch (visual->GetVisualType())
+    {
+        case VisualType::NoAssigned:
+            break;
+        case VisualType::Sprite:
+            mSpriteShader->SetActive();
+            mSpriteShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
+            s = mSpriteShader.get();
+            break;
+        case VisualType::Billboard:
+            mBillboardShader->SetActive();
+            mBillboardShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+            s = mBillboardShader.get();
+            break;
+        case VisualType::Particle:
+            break;
+        default:
+            break;
+    }
+    
+    return s;
 }
 
 

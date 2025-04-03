@@ -13,6 +13,7 @@ BillboardComponent::BillboardComponent(class Actor* a, int order)
 {
     mDrawOrder = order;
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
+    mType = VisualType::Billboard;
 }
 
 BillboardComponent::~BillboardComponent()
@@ -28,19 +29,34 @@ void BillboardComponent::Draw(Shader* shader)
     {
         glBlendFunc(GL_ONE, GL_ONE);
     }
+    
+    // カメラと位置取得
+    Vector3 pos = mOwnerActor->GetPosition();
+    Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
+    Matrix4 invView = view;
+    invView.Invert();
+    Vector3 cameraPos = invView.GetTranslation();
 
-    Matrix4 mat = mOwnerActor->GetWorldTransform();
-    Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
-    invView.mat[3][0] = mat.mat[3][0];
-    invView.mat[3][1] = mat.mat[3][1];
-    invView.mat[3][2] = mat.mat[3][2];
+    // 回転角（Y軸）
+    Vector3 toCamera = pos - cameraPos;
+    toCamera.y = 0.0f;
+    toCamera.Normalize();
 
-    Matrix4 scaleMat = Matrix4::CreateScale(mTexture->GetWidth() * mScale, mTexture->GetHeight() * mScale, 1);
-    Matrix4 world = scaleMat * Matrix4::CreateScale(mOwnerActor->GetScale()) * invView;
+    float angle = atan2f(toCamera.x, toCamera.z);
+    Matrix4 rotY = Matrix4::CreateRotationY(angle);
 
+    // スケール＋平行移動
+    float scale = mScale * mOwnerActor->GetScale();
+    Matrix4 scaleMat = Matrix4::CreateScale(mTexture->GetWidth() * scale,
+                                            mTexture->GetHeight() * scale, 1.0f);
+    Matrix4 translate = Matrix4::CreateTranslation(pos);
+
+    // 最終行列
+    Matrix4 world = scaleMat * rotY * translate;
     shader->SetMatrixUniform("uWorldTransform", world);
-    mTexture->SetActive(0);
-    shader->SetVectorUniform("uPosition", Vector3(0, 0, 0));
+
+    mTexture->SetActive(2);
+    shader->SetTextureUniform("uTexture", 2);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 

@@ -4,6 +4,15 @@
 #include "Renderer.h"
 
 
+
+enum class VisualType
+{
+    NoAssigned,
+    Sprite,
+    Billboard,
+    Particle
+};
+
 class VisualComponent : public Component
 {
 public:
@@ -23,6 +32,8 @@ public:
 
     void SetLayer(VisualLayer layer) { mLayer = layer; }
     VisualLayer GetLayer() const { return mLayer; }
+    
+    VisualType GetVisualType() const { return mType; }
 
     int GetDrawOrder() const { return mDrawOrder; }
     void SetDrawOrder(int order) { mDrawOrder = order; }
@@ -32,5 +43,6 @@ protected:
     bool mIsVisible;
     bool mIsBlendAdd;
     VisualLayer mLayer;
+    VisualType mType;
     int mDrawOrder;
 };

@@ -19,14 +19,22 @@ Game::~Game()
 void Game::InitGame()
 {
     LoadData();
+
     auto spActor = CreateActor<Actor>();
     spActor->SetPosition(Vector3(10.0f, 10.0f, 0.0f));
     spActor->SetScale(1);
     auto spSprite = spActor->CreateComponent<SpriteComponent>(100, VisualLayer::UI);
     spSprite->SetTexture(GetRenderer()->GetTexture("Assets/HealthBar.png"));
     spSprite->SetVisible(true);
-    
 
+    
+    auto treeActor = CreateActor<Actor>();
+    treeActor->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    treeActor->SetScale(0.01);
+    
+    auto treeBillboard = treeActor->CreateComponent<BillboardComponent>(100);
+    treeBillboard->SetTexture(GetRenderer()->GetTexture("Assets/tree.png"));
+    treeBillboard->SetVisible(true);
 }
 
 void Game::LoadData()
@@ -109,8 +117,6 @@ void Game::LoadData()
 
 void Game::UpdateGame(float deltaTime)
 {
-    auto a = GetRenderer()->GetTexture("Assets/Stan_Texture.png");
-    std::cout << a->GetTextureID() << std::endl;
 }
 
 void Game::ShutdownGame()

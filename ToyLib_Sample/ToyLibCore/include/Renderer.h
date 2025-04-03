@@ -38,13 +38,7 @@ public:
     bool Initialize();
     // 描画（Applicationから呼ばれる）
     void Draw();
-    void DrawBackGround();
-    void DrawMesh();
-    void DrawParticle();
-    void DrawBillboard();
-    //void DrawSprite();
-    void DrawDebugger();
-    void DrawEffect();
+
     // 終了
     void Shutdown();
 
@@ -166,10 +160,6 @@ private:
     int mShadowFBOHeight;
     
 
-    
-
-    
-
     // ビューマトリックス
     Matrix4 mViewMatrix;
     Matrix4 mInvView;
@@ -243,5 +233,14 @@ private:
     
     
 
+    void DrawBackGround();
+    void DrawMesh();
+    void DrawParticle();
+    void DrawBillboard();
+    void DrawSprite();
+    void DrawDebugger();
+    void DrawEffect();
+    
+    class Shader* GetVisualShader(const class VisualComponent* visual);
 };
 
