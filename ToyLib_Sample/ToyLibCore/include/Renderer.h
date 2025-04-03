@@ -70,14 +70,7 @@ public:
     // Visualコンポーネント
     void AddVisualComp(class VisualComponent* comp);
     void RemoveVisualComp(class VisualComponent* comp);
-    void DrawVisualLayer(VisualLayer layer);
-    
-    // スプライトコンポーネント登録・削除
-    //void AddSprite(class SpriteComponent* sprite);
-    //void RemoveSprite(class SpriteComponent* sprite);
-    // 背景スプライトコンポーネント登録・削除
-    //void AddBackGroundSprite(class SpriteComponent* sprite);
-    //void RemoveBackGroundSprite(class SpriteComponent* sprite);
+
     // メッシュコンポーネント登録・削除
     void AddMeshComp(class MeshComponent* mesh);
     void RemoveMeshComp(class MeshComponent* mesh);
@@ -87,12 +80,6 @@ public:
     // エフェクトメッシュコンポーネント登録・削除
     void AddEffectMeshComp(class MeshComponent* mesh);
     void RemoveEffectMeshComp(class MeshComponent* mesh);
-    // パーティクルコンポーネント登録・削除
-    void AddParticleComp(class ParticleComponent* part);
-    void RemoveParticleComp(class ParticleComponent* part);
-    // ビルボード登録・削除
-    void AddBillboardComp(class BillboardComponent* billboard);
-    void RemoveBillboardComp(class BillboardComponent* billboard);
     // ワイヤーフレームコンポーネント登録・削除
     void AddWireframeComp(class WireframeComponent* wireframe);
     void RemoveWireframeComp(class WireframeComponent* wireframe);
@@ -223,26 +210,19 @@ private:
 
     // コンポーネント
     std::vector<class VisualComponent*> mVisualComps;
-    //std::vector<class SpriteComponent*> mSpriteComps;
-    //std::vector<class SpriteComponent*> mBgSpriteComps;
     std::vector<class MeshComponent*> mMeshComps;
     std::vector<class MeshComponent*> mBgMesh;
     std::vector<class MeshComponent*> mEffectMesh;
     std::vector<class SkeletalMeshComponent*> mSkeletalMeshes;
-    std::vector<class ParticleComponent*> mParticleComps;
-    std::vector<class BillboardComponent*> mBillboardComps;
     std::vector<class WireframeComponent*> mWireframeComps;
     
     
 
     void DrawBackGround();
     void DrawMesh();
-    void DrawParticle();
-    void DrawBillboard();
-    void DrawSprite();
     void DrawDebugger();
     void DrawEffect();
-    
+    void DrawVisualLayer(VisualLayer layer);
     class Shader* GetVisualShader(const class VisualComponent* visual);
 };
 

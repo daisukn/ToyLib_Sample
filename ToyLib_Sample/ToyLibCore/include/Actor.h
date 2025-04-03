@@ -43,15 +43,12 @@ public:
     // 回転角を操作
 	const Quaternion& GetRotation() const { return mRotation; }
 	void SetRotation(const Quaternion& rot) { mRotation = rot;  mIsRecomputeWorldTransform = true; }
-
 	
     // 座標系を更新
     void ComputeWorldTransform();
     // ワールドマトリックスを取得
     const Matrix4 GetWorldTransform() const { return mWorldTransform; }
     void SetWorldTransform(const Matrix4 mat) { mWorldTransform = mat; }
-    
-    
  
     // 前方を取得（Z方向）
     virtual Vector3 GetForward() { return Vector3::Transform(Vector3::UnitZ, mRotation); }
@@ -101,8 +98,6 @@ public:
 
     
 private:
-
-
     // マトリックス
     Matrix4     mWorldTransform;
     Vector3     mPosition;

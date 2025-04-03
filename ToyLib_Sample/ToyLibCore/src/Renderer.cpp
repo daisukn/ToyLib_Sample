@@ -139,11 +139,11 @@ void Renderer::Draw()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    DrawDebugger();
     DrawVisualLayer(VisualLayer::Background2D);
     DrawMesh();
     DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
-    DrawDebugger();
     DrawVisualLayer(VisualLayer::UI);
 
     SDL_GL_SwapWindow(mWindow);
@@ -174,7 +174,6 @@ void Renderer::DrawMesh()
 {
 
     mShadowMapTexture->SetActive(1); // 共通シャドウマップ用テクスチャ
-    //mShadowMapTexture->SetActive(0); // 通常テクスチャ
 
 
     // 通常メッシュ描画（スキンなし）
@@ -217,67 +216,6 @@ void Renderer::DrawMesh()
     
     glActiveTexture(GL_TEXTURE0);
 }
-
-// パーティクル
-void Renderer::DrawParticle()
-{
-    // パーティクルの処理
-    // Zバッファに書き込まない
-    glDepthMask(GL_FALSE);
-    //加算合成
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    mSpriteVerts->SetActive();
-    mParticleShader->SetActive();
-    mParticleShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-
-    for (auto parts : mParticleComps)
-    {
-        parts->Draw(mParticleShader.get());
-    }
-    glDepthMask(GL_TRUE);
-}
-
-void Renderer::DrawBillboard()
-{
-    // ビルボード
-    // Zバッファに書き込まない
-    glDepthMask(GL_FALSE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    mSpriteVerts->SetActive();
-    mBillboardShader->SetActive();
-    SetLightUniforms(mBillboardShader.get());
-    mBillboardShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-
-    for (auto bb : mBillboardComps)
-    {
-        
-        bb->Draw(mBillboardShader.get());
-    }
-    glDepthMask(GL_TRUE);
-    
-}
-
-void Renderer::DrawSprite()
-{
-    /*
-    // スプライト処理
-    glDisable(GL_DEPTH_TEST);
-    // アルファブレンディング
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    mSpriteShader->SetActive();
-    for (auto sprite : mSpriteComps)
-    {
-        sprite->Draw(mSpriteShader.get());
-    }
-    glEnable(GL_DEPTH_TEST);
-     */
-    
-    
-}
- 
 
 void Renderer::DrawDebugger()
 {
@@ -450,63 +388,6 @@ void Renderer::SetLightUniforms(Shader* shader)
     shader->SetFloatUniform("uFoginfo.minDist", mFogMinDist);
     shader->SetVectorUniform("uFoginfo.color", mFogColor);
 }
-/*
-// スプライトコンポーネントの登録
-void Renderer::AddSprite(SpriteComponent* sprite)
-{
-    // DrawOrderを探して 自分より優先度の高いものの次を見つける
-    int drawOrder = sprite->GetDrawOrder();
-    auto iter = mSpriteComps.begin();
-    for (;iter != mSpriteComps.end(); ++iter)
-    {
-        if (drawOrder < (*iter)->GetDrawOrder())
-        {
-            break;
-        }
-    }
-
-    // 見つけた箇所に挿入
-    mSpriteComps.insert(iter, sprite);
-}
-
-// スプライト削除
-void Renderer::RemoveSprite(SpriteComponent* sprite)
-{
-    auto iter = std::find(mSpriteComps.begin(), mSpriteComps.end(), sprite);
-    if (iter != mSpriteComps.end())
-    { // 要素が見つかった場合のみ削除
-        mSpriteComps.erase(iter);
-    }
-
-}
-
-// 背景スプライトコンポーネントの登録
-void Renderer::AddBackGroundSprite(SpriteComponent* sprite)
-{
-    // DrawOrderを探して 自分より優先度の高いものの次を見つける
-    int drawOrder = sprite->GetDrawOrder();
-    auto iter = mBgSpriteComps.begin();
-    for (;iter != mBgSpriteComps.end(); ++iter)
-    {
-        if (drawOrder < (*iter)->GetDrawOrder())
-        {
-            break;
-        }
-    }
-    // 見つけた箇所に挿入
-    mBgSpriteComps.insert(iter, sprite);
-}
-
-// スプライト削除
-void Renderer::RemoveBackGroundSprite(SpriteComponent* sprite)
-{
-    auto iter = std::find(mBgSpriteComps.begin(), mBgSpriteComps.end(), sprite);
-    if (iter != mBgSpriteComps.end())
-    { // 要素が見つかった場合のみ削除
-        mBgSpriteComps.erase(iter);
-    }
-}
-*/
 
 void Renderer::AddVisualComp(VisualComponent* comp)
 {
@@ -756,67 +637,13 @@ void Renderer::AddEffectMeshComp(MeshComponent* mesh)
     mEffectMesh.emplace_back(mesh);
 }
 
-// BGメッシュコンポーネント削除
+// エフェクトメッシュコンポーネント削除
 void Renderer::RemoveEffectMeshComp(MeshComponent* mesh)
 {
     auto iter = std::find(mEffectMesh.begin(), mEffectMesh.end(), mesh);
     if (iter != mEffectMesh.end())
     { // 要素が見つかった場合のみ削除
         mEffectMesh.erase(iter);
-    }
-}
-
-// パーティクルコンポーネント登録
-void Renderer::AddParticleComp(ParticleComponent* part)
-{
-    int myDrawOrder = part->GetDrawOrder();
-    auto iter = mParticleComps.begin();
-    for (;iter != mParticleComps.end(); ++iter)
-    {
-        if (myDrawOrder < (*iter)->GetDrawOrder())
-        {
-            break;
-        }
-    }
-    mParticleComps.insert(iter, part);
-}
-
-// パーティクルコンポーネント削除
-void Renderer::RemoveParticleComp(ParticleComponent* part)
-{
-    auto iter = std::find(mParticleComps.begin(), mParticleComps.end(), part);
-    if (iter != mParticleComps.end())
-    { // 要素が見つかった場合のみ削除
-        mParticleComps.erase(iter);
-    }
-}
-
-
-// ビルボードコンポーネント登録
-void Renderer::AddBillboardComp(BillboardComponent* billboard)
-{
-    // DrawOrderを探して 自分より優先度の高いものの次を見つける
-    int drawOrder = billboard->GetDrawOrder();
-    auto iter = mBillboardComps.begin();
-    for (;iter != mBillboardComps.end(); ++iter)
-    {
-        if (drawOrder < (*iter)->GetDrawOrder())
-        {
-            break;
-        }
-    }
-
-    // 見つけた箇所に挿入
-    mBillboardComps.insert(iter, billboard);
-}
-
-// パーティクルコンポーネント登録
-void Renderer::RemoveBillboardComp(BillboardComponent* billboard)
-{
-    auto iter = std::find(mBillboardComps.begin(), mBillboardComps.end(), billboard);
-    if (iter != mBillboardComps.end())
-    { // 要素が見つかった場合のみ削除
-        mBillboardComps.erase(iter);
     }
 }
 

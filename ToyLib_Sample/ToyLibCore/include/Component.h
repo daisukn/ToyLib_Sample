@@ -10,7 +10,7 @@ class Component
 {
 public:
 	// コンストラクタ UpdateOrderが小さいものが優先される
-	Component( class Actor* a, int order = 100 );
+	Component(class Actor* a, int order = 100);
     // デストラクタ
     virtual ~Component();
 	// Actorから呼ばれる　Overrideして更新処理

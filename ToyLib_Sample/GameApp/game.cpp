@@ -43,7 +43,7 @@ void Game::InitGame()
     
     
     auto particleActor = CreateActor<Actor>();
-    particleActor->SetPosition(Vector3(-15, -2, 15));
+    particleActor->SetPosition(Vector3(-15, -3, 15));
     auto particleComp = particleActor->CreateComponent<ParticleComponent>();
     particleComp->SetTexture(GetRenderer()->GetTexture("Assets/fire.png"));
     particleComp->CreateParticles(Vector3(0, 1, 0),
@@ -103,6 +103,7 @@ void Game::LoadData()
     towerCollider->GetBoundingVolume()->CreateVArray();
     towerCollider->SetDisp(true);
     towerCollider->SetColliderType(C_WALL);
+    towerCollider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
     
     towerActor->SetPosition(Vector3(15, -2, 15));
     towerActor->SetScale(0.003f);
@@ -116,7 +117,7 @@ void Game::LoadData()
     fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
     
     fireActor->SetPosition(Vector3(-15, -2, 15));
-    fireActor->SetScale(0.03f);
+    fireActor->SetScale(0.01f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider->SetDisp(true);
