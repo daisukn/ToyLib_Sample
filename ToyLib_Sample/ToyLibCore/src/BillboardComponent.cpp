@@ -5,69 +5,99 @@
 #include "Actor.h"
 #include "Renderer.h"
 
-BillboardComponent::BillboardComponent(class Actor* a, int order)
-: Component(a)
-, mDrawOrder(order)
+#include <GL/glew.h>
+
+BillboardComponent::BillboardComponent(class Actor* a, int drawOrder)
+: VisualComponent(a, drawOrder, VisualLayer::Object3D)
 , mScale(1.0f)
-, mIsBlendAdd(false)
-, mIsVisible(false)
 {
-    mOwnerActor->GetApp()->GetRenderer()->AddBillboardComp(this);
+    mDrawOrder = drawOrder;
+    mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
+    mType = VisualType::Billboard;
 }
 
 BillboardComponent::~BillboardComponent()
 {
-    mOwnerActor->GetApp()->GetRenderer()->RemoveBillboardComp(this);
+    mOwnerActor->GetApp()->GetRenderer()->RemoveVisualComp(this);
 }
-
 
 void BillboardComponent::Draw(Shader* shader)
 {
-    if(!mIsVisible) return;
-    
-    if (mTexture)
+    if (!mIsVisible || !mTexture) return;
+
+    if (mIsBlendAdd)
     {
-        if (mIsBlendAdd)
-        {
-            glBlendFunc(GL_ONE, GL_ONE);
-        }
-        
-        // Ownerのマトリックスを取得（Positionでも良いかもしれない。）
-        Matrix4 mat = mOwnerActor->GetWorldTransform();
-        
-        // ビルボーディング
-        // ビューマトリックスの逆行列の座標を差し替えて流用
-        Matrix4 invVew = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
-        // 座標差し替え
-        invVew.mat[3][0] = mat.mat[3][0];
-        invVew.mat[3][1] = mat.mat[3][1];
-        invVew.mat[3][2] = mat.mat[3][2];
-        
-        // スケールを復元
-        Matrix4 scaleMat = Matrix4::CreateScale(mTexture->GetWidth() * mScale, mTexture->GetHeight() * mScale, 1);
-        Matrix4 world = scaleMat * Matrix4::CreateScale(mOwnerActor->GetScale()) * invVew;
+        glBlendFunc(GL_ONE, GL_ONE);
+    }
+    
+    // カメラと位置取得
+    Vector3 pos = mOwnerActor->GetPosition();
+    Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
+    Matrix4 invView = view;
+    invView.Invert();
+    Vector3 cameraPos = invView.GetTranslation();
 
-        // シェーダー に送る
-        shader->SetMatrixUniform("uWorldTransform", world);
-        mTexture->SetActive();
-        
+    // 回転角（Y軸）
+    Vector3 toCamera = pos - cameraPos;
+    toCamera.y = 0.0f;
+    toCamera.Normalize();
 
-        shader->SetVectorUniform("uPosition", Vector3(0,0,0));
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    float angle = atan2f(toCamera.x, toCamera.z);
+    Matrix4 rotY = Matrix4::CreateRotationY(angle);
 
-        if (mIsBlendAdd)
-        {
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
+    // スケール＋平行移動
+    float scale = mScale * mOwnerActor->GetScale();
+    Matrix4 scaleMat = Matrix4::CreateScale(mTexture->GetWidth() * scale,
+                                            mTexture->GetHeight() * scale, 1.0f);
+    Matrix4 translate = Matrix4::CreateTranslation(pos);
+
+    // 最終行列
+    Matrix4 world = scaleMat * rotY * translate;
+    shader->SetMatrixUniform("uWorldTransform", world);
+
+    mTexture->SetActive(2);
+    shader->SetTextureUniform("uTexture", 2);
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    if (mIsBlendAdd)
+    {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 }
-
-void BillboardComponent::SetTexture(Texture* tex)
+/*
+void BillboardComponent::DrawShadow(class Shader* shader)
 {
-    mTexture = tex;
-}
+    if (!mIsVisible || !mTexture) return;
 
-void BillboardComponent::Update(float deltaTime)
-{
-    
+    // ビルボードの位置を取得
+    Vector3 pos = mOwnerActor->GetPosition();
+
+    // ライト方向（逆方向を向かせる）
+    Vector3 lightDir = mOwnerActor->GetApp()->GetRenderer()->GetDirLight().Direction;
+    Vector3 look = Vector3(-lightDir.x, -lightDir.y, -lightDir.z);
+    look.y = 0.0f; // Y軸は無視（水平に回転）
+    if (Math::NearZero(look.LengthSq()))
+    {
+        look = Vector3(0, 0, 1); // デフォルト方向
+    }
+    look.Normalize();
+
+    // Y軸回転角を取得
+    float angle = atan2f(look.x, look.z);
+    Matrix4 rotY = Matrix4::CreateRotationY(angle);
+
+    // スケール（影の大きさを調整）
+    float shadowScale = mTexture->GetWidth() * mScale * 0.5f;
+    Matrix4 scaleMat = Matrix4::CreateScale(shadowScale, shadowScale, 1.0f);
+    Matrix4 transMat = Matrix4::CreateTranslation(pos);
+
+    Matrix4 world = scaleMat * rotY * transMat;
+
+    // シェーダーに送信（uLightSpaceMatrix は呼び出し元でセット済み）
+    shader->SetMatrixUniform("uWorldTransform", world);
+
+    // ビルボードはSpriteVertsを使う
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
+*/

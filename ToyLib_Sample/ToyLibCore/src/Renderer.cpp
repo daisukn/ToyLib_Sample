@@ -8,6 +8,7 @@
 #include "SkeletalMeshComponent.h"
 #include "ParticleComponent.h"
 #include "BillboardComponent.h"
+#include "VisualComponent.h"
 
 #include "WireframeComponent.h"
 
@@ -129,48 +130,29 @@ void::Renderer::SetClearColor(const Vector3 color)
 // 描画処理
 void Renderer::Draw()
 {
-    
-    // シャドウマップレンダー
-    RenderShadowMap();
-    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //Culling設定
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW); // 左手座標系
 
-    
-    /* 描画処理 メッシュ、スプライト*/
-    // アルファブレンディングを有効化
+    RenderShadowMap();
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    
-    // 各コンポーネント描画
-    DrawBackGround();
+    DrawVisualLayer(VisualLayer::Background2D);
     DrawMesh();
+    DrawVisualLayer(VisualLayer::Object3D);
+    DrawVisualLayer(VisualLayer::Effect3D);
     DrawDebugger();
-    DrawParticle();
-    DrawBillboard();
-    DrawSprite();
-
+    DrawVisualLayer(VisualLayer::UI);
 
     SDL_GL_SwapWindow(mWindow);
-
 }
 
 // 背景オブジェクトの描画
 void Renderer::DrawBackGround()
 {
-    // 背景スプライト
-    glDisable(GL_DEPTH_TEST);
-    mSpriteShader->SetActive();
-    for (auto sprite : mBgSpriteComps)
-    {
-        sprite->Draw(mSpriteShader.get());
-    }
-    glEnable(GL_DEPTH_TEST);
- 
-    
+   
     
     // 背景用メッシュ描画
     mBackGroundShader->SetActive();
@@ -190,10 +172,10 @@ void Renderer::DrawBackGround()
 // メッシュの描画
 void Renderer::DrawMesh()
 {
-    // 共通シャドウマップ設定（ユニット1）
-    glActiveTexture(GL_TEXTURE1);
-    mShadowMapTexture->SetActive(); // ← Textureクラスの SetActive()
-    glActiveTexture(GL_TEXTURE0);   // メインテクスチャ用に戻す
+
+    mShadowMapTexture->SetActive(1); // 共通シャドウマップ用テクスチャ
+    //mShadowMapTexture->SetActive(0); // 通常テクスチャ
+
 
     // 通常メッシュ描画（スキンなし）
     for (auto mc : mMeshComps)
@@ -232,6 +214,8 @@ void Renderer::DrawMesh()
 
         sk->Draw(mSkinnedShader.get());
     }
+    
+    glActiveTexture(GL_TEXTURE0);
 }
 
 // パーティクル
@@ -277,6 +261,7 @@ void Renderer::DrawBillboard()
 
 void Renderer::DrawSprite()
 {
+    /*
     // スプライト処理
     glDisable(GL_DEPTH_TEST);
     // アルファブレンディング
@@ -288,7 +273,11 @@ void Renderer::DrawSprite()
         sprite->Draw(mSpriteShader.get());
     }
     glEnable(GL_DEPTH_TEST);
+     */
+    
+    
 }
+ 
 
 void Renderer::DrawDebugger()
 {
@@ -461,7 +450,7 @@ void Renderer::SetLightUniforms(Shader* shader)
     shader->SetFloatUniform("uFoginfo.minDist", mFogMinDist);
     shader->SetVectorUniform("uFoginfo.color", mFogColor);
 }
-
+/*
 // スプライトコンポーネントの登録
 void Renderer::AddSprite(SpriteComponent* sprite)
 {
@@ -517,6 +506,96 @@ void Renderer::RemoveBackGroundSprite(SpriteComponent* sprite)
         mBgSpriteComps.erase(iter);
     }
 }
+*/
+
+void Renderer::AddVisualComp(VisualComponent* comp)
+{
+    auto iter = mVisualComps.begin();
+    for (; iter != mVisualComps.end(); ++iter)
+    {
+        if (comp->GetDrawOrder() < (*iter)->GetDrawOrder())
+            break;
+    }
+    mVisualComps.insert(iter, comp);
+}
+
+void Renderer::RemoveVisualComp(VisualComponent* comp)
+{
+    auto iter = std::find(mVisualComps.begin(), mVisualComps.end(), comp);
+    if (iter != mVisualComps.end())
+        mVisualComps.erase(iter);
+}
+
+void Renderer::DrawVisualLayer(VisualLayer layer)
+{
+    if (layer == VisualLayer::UI || layer == VisualLayer::Background2D)
+    {
+        glDisable(GL_DEPTH_TEST);     // Zテスト不要
+        glDepthMask(GL_FALSE);        // 書き込みも不要（2D要素）
+    }
+    else if (layer == VisualLayer::Effect3D)
+    {
+        glEnable(GL_DEPTH_TEST);     // 粒同士のZ隠し合いを防ぐ
+        glDepthMask(GL_FALSE);        // Zバッファ汚さない
+    }
+    else
+    {
+        glEnable(GL_DEPTH_TEST);      // 通常描画
+        glDepthMask(GL_TRUE);         // 書き込みON
+    }
+    
+    
+    
+    mSpriteVerts->SetActive();       // VAO
+
+    for (auto comp : mVisualComps)
+    {
+        if (comp->IsVisible() && comp->GetLayer() == layer)
+        {
+            auto s = GetVisualShader(comp);
+            comp->Draw(s);
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST); // 念のため戻す
+    glDepthMask(GL_TRUE);
+}
+
+class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
+{
+    Shader* s = nullptr;
+    switch (visual->GetVisualType())
+    {
+        case VisualType::NoAssigned:
+            break;
+        case VisualType::Sprite:
+            mSpriteShader->SetActive();
+            mSpriteShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
+            s = mSpriteShader.get();
+            break;
+        case VisualType::Billboard:
+            mBillboardShader->SetActive();
+            mBillboardShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+            s = mBillboardShader.get();
+            break;
+        case VisualType::Particle:
+            mParticleShader->SetActive();
+            mParticleShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+            s = mParticleShader.get();
+            break;
+        case VisualType::ShadowSprite:
+            mSpriteShader->SetActive();
+            mSpriteShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+            s = mSpriteShader.get();
+
+        default:
+            break;
+    }
+    
+    return s;
+}
+
+
 
 // テクスチャ取り出し
 Texture* Renderer::GetTexture(const std::string &fileName)
@@ -846,6 +925,23 @@ void Renderer::RenderShadowMap()
             mesh->DrawShadow(mShadowMeshShader.get(), mLightSpaceMatrix);
         }
     }
+    
+    /*
+    mShadowMeshShader->SetActive();
+    mShadowMeshShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
+    for (auto& comp : mVisualComps)
+    {
+        if (comp->GetVisualType() == VisualType::Billboard)
+        {
+            BillboardComponent* b = static_cast<BillboardComponent*>(comp);
+            if (b->GetEnableShadow())
+            {
+                b->DrawShadow(mShadowMeshShader.get());
+            }
+        }
+    }
+    */
+    
 
     // ビューポートを戻す（スクリーンサイズ）
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

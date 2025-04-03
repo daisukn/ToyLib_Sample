@@ -1,44 +1,15 @@
 #pragma once
 
-#include "Component.h"
-#include "MathUtils.h"
+#include "VisualComponent.h"
 
-// ビルボードコンポーネント
-class BillboardComponent : public Component
+class BillboardComponent : public VisualComponent
 {
 public:
-    BillboardComponent(class Actor* a, int order = 100);
+    BillboardComponent(class Actor* a, int drawOrder);
     ~BillboardComponent();
-    
-    // Rendererから呼ばれる
-    virtual void Draw(class Shader* shader);
 
-    // テクスチャセット
-    virtual void SetTexture(class Texture* tex);
-    
-    // アップデート処理
-    void Update(float deltaTime) override;
-    
-
-    void SetVisible(bool visible) { mIsVisible = visible; }
-    bool GetVisible() const { return mIsVisible; }
-    
-    void SetScale(float f){ mScale = f;}
-
-    int GetDrawOrder() const { return mDrawOrder; }
-    
-    
-    void SetBlendAdd(bool b) { mIsBlendAdd = b; }
-    bool GetBlendAdd() const { return mIsBlendAdd; }
+    void Draw(class Shader* shader) override;
     
 private:
-    int             mDrawOrder;
-    bool            mIsVisible;
-    float           mScale;
-    class Texture*  mTexture;
-    
-    // 加算合成するか
-    bool            mIsBlendAdd;
-
+    float mScale;
 };
-

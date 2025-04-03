@@ -64,6 +64,8 @@ bool Texture::Load(const std::string& fileName)
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // ← ★追加すべき！
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // ← ★追加すべき！
 
     mWidth = convertedImage->w;
     mHeight = convertedImage->h;
@@ -146,12 +148,14 @@ void Texture::CreateForRendering(int w, int h, unsigned int format)
 // テクスチャ削除
 void Texture::Unload()
 {
+    glActiveTexture(GL_TEXTURE0); 
 	glDeleteTextures(1, &mTextureID);
 }
 
 // アクティブ化（Bind）
-void Texture::SetActive()
+void Texture::SetActive(int unit)
 {
+    glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 }
 

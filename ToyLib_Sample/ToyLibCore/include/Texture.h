@@ -21,7 +21,7 @@ public:
     // 削除
 	void Unload();
     // 描画用にBind
-	void SetActive();
+	void SetActive(int unit);
 	// 幅と高さ取得
     int GetWidth() const { return mWidth; }
     int GetHeight() const { return mHeight; }

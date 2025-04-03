@@ -45,7 +45,6 @@ void SkeletalMeshComponent::Draw(Shader* shader)
         for (auto v : va)
         {
             {
-                //Texture* t = mMesh->GetTexture(v->GetTextureID());
                 auto mat = mMesh->GetMaterial(v->GetTextureID());
                 if (mat)
                 {
@@ -97,30 +96,10 @@ void SkeletalMeshComponent::DrawShadow(Shader* shader, const Matrix4& lightSpace
     std::vector<VertexArray*> va = mMesh->GetVertexArray();
     for (auto v : va)
     {
-        
-        v->SetActive();
-        glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
-//            glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
-    }
-    
-    /*
-    // アニメーション状態からボーン行列を計算
-    std::vector<Matrix4> transform;
-    mMesh->BoneTransform(mAnimTime, transform);
-    
-    // シェーダーに渡す
-    Matrix4 worldTransform = Matrix4::CreateScale(mScale) * mOwnerActor->GetWorldTransform();
-    shader->SetMatrixUniform("uWorldTransform", worldTransform);
-    shader->SetMatrixUniform("uLightSpaceMatrix", lightSpaceMatrix);
-    shader->SetMatrixUniforms("uMatrixPalette", transform.data(), (unsigned int)transform.size());
-    
-    std::vector<VertexArray*> va = mMesh->GetVertexArray();
-    for (auto v : va)
-    {
         v->SetActive();
         glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
     }
-     */
+    
 }
 
 void SkeletalMeshComponent::Update(float deltaTime)

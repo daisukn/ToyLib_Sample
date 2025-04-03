@@ -18,6 +18,13 @@ struct DirectionalLight
     Vector3 SpecColor;      // 反射色
 };
 
+enum class VisualLayer
+{
+    Background2D,
+    Effect3D,
+    Object3D,
+    UI
+};
 
 // 描画エンジン
 class Renderer
@@ -32,13 +39,7 @@ public:
     bool Initialize();
     // 描画（Applicationから呼ばれる）
     void Draw();
-    void DrawBackGround();
-    void DrawMesh();
-    void DrawParticle();
-    void DrawBillboard();
-    void DrawSprite();
-    void DrawDebugger();
-    void DrawEffect();
+
     // 終了
     void Shutdown();
 
@@ -66,12 +67,17 @@ public:
     float GetScreenHeight() const { return mScreenHeight; }
       
     
+    // Visualコンポーネント
+    void AddVisualComp(class VisualComponent* comp);
+    void RemoveVisualComp(class VisualComponent* comp);
+    void DrawVisualLayer(VisualLayer layer);
+    
     // スプライトコンポーネント登録・削除
-    void AddSprite(class SpriteComponent* sprite);
-    void RemoveSprite(class SpriteComponent* sprite);
+    //void AddSprite(class SpriteComponent* sprite);
+    //void RemoveSprite(class SpriteComponent* sprite);
     // 背景スプライトコンポーネント登録・削除
-    void AddBackGroundSprite(class SpriteComponent* sprite);
-    void RemoveBackGroundSprite(class SpriteComponent* sprite);
+    //void AddBackGroundSprite(class SpriteComponent* sprite);
+    //void RemoveBackGroundSprite(class SpriteComponent* sprite);
     // メッシュコンポーネント登録・削除
     void AddMeshComp(class MeshComponent* mesh);
     void RemoveMeshComp(class MeshComponent* mesh);
@@ -114,6 +120,7 @@ public:
     
     // ディレクショナルライト設定
     void SetDirectionalLightPosition(const Vector3& pos, const Vector3& target);
+    const DirectionalLight GetDirLight() const { return mDirLight; }
     // フォグ情報設定
     void SetFogInfo(const float max, const float min, Vector3 color);
     
@@ -153,10 +160,6 @@ private:
     float mShadowOrthoHeight;
     int mShadowFBOWidth;
     int mShadowFBOHeight;
-    
-
-    
-
     
 
     // ビューマトリックス
@@ -219,8 +222,9 @@ private:
     std::unordered_map<std::string, std::unique_ptr<class Mesh>> mMeshes;
 
     // コンポーネント
-    std::vector<class SpriteComponent*> mSpriteComps;
-    std::vector<class SpriteComponent*> mBgSpriteComps;
+    std::vector<class VisualComponent*> mVisualComps;
+    //std::vector<class SpriteComponent*> mSpriteComps;
+    //std::vector<class SpriteComponent*> mBgSpriteComps;
     std::vector<class MeshComponent*> mMeshComps;
     std::vector<class MeshComponent*> mBgMesh;
     std::vector<class MeshComponent*> mEffectMesh;
@@ -231,5 +235,14 @@ private:
     
     
 
+    void DrawBackGround();
+    void DrawMesh();
+    void DrawParticle();
+    void DrawBillboard();
+    void DrawSprite();
+    void DrawDebugger();
+    void DrawEffect();
+    
+    class Shader* GetVisualShader(const class VisualComponent* visual);
 };
 
