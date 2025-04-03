@@ -21,7 +21,7 @@ void Game::InitGame()
     LoadData();
 
     auto spActor = CreateActor<Actor>();
-    spActor->SetPosition(Vector3(10.0f, 10.0f, 0.0f));
+    spActor->SetPosition(Vector3(-460.0f, -330.0f, 0.0f));
     spActor->SetScale(1);
     auto spSprite = spActor->CreateComponent<SpriteComponent>(100, VisualLayer::UI);
     spSprite->SetTexture(GetRenderer()->GetTexture("Assets/HealthBar.png"));
@@ -29,12 +29,21 @@ void Game::InitGame()
 
     
     auto treeActor = CreateActor<Actor>();
-    treeActor->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-    treeActor->SetScale(0.01);
-    
+    treeActor->SetPosition(Vector3(0.0f, 2.5f, 0.0f));
+    treeActor->SetScale(0.02);
     auto treeBillboard = treeActor->CreateComponent<BillboardComponent>(100);
     treeBillboard->SetTexture(GetRenderer()->GetTexture("Assets/tree.png"));
     treeBillboard->SetVisible(true);
+
+    auto shadow = treeActor->CreateComponent<ShadowSpriteComponent>(10);
+    Texture* shadowTex = GetRenderer()->GetTexture("Assets/shadowcircle.png");
+    shadow->SetTexture(shadowTex);
+    shadow->SetVisible(true);
+    shadow->SetOffsetPosition(Vector3(0.0f, -4.4f, 0.0f));
+    shadow->SetOffsetScale(0.03f);
+    
+    
+    auto fireActor = CreateActor<Actor>();
 }
 
 void Game::LoadData()

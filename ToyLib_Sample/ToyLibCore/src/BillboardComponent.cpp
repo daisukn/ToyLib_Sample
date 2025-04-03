@@ -7,11 +7,11 @@
 
 #include <GL/glew.h>
 
-BillboardComponent::BillboardComponent(class Actor* a, int order)
-    : VisualComponent(a, VisualLayer::Effect3D)
-    , mScale(1.0f)
+BillboardComponent::BillboardComponent(class Actor* a, int drawOrder)
+: VisualComponent(a, drawOrder, VisualLayer::Effect3D)
+, mScale(1.0f)
 {
-    mDrawOrder = order;
+    mDrawOrder = drawOrder;
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::Billboard;
 }
@@ -65,3 +65,39 @@ void BillboardComponent::Draw(Shader* shader)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 }
+/*
+void BillboardComponent::DrawShadow(class Shader* shader)
+{
+    if (!mIsVisible || !mTexture) return;
+
+    // ビルボードの位置を取得
+    Vector3 pos = mOwnerActor->GetPosition();
+
+    // ライト方向（逆方向を向かせる）
+    Vector3 lightDir = mOwnerActor->GetApp()->GetRenderer()->GetDirLight().Direction;
+    Vector3 look = Vector3(-lightDir.x, -lightDir.y, -lightDir.z);
+    look.y = 0.0f; // Y軸は無視（水平に回転）
+    if (Math::NearZero(look.LengthSq()))
+    {
+        look = Vector3(0, 0, 1); // デフォルト方向
+    }
+    look.Normalize();
+
+    // Y軸回転角を取得
+    float angle = atan2f(look.x, look.z);
+    Matrix4 rotY = Matrix4::CreateRotationY(angle);
+
+    // スケール（影の大きさを調整）
+    float shadowScale = mTexture->GetWidth() * mScale * 0.5f;
+    Matrix4 scaleMat = Matrix4::CreateScale(shadowScale, shadowScale, 1.0f);
+    Matrix4 transMat = Matrix4::CreateTranslation(pos);
+
+    Matrix4 world = scaleMat * rotY * transMat;
+
+    // シェーダーに送信（uLightSpaceMatrix は呼び出し元でセット済み）
+    shader->SetMatrixUniform("uWorldTransform", world);
+
+    // ビルボードはSpriteVertsを使う
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+}
+*/

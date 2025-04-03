@@ -539,9 +539,13 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
 {
     
     if (layer == VisualLayer::UI || layer == VisualLayer::Background2D)
+    {
         glDisable(GL_DEPTH_TEST);
+    }
     else
+    {
         glEnable(GL_DEPTH_TEST);
+    }
     
     mSpriteVerts->SetActive();       // VAO
 
@@ -550,14 +554,11 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
         if (comp->IsVisible() && comp->GetLayer() == layer)
         {
             auto s = GetVisualShader(comp);
-            //s->SetActive();
             comp->Draw(s);
         }
     }
 
     glEnable(GL_DEPTH_TEST); // 念のため戻す
-
-
 }
 
 class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
@@ -579,6 +580,11 @@ class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
             break;
         case VisualType::Particle:
             break;
+        case VisualType::ShadowSprite:
+            mSpriteShader->SetActive();
+            mSpriteShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+            s = mSpriteShader.get();
+
         default:
             break;
     }
@@ -916,6 +922,23 @@ void Renderer::RenderShadowMap()
             mesh->DrawShadow(mShadowMeshShader.get(), mLightSpaceMatrix);
         }
     }
+    
+    /*
+    mShadowMeshShader->SetActive();
+    mShadowMeshShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
+    for (auto& comp : mVisualComps)
+    {
+        if (comp->GetVisualType() == VisualType::Billboard)
+        {
+            BillboardComponent* b = static_cast<BillboardComponent*>(comp);
+            if (b->GetEnableShadow())
+            {
+                b->DrawShadow(mShadowMeshShader.get());
+            }
+        }
+    }
+    */
+    
 
     // ビューポートを戻す（スクリーンサイズ）
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

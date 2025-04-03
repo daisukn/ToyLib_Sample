@@ -27,6 +27,7 @@
 #include "SkeletalMeshComponent.h"
 #include "VisualComponent.h"
 #include "SpriteComponent.h"
+#include "ShadowSpriteComponent.h"
 #include "BillboardComponent.h"
 #include "ParticleComponent.h"
 #include "WireframeComponent.h"

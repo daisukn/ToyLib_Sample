@@ -10,13 +10,14 @@ enum class VisualType
     NoAssigned,
     Sprite,
     Billboard,
-    Particle
+    Particle,
+    ShadowSprite
 };
 
 class VisualComponent : public Component
 {
 public:
-    VisualComponent(class Actor* owner, VisualLayer layer = VisualLayer::Effect3D);
+    VisualComponent(class Actor* owner, int drawOrder, VisualLayer layer = VisualLayer::Effect3D);
     virtual ~VisualComponent() {}
 
     virtual void Draw(class Shader* shader) = 0;
