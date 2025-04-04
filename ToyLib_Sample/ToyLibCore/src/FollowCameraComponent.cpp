@@ -7,8 +7,8 @@ FollowCameraComponent::FollowCameraComponent(Actor* owner)
 , mHorzDist(10.0f)        // 所有アクターとの距離
 , mVertDist(4.0f)        // 所有アクターとの距離（高さ）
 , mTargetDist(10.0f)      // 視点は所有アクターよりどのくらい前か
-, mSpringConstant(500.0f)  // バネ定数
-, mVelocity(Vector3(1,1,1))
+, mSpringConstant(2000.0f)  // バネ定数
+, mVelocity(Vector3(100,100,100))
 {
     
 }
