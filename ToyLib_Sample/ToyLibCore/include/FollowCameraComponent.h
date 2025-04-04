@@ -4,11 +4,11 @@
 
 
 // Actorについていくカメラ
-class FollowCamera : public CameraComponent
+class FollowCameraComponent : public CameraComponent
 {
 public:
     // コンストラクタ
-	FollowCamera(class Actor* owner);
+    FollowCameraComponent(class Actor* owner);
 
     // Override
 	void Update(float deltaTime) override;

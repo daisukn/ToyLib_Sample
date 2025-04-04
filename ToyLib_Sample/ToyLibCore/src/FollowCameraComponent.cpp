@@ -1,19 +1,19 @@
 
-#include "FollowCamera.h"
+#include "FollowCameraComponent.h"
 #include "Actor.h"
-#include "ColliderComponent.h"
 
-FollowCamera::FollowCamera(Actor* owner)
+FollowCameraComponent::FollowCameraComponent(Actor* owner)
 : CameraComponent(owner)
-, mHorzDist(45.0f)        // 所有アクターとの距離
-, mVertDist(10.0f)        // 所有アクターとの距離（高さ）
-, mTargetDist(500.0f)      // 視点は所有アクターよりどのくらい前か
-, mSpringConstant(100.0f)  // バネ定数
+, mHorzDist(10.0f)        // 所有アクターとの距離
+, mVertDist(4.0f)        // 所有アクターとの距離（高さ）
+, mTargetDist(10.0f)      // 視点は所有アクターよりどのくらい前か
+, mSpringConstant(500.0f)  // バネ定数
+, mVelocity(Vector3(1,1,1))
 {
     
 }
 
-void FollowCamera::Update(float deltaTime)
+void FollowCameraComponent::Update(float deltaTime)
 {
 	CameraComponent::Update(deltaTime);
     mCameraPosition = mActualPos;
@@ -30,8 +30,8 @@ void FollowCamera::Update(float deltaTime)
 	// 加速度を更新
     mVelocity += acel * deltaTime;
 	// カメラの場所を更新
-    //mActualPos += velocity * deltaTime;
-    mActualPos = idealPos;
+    mActualPos += mVelocity * deltaTime;
+    //mActualPos = idealPos;
 	// ターゲットは所有アクターの前方
     Vector3 target = mOwnerActor->GetPosition() + mOwnerActor->GetForward() * mTargetDist;
     
@@ -46,7 +46,7 @@ void FollowCamera::Update(float deltaTime)
 }
 
 // 理想の位置に向けて調整
-void FollowCamera::SnapToIdeal()
+void FollowCameraComponent::SnapToIdeal()
 {
 	// 実際の位置
     mActualPos = ComputeCameraPos();
@@ -60,7 +60,7 @@ void FollowCamera::SnapToIdeal()
     SetCameraPosition(mActualPos);
 }
 
-Vector3 FollowCamera::ComputeCameraPos() const
+Vector3 FollowCameraComponent::ComputeCameraPos() const
 {
 	// カメラの位置を所有アクターの上のほうにセット
 	Vector3 cameraPos = mOwnerActor->GetPosition();
