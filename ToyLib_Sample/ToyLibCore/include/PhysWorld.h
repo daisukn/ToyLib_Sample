@@ -42,7 +42,7 @@ public:
     PhysWorld();
     ~PhysWorld();
     
-    void SetGroundVertex(class VertexArray* v) { mVertexGround = v;  }
+    //void SetGroundVertex(class VertexArray* v) { mVertexGround = v;  }
     void ComputeGroundHeight();
     
     // 暫定
@@ -54,6 +54,10 @@ public:
 
     // コライダータイプ別に登録
     void AddColliderType(class ColliderComponent* c, ColliderType t);
+    
+    // 重力コンポーネント向けのインターフェイス
+    float GetGroundHeightAt(const Vector3& pos) const;
+    bool GetNearestGroundY(const class Actor* a, float& outY) const;
     
 private:
     
@@ -70,8 +74,8 @@ private:
     bool IsCollideBoxOBB_MTV(const OBB* cA, const OBB* cB, MTVResult& mtv);
     
 ///地表計算系
-    bool IsInPolygon(const struct Polygon* pl, const struct Vector3 p);
-    float PolygonHeight(const struct Polygon* pl, const struct Vector3 p);
+    bool IsInPolygon(const struct Polygon* pl, const struct Vector3 p) const;
+    float PolygonHeight(const struct Polygon* pl, const struct Vector3 p) const;
 
     // 物理計算をするコライダーを保持
     //std::vector<class Actor*> actors;
@@ -82,10 +86,14 @@ private:
     std::vector<class ColliderComponent*> mCollBullet;
     std::vector<class ColliderComponent*> mCollWall;
     std::vector<class ColliderComponent*> mCollGround;
+    std::vector<class ColliderComponent*> mCollFoot;
 
 
     // 地表面をVarrayで持つ（WorldTransform未対応）
-    class VertexArray* mVertexGround;
+    //class VertexArray* mVertexGround;
+    
+    std::vector<struct Polygon> mTerrainPolygons;
+    void SetGroundPolygons(const std::vector<Polygon>& polys);
 
     
 };

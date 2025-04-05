@@ -201,7 +201,8 @@ void PhysWorld::Test()
 }
 
 // OBBの投影距離比較
-bool PhysWorld::CompareLengthOBB(const OBB* cA, const OBB* cB, const Vector3 vSep, const Vector3 vDistance){
+bool PhysWorld::CompareLengthOBB(const OBB* cA, const OBB* cB, const Vector3 vSep, const Vector3 vDistance)
+{
     // 分離軸上のAからBの距離
     float length = fabsf(Vector3::Dot(vSep, vDistance));
 
@@ -230,7 +231,8 @@ bool PhysWorld::CompareLengthOBB(const OBB* cA, const OBB* cB, const Vector3 vSe
 
 
 // 回転に対応したOBBCollid
-bool PhysWorld::JudgeWithOBB(ColliderComponent* col1, ColliderComponent* col2){
+bool PhysWorld::JudgeWithOBB(ColliderComponent* col1, ColliderComponent* col2)
+{
     
     auto obb1 = col1->GetBoundingVolume()->GetOBB();
     auto obb2 = col2->GetBoundingVolume()->GetOBB();
@@ -241,10 +243,8 @@ bool PhysWorld::JudgeWithOBB(ColliderComponent* col1, ColliderComponent* col2){
 }
 
 // 衝突しているかどうか
-bool PhysWorld::IsCollideBoxOBB(const OBB* cA, const OBB* cB){
-
-
-
+bool PhysWorld::IsCollideBoxOBB(const OBB* cA, const OBB* cB)
+{
     // 中心間の距離ベクトル算出
     Vector3 vDistance = cB->pos - cA->pos;
 
@@ -330,6 +330,8 @@ void PhysWorld::AddColliderType(ColliderComponent* c, ColliderType t)
             break;
         case C_GROUND:
             mCollGround.emplace_back(c);
+        case C_FOOT:
+            mCollFoot.emplace_back(c);
             break;
     }
 }
@@ -348,7 +350,7 @@ void PhysWorld::RemoveCollider(ColliderComponent* c)
 
 
 // XZ平面に投影し、点がポリゴン内に存在すればTrue
-bool PhysWorld::IsInPolygon(const Polygon* pl, const Vector3 p)
+bool PhysWorld::IsInPolygon(const Polygon* pl, const Vector3 p) const
 {
 
     if(((pl->b.x - pl->a.x) * (p.z - pl->a.z) -
@@ -373,7 +375,7 @@ bool PhysWorld::IsInPolygon(const Polygon* pl, const Vector3 p)
 
 
 // ポリゴン内のある座標における高さを返す
-float PhysWorld::PolygonHeight(const Polygon* pl, const Vector3 p)
+float PhysWorld::PolygonHeight(const Polygon* pl, const Vector3 p) const
 {
 
     float wa, wb, wc;    // 平明方程式の係数
@@ -508,4 +510,65 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
     }
 
     return Vector3::Zero;
+}
+
+bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
+{
+    if (!a) return false;
+
+    const auto* foot = a->GetComponent<ColliderComponent>();
+    if (!foot) return false;
+
+    const Cube* box = foot->GetBoundingVolume()->GetBoundingBox();
+    if (!box) return false;
+
+    float bestY = -FLT_MAX;
+    bool found = false;
+
+    for (const auto* c : mCollFoot)
+    {
+        if (c->GetOwner() == a) continue;
+        const Cube* other = c->GetBoundingVolume()->GetBoundingBox();
+        if (!other) continue;
+
+        bool xzOverlap =
+            box->max.x > other->min.x && box->min.x < other->max.x &&
+            box->max.z > other->min.z && box->min.z < other->max.z;
+
+        bool isBelow = box->min.y >= other->max.y;
+
+        if (xzOverlap && isBelow)
+        {
+            float topY = other->max.y;
+            if (topY > bestY)
+            {
+                bestY = topY;
+                found = true;
+            }
+        }
+    }
+
+    if (found) outY = bestY;
+    return found;
+}
+float PhysWorld::GetGroundHeightAt(const Vector3& pos) const
+{
+    float highestY = -FLT_MAX;
+    for (const auto& poly : mTerrainPolygons)
+    {
+        if (IsInPolygon(&poly, pos))
+        {
+            float y = PolygonHeight(&poly, pos);
+            if (y > highestY)
+            {
+                highestY = y;
+            }
+        }
+    }
+    return highestY;
+}
+
+void PhysWorld::SetGroundPolygons(const std::vector<Polygon>& polys)
+{
+    mTerrainPolygons = polys;
 }

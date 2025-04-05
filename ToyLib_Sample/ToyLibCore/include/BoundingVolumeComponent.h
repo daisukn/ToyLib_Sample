@@ -34,8 +34,6 @@ struct OBB
         OBB::axisY = src.axisY;
         OBB::axisZ = src.axisZ;
     }
-
-
 };
 
 
@@ -66,6 +64,7 @@ public:
     // バウンディングボックス取得
     struct Cube* GetBoundingBox() const { return mBoundingBox.get(); }
     struct OBB* GetOBB() const { return mObb.get(); }
+
     
     struct Polygon* GetPolygons() const { return mPolygons.get(); }
     

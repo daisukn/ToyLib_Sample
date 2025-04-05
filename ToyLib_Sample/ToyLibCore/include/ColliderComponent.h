@@ -15,7 +15,8 @@ enum ColliderType
     C_BULLET,   // 弾丸
     C_LASER,
     C_WALL,     // 壁
-    C_GROUND    // 地面
+    C_GROUND,    // 地面
+    C_FOOT      // 足元を判定する
 };
 
 class ColliderComponent : public Component

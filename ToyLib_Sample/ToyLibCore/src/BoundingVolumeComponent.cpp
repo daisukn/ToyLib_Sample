@@ -274,3 +274,4 @@ void BoundingVolumeComponent::Draw(Shader* shader)
     mVertexArray->SetActive();
     glDrawElements(GL_LINE_STRIP, 36, GL_UNSIGNED_INT, nullptr);
 }
+

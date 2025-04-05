@@ -17,8 +17,6 @@
 #include <string>
 
 
-const std::string LIBRARY_PATH = "ToyLibCore/";
-
 // コンストラクタ
 Renderer::Renderer()
 : mStrTitle("ToyLib App")
@@ -45,6 +43,7 @@ Renderer::Renderer()
 , mShadowFBOHeight(4096)
 , mWindow(nullptr)
 , mGLContext(nullptr)
+, mShaderPath("ToyLibCore/Shaders/")
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -258,8 +257,8 @@ bool Renderer::LoadShaders()
 
     // スプライト用シェーダー生成
     mSpriteShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/Sprite.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/Sprite.frag";
+    vShaderName = mShaderPath +"Sprite.vert";
+    fShaderName = mShaderPath + "Sprite.frag";
     if (!mSpriteShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -271,8 +270,8 @@ bool Renderer::LoadShaders()
 
     // Billboard用シェーダー
     mBillboardShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/Billboard.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/Billboard.frag";
+    vShaderName = mShaderPath + "Billboard.vert";
+    fShaderName = mShaderPath + "Billboard.frag";
     if (!mBillboardShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -280,8 +279,8 @@ bool Renderer::LoadShaders()
     
     // Particle用シェーダー
     mParticleShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/Billboard.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/Particle.frag";
+    vShaderName = mShaderPath + "Billboard.vert";
+    fShaderName = mShaderPath + "Particle.frag";
     if (!mParticleShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -289,8 +288,8 @@ bool Renderer::LoadShaders()
     
     // メッシュ用シェーダー生成
     mMeshShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/Phong.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/Toon.frag";
+    vShaderName = mShaderPath + "Phong.vert";
+    fShaderName = mShaderPath + "Toon.frag";
     if (!mMeshShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -298,8 +297,8 @@ bool Renderer::LoadShaders()
     
     // メッシュ用シェーダー(Toon)生成
     mMeshShaderToon = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/Phong.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/Toon.frag";
+    vShaderName = mShaderPath + "Phong.vert";
+    fShaderName = mShaderPath + "Toon.frag";
     if (!mMeshShaderToon->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -307,8 +306,8 @@ bool Renderer::LoadShaders()
     
     // 背景用シェーダー生成
     mBackGroundShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/BasicMesh.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/BasicMesh.frag";
+    vShaderName = mShaderPath + "BasicMesh.vert";
+    fShaderName = mShaderPath + "BasicMesh.frag";
     if (!mBackGroundShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -316,8 +315,8 @@ bool Renderer::LoadShaders()
     
     // スキンメッシュ用シェーダー
     mSkinnedShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/Skinned.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/Toon.frag";
+    vShaderName = mShaderPath + "Skinned.vert";
+    fShaderName = mShaderPath + "Toon.frag";
     if (!mSkinnedShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -325,8 +324,8 @@ bool Renderer::LoadShaders()
     
     // スキンメッシュ用シェーダー(Toon)
     mSkinnedShaderToon = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/Skinned.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/Toon.frag";
+    vShaderName = mShaderPath + "Skinned.vert";
+    fShaderName = mShaderPath + "Toon.frag";
     if (!mSkinnedShaderToon->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -334,8 +333,8 @@ bool Renderer::LoadShaders()
     
     // ワイヤフレーム用　単色シェーダー生成
     mSolidShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/BasicMesh.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/SolidColor.frag";
+    vShaderName = mShaderPath + "BasicMesh.vert";
+    fShaderName = mShaderPath + "SolidColor.frag";
     if (!mSolidShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -343,8 +342,8 @@ bool Renderer::LoadShaders()
     
     // シャドウマッピング透けるタルメッシュ用
     mShadowSkinnedShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/ShadowMapping_Skinned.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/ShadowMapping.frag";
+    vShaderName = mShaderPath + "ShadowMapping_Skinned.vert";
+    fShaderName = mShaderPath + "ShadowMapping.frag";
     if (!mShadowSkinnedShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -352,8 +351,8 @@ bool Renderer::LoadShaders()
     
     // シャドウマップメッシュ用
     mShadowMeshShader = std::make_unique<Shader>();
-    vShaderName = LIBRARY_PATH + "Shaders/ShadowMapping_Mesh.vert";
-    fShaderName = LIBRARY_PATH + "Shaders/ShadowMapping.frag";
+    vShaderName = mShaderPath + "ShadowMapping_Mesh.vert";
+    fShaderName = mShaderPath + "ShadowMapping.frag";
     if (!mShadowMeshShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;

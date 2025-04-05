@@ -116,6 +116,7 @@ private:
     bool LoadSettings(const std::string& filePath);
     
     // レンダラーパラメーター //
+    std::string mShaderPath;
     // ウィンドウタイトル
     std::string mStrTitle;
     //スクリーンサイズ

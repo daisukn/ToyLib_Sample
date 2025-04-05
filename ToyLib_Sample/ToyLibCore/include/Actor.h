@@ -72,7 +72,8 @@ public:
 	//void AddComponent(class Component* component);
 	void AddComponent(std::unique_ptr<class Component> component);
     void RemoveComponent(class Component* component);
-    
+
+    // コンポーネントを生成
     template <typename T, typename... Args>
     T* CreateComponent(Args&&... args)
     {
@@ -82,6 +83,7 @@ public:
         return rawPtr;
     }
 
+    // 該当するコンポーネントを返す（１つ）
     template <typename T>
     T* GetComponent() const
     {
@@ -94,6 +96,21 @@ public:
             }
         }
         return nullptr;
+    }
+    // 該当するコンポーネントを全てVectorで返す
+    template <typename T>
+    std::vector<T*> GetAllComponents()
+    {
+        std::vector<T*> results;
+        for (auto& comp : mComponents)
+        {
+            T* casted = dynamic_cast<T*>(comp.get());
+            if (casted)
+            {
+                results.emplace_back(casted);
+            }
+        }
+        return results;
     }
 
     

@@ -1,11 +1,12 @@
 {
   "title": "ToyLib Game",
+  "shader_path": "ToyLibCore/Shaders/",
   "screen": {
     "width": 1280.0,
     "height": 768.0,
     "fullscreen": false
   },
-  "perspectiveFOV": 30.0,
+  "perspectiveFOV": 60.0,
   "camera": {
     "position": [0.0, 0.0, 5.0]
   },

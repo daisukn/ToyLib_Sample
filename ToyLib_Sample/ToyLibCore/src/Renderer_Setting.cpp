@@ -25,6 +25,9 @@ bool Renderer::LoadSettings(const std::string& filePath)
 
     // タイトル
     JsonHelper::GetString(data, "title", mStrTitle);
+    
+    // シェーダーパス
+    JsonHelper::GetString(data, "shader_path", mShaderPath);
 
     // 画面サイズ
     if (data.contains("screen"))
