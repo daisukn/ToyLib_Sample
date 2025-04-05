@@ -4,14 +4,16 @@ project(game)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
+set(TOYLIB_PATH ToyLib_Sample/ToyLibCore)
+set(GAME_PATH ToyLib_Sample/GameApp)
 
 find_package(OpenGL REQUIRED)
 
 # ソースファイル収集
 file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/*.cpp
-    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/src/*.cpp
-    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp/*.cpp
+    ${CMAKE_SOURCE_DIR}/${TOYLIB_PATH}/src/*.cpp
+    ${CMAKE_SOURCE_DIR}/${GAME_PATH}/*.cpp
 )
 
 # 内部ファイル除去
@@ -24,8 +26,8 @@ endforeach()
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/include
-    ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp
+    ${CMAKE_SOURCE_DIR}/${TOYLIB_PATH}/include
+    ${CMAKE_SOURCE_DIR}/${GAME_PATH}/
 )
 
 if(WIN32)
@@ -39,8 +41,8 @@ if(WIN32)
     find_package(OpenGL REQUIRED)
 
     include_directories(
-        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/ToyLibCore/include
-        ${CMAKE_SOURCE_DIR}/ToyLib_Sample/GameApp
+        ${CMAKE_SOURCE_DIR}/${TOYLIB_PATH}/include
+        ${CMAKE_SOURCE_DIR}/${GAME_PATH}
         C:/dev/local/assimp/include
     )
 
