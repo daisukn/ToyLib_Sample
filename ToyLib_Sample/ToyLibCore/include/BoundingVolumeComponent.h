@@ -64,6 +64,8 @@ public:
     // バウンディングボックス取得
     struct Cube* GetBoundingBox() const { return mBoundingBox.get(); }
     struct OBB* GetOBB() const { return mObb.get(); }
+    // ワールド座標のAABBを返す
+    struct Cube GetWorldAABB() const;
 
     
     struct Polygon* GetPolygons() const { return mPolygons.get(); }

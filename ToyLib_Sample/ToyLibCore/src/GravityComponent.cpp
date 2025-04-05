@@ -1,6 +1,7 @@
 #include "GravityComponent.h"
 #include "Actor.h"
 #include "ColliderComponent.h"
+#include "BoundingVolumeComponent.h"
 #include "PhysWorld.h"
 #include "Application.h"
 #include <iostream>
@@ -10,32 +11,42 @@ GravityComponent::GravityComponent(Actor* a)
 {
 }
 
-void GravityComponent::Update(float dt)
+void GravityComponent::Update(float deltaTime)
 {
-    mVelocityY += mGravityAccel * dt;
+    mVelocityY += mGravityAccel * deltaTime;
 
     Vector3 pos = mOwnerActor->GetPosition();
-    pos.y += mVelocityY * dt;
+    pos.y += mVelocityY/9 * deltaTime;
+    mOwnerActor->SetPosition(pos); // 仮位置反映
+
+    ColliderComponent* collider = FindFootCollider();
+    if (!collider) return;
+
+    PhysWorld* phys = mOwnerActor->GetApp()->GetPhysWorld();
+    if (!phys) return;
 
     float groundY;
-    PhysWorld* phys = mOwnerActor->GetApp()->GetPhysWorld();
-    if (phys && phys->GetNearestGroundY(mOwnerActor, groundY))
+    if (phys->GetNearestGroundY(mOwnerActor, groundY))
     {
-        if (pos.y <= groundY )
+        std::cout << "groundY"  << groundY << std::endl;
+        std::cout << "velocity" << mVelocityY * deltaTime << std::endl;
+        const Cube worldBox = collider->GetBoundingVolume()->GetWorldAABB();
+        float offset = pos.y - worldBox.min.y;
+
+        if (pos.y - offset <= groundY + 0.01f)  // 少しマージン持たせる
         {
-            pos.y = groundY;
+            pos.y = groundY + offset;
             mVelocityY = 0.0f;
             mIsGrounded = true;
+            mOwnerActor->SetPosition(pos);
         }
         else
         {
             mIsGrounded = false;
         }
     }
-    else
-    {
-       std::cout << "No ground detected!" << std::endl;
-    }
+    std::cout << "pos.y" << pos.y << std::endl;
+
     mOwnerActor->SetPosition(pos);
 }
 
@@ -47,3 +58,16 @@ void GravityComponent::Jump()
         mIsGrounded = false;
     }
 }
+ColliderComponent* GravityComponent::FindFootCollider()
+{
+    for (auto* comp : mOwnerActor->GetAllComponents<ColliderComponent>())
+    {
+        if (comp->GetColliderType() == C_FOOT)
+        {
+            return comp;
+        }
+    }
+    return nullptr;
+}
+
+

@@ -29,7 +29,7 @@ void main()
 {
 
     // フォグの値を計算
-    float dist = length(uCameraPos.xyz - fragWorldPos.xyz);
+    float dist = length(uCameraPos - fragWorldPos);
     float fogFactor = (uFoginfo.maxDist - dist) / (uFoginfo.maxDist - uFoginfo.minDist);
     fogFactor = clamp(fogFactor, 0.0f, 1.0f);
     
@@ -40,9 +40,9 @@ void main()
     
   
     // フォグを適用
-    vec3 c = mix(uFoginfo.color, col.xyz, fogFactor);
+    vec3 c = mix(uFoginfo.color, col.rgb, fogFactor);
     outColor = vec4(c, col.a);
-    outColor = col;
+    //outColor = col;
 
    
 }

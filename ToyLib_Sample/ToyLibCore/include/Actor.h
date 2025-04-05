@@ -99,7 +99,7 @@ public:
     }
     // 該当するコンポーネントを全てVectorで返す
     template <typename T>
-    std::vector<T*> GetAllComponents()
+    std::vector<T*> GetAllComponents() const
     {
         std::vector<T*> results;
         for (auto& comp : mComponents)

@@ -100,10 +100,18 @@ void Game::LoadData()
     
     auto towerCollider = towerActor->CreateComponent<ColliderComponent>();
     towerCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/house.x")->GetVertexArray());
-    towerCollider->GetBoundingVolume()->CreateVArray();
     towerCollider->SetDisp(true);
     towerCollider->SetColliderType(C_WALL);
     towerCollider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
+
+    auto towerFootColl = towerActor->CreateComponent<ColliderComponent>();
+    towerFootColl->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/house.x")->GetVertexArray());
+    towerFootColl->GetBoundingVolume()->CreateVArray();
+    towerFootColl->SetDisp(true);
+    towerFootColl->SetColliderType(C_GROUND);
+    towerFootColl->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
+
+    
     
     towerActor->SetPosition(Vector3(15, 0, 15));
     towerActor->SetScale(0.003f);
@@ -117,11 +125,11 @@ void Game::LoadData()
     fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
     
     fireActor->SetPosition(Vector3(-15, 0, 15));
-    fireActor->SetScale(0.01f);
+    fireActor->SetScale(0.1f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider->SetDisp(true);
-    fireCollider->SetColliderType(C_WALL);
+    fireCollider->SetColliderType(C_GROUND);
     
     // 地面
     auto b = CreateActor<Actor>();

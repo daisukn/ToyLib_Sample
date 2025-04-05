@@ -275,3 +275,17 @@ void BoundingVolumeComponent::Draw(Shader* shader)
     glDrawElements(GL_LINE_STRIP, 36, GL_UNSIGNED_INT, nullptr);
 }
 
+// ワールド空間でのバウンディングボックスを取得
+Cube BoundingVolumeComponent::GetWorldAABB() const
+{
+    Cube worldBox;
+    if (!mBoundingBox) return worldBox;
+
+    Vector3 pos = mOwnerActor->GetPosition();
+    float scale = mOwnerActor->GetScale();
+
+    worldBox.min = mBoundingBox->min * scale + pos;
+    worldBox.max = mBoundingBox->max * scale + pos;
+
+    return worldBox;
+}

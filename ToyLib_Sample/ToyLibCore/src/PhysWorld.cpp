@@ -29,7 +29,14 @@ void PhysWorld::Test()
         c->ClearCollidBuffer();
     }
 
+    CollideAndCallback(mCollPlayer, mCollEnemy);                      // ヒットのみ
+    CollideAndCallback(mCollPlayer, mCollBullet);                      // ヒットのみ
+    CollideAndCallback(mCollPlayer, mCollWall, true, false);          // 壁ずり（Y方向除外）
+    CollideAndCallback(mCollEnemy, mCollWall, true, false);           // 敵の壁押し戻し
+    //CollideAndCallback(mCollPlayer, mCollFoot, true, true, true);     // 足場に着地
+    //CollideAndCallback(mCollPlayer, mCollGround, true, true, true);   // 地形に着地
     
+    /*
     // Player vs Enemy
     for (auto c1 : mCollPlayer)
     {
@@ -59,7 +66,7 @@ void PhysWorld::Test()
             }
         }
     }
-    
+ */
     // Laser vs Enemy
 /*    for (auto c1 : mCollLaser)
     {
@@ -116,7 +123,7 @@ void PhysWorld::Test()
             }
         }
     }
-    
+    /*
     // Player vs Wall
     for (auto c1 : mCollPlayer)
     {
@@ -133,7 +140,7 @@ void PhysWorld::Test()
             if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
             {
                 // 押し戻し処理
-                Vector3 pushDir = ComputePushBackDirection(c1, c2);
+                Vector3 pushDir = ComputePushBackDirection(c1, c2, false);
                 totalPush += pushDir;
                 collided = true;
                 
@@ -163,7 +170,7 @@ void PhysWorld::Test()
             if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
             {
                 // 押し戻し処理
-                Vector3 pushDir = ComputePushBackDirection(c1, c2);
+                Vector3 pushDir = ComputePushBackDirection(c1, c2, false);
                 totalPush += pushDir;
                 collided = true;
                 
@@ -179,25 +186,68 @@ void PhysWorld::Test()
     }
     
     // Player vs Ground
+    // Player vs Ground or Foot（押し戻しではなく Y補正ベース）
     for (auto c1 : mCollPlayer)
     {
-        for (auto c2 : mCollGround)
+        if (!c1->GetDisp()) continue;
+
+        float bestGroundY = -FLT_MAX;
+        bool found = false;
+
+        // C_FOOT
+        for (auto c2 : mCollFoot)
         {
+            if (!c2->GetDisp()) continue;
+            if (c1->GetOwner() == c2->GetOwner()) continue;
+
             if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
             {
-                Actor* player = c1->GetOwner();
-                Vector3 pos = player->GetPosition();
-                pos.y = c2->GetPosition().y + 1.f;//地面の厚み; // ちょっと上に補正
-                player->SetPosition(pos);
+                float groundY = c2->GetOwner()->GetPosition().y + c2->GetBoundingVolume()->GetBoundingBox()->max.y * c2->GetOwner()->GetScale();
+                if (groundY > bestGroundY)
+                {
+                    bestGroundY = groundY;
+                    found = true;
+                }
+            }
+        }
 
-                // 垂直速度リセット
-                if (auto* move = player->GetComponent<MoveComponent>())
+        // C_GROUND
+        for (auto c2 : mCollGround)
+        {
+            if (!c2->GetDisp()) continue;
+
+            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
+            {
+                float groundY = c2->GetOwner()->GetPosition().y + c2->GetBoundingVolume()->GetBoundingBox()->max.y * c2->GetOwner()->GetScale();
+                if (groundY > bestGroundY)
+                {
+                    bestGroundY = groundY;
+                    found = true;
+                }
+            }
+        }
+
+        if (found)
+        {
+            Vector3 pos = c1->GetOwner()->GetPosition();
+            const Cube* box = c1->GetBoundingVolume()->GetBoundingBox();
+            float scale = c1->GetOwner()->GetScale();
+            float footOffset = box->min.y * scale;
+
+            float actorFootY = pos.y + footOffset;
+            if (actorFootY < bestGroundY + 0.01f)
+            {
+                pos.y = bestGroundY - footOffset;
+                c1->GetOwner()->SetPosition(pos);
+
+                if (auto* move = c1->GetOwner()->GetComponent<MoveComponent>())
                 {
                     move->SetVerticalSpeed(0.0f);
                 }
             }
         }
     }
+    */
 }
 
 // OBBの投影距離比較
@@ -330,6 +380,7 @@ void PhysWorld::AddColliderType(ColliderComponent* c, ColliderType t)
             break;
         case C_GROUND:
             mCollGround.emplace_back(c);
+            break;
         case C_FOOT:
             mCollFoot.emplace_back(c);
             break;
@@ -469,7 +520,7 @@ bool PhysWorld::IsCollideBoxOBB_MTV(const OBB* cA, const OBB* cB, MTVResult& mtv
         CompareLengthOBB_MTV(cA, cB, Vector3::Cross(cA->axisZ, cB->axisZ), vDistance, mtv);
 }
 
-Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderComponent* b)
+Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderComponent* b, bool allowY)
 {
     MTVResult mtv;
 
@@ -480,7 +531,7 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
     {
         // fallback
         Vector3 delta = a->GetPosition() - b->GetPosition();
-        delta.y = 0.0f;
+        if (!allowY) delta.y = 0.0f;
         if (delta.LengthSq() > Math::NearZeroEpsilon)
         {
             delta.Normalize();
@@ -494,7 +545,7 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
 
     // MTVに基づく押し戻し（Y方向を除外して壁ずり対応）
     Vector3 pushAxis = mtv.axis;
-    pushAxis.y = 0.0f;
+    if (!allowY) pushAxis.y = 0.0f;
 
     // MTVの向きを修正：a→bの方向でなければ反転
     Vector3 dirAB = a->GetPosition() - b->GetPosition();
@@ -511,50 +562,102 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
 
     return Vector3::Zero;
 }
+/*
+bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
+{
+    if (!a) return false;
+
+    const auto* foot = FindFootCollider(a);
+    if (!foot) return false;
+
+    const Cube box = foot->GetBoundingVolume()->GetWorldAABB();
+
+    float bestY = -FLT_MAX;
+    float smallestGap = FLT_MAX;
+    bool found = false;
+
+    // --- C_GROUND コライダーによる接地判定 ---
+    for (const auto* c : mCollGround)
+    {
+        if (c->GetOwner() == a) continue;
+
+        const Cube other = c->GetBoundingVolume()->GetWorldAABB();
+
+        const bool xzOverlap =
+            box.max.x > other.min.x && box.min.x < other.max.x &&
+            box.max.z > other.min.z && box.min.z < other.max.z;
+
+        const float yGap = box.min.y - other.max.y;
+
+        if (xzOverlap && yGap >= -0.001f && yGap < smallestGap)
+        {
+            bestY = other.max.y;
+            std::cout << "besty is " << bestY << std::endl;
+            smallestGap = yGap;
+            found = true;
+        }
+    }
+
+    // --- 地形ポリゴンによる接地判定（オプション） ---
+    const Vector3 center = a->GetPosition();
+    const float terrainY = GetGroundHeightAt(center);
+    if (terrainY > bestY)
+    {
+        bestY = terrainY;
+        std::cout << "地面" << bestY << std::endl;
+        found = true;
+    }
+
+    if (found) outY = bestY;
+    return found;
+}
+ */
 
 bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
 {
     if (!a) return false;
 
-    const auto* foot = a->GetComponent<ColliderComponent>();
+    const auto* foot = FindFootCollider(a);
     if (!foot) return false;
 
-    const Cube* box = foot->GetBoundingVolume()->GetBoundingBox();
-    if (!box) return false;
+    const Cube box = foot->GetBoundingVolume()->GetWorldAABB();
 
     float bestY = -FLT_MAX;
+    float smallestGap = FLT_MAX;
+    bool foundGroundCollider = false;
     bool found = false;
 
-    // --- C_FOOT コライダーを使った接地判定 ---
-    for (const auto* c : mCollFoot)
+    // --- C_GROUNDコライダー優先 ---
+    for (const auto* c : mCollGround)
     {
         if (c->GetOwner() == a) continue;
-        const Cube* other = c->GetBoundingVolume()->GetBoundingBox();
-        if (!other) continue;
 
-        bool xzOverlap =
-            box->max.x > other->min.x && box->min.x < other->max.x &&
-            box->max.z > other->min.z && box->min.z < other->max.z;
+        const Cube other = c->GetBoundingVolume()->GetWorldAABB();
 
-        bool isBelow = box->min.y >= other->max.y;
+        const bool xzOverlap =
+            box.max.x > other.min.x && box.min.x < other.max.x &&
+            box.max.z > other.min.z && box.min.z < other.max.z;
 
-        if (xzOverlap && isBelow)
+        const float yGap = box.min.y - other.max.y;
+
+        if (xzOverlap && yGap >= -0.001f && yGap < smallestGap)
         {
-            float topY = other->max.y;
-            if (topY > bestY)
-            {
-                bestY = topY;
-                found = true;
-            }
+            bestY = other.max.y;
+            smallestGap = yGap;
+            foundGroundCollider = true;
         }
     }
 
-    // --- 地形ポリゴンを使った接地判定 ---
-    Vector3 center = a->GetPosition();
-    float terrainY = GetGroundHeightAt(center);
-    if (terrainY > bestY)
+    // --- 地形（ポリゴン）による補完（C_GROUNDが見つからなかった場合のみ） ---
+    if (!foundGroundCollider)
     {
+        const Vector3 center = a->GetPosition();
+        const float terrainY = GetGroundHeightAt(center);
         bestY = terrainY;
+        found = true;
+    }
+    else
+    {
         found = true;
     }
 
@@ -582,4 +685,62 @@ float PhysWorld::GetGroundHeightAt(const Vector3& pos) const
 void PhysWorld::SetGroundPolygons(const std::vector<Polygon>& polys)
 {
     mTerrainPolygons = polys;
+}
+
+// 実装（PhysWorld.cpp）
+void PhysWorld::CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
+                                   const std::vector<ColliderComponent*>& groupB,
+                                   bool doPushBack,
+                                   bool allowY,
+                                   bool stopVerticalSpeed)
+{
+    for (auto* c1 : groupA)
+    {
+        if (!c1->GetDisp()) continue;
+
+        Vector3 totalPush = Vector3::Zero;
+        bool collided = false;
+
+        for (auto* c2 : groupB)
+        {
+            if (!c2->GetDisp()) continue;
+            if (c1->GetOwner() == c2->GetOwner()) continue;
+
+            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
+            {
+                c1->Collided(c2);
+                c2->Collided(c1);
+                collided = true;
+
+                if (doPushBack)
+                {
+                    Vector3 push = ComputePushBackDirection(c1, c2, allowY);
+                    totalPush += push;
+                }
+            }
+        }
+
+        if (collided && doPushBack)
+        {
+            Vector3 newPos = c1->GetOwner()->GetPosition() + totalPush;
+            c1->GetOwner()->SetPosition(newPos);
+
+            if (stopVerticalSpeed)
+            {
+                if (auto* move = c1->GetOwner()->GetComponent<MoveComponent>())
+                {
+                    move->SetVerticalSpeed(0.0f);
+                }
+            }
+        }
+    }
+}
+ColliderComponent* PhysWorld::FindFootCollider(const Actor* a) const
+{
+    for (auto* comp : a->GetAllComponents<ColliderComponent>())
+    {
+        if (comp->GetColliderType() == C_FOOT)
+            return comp;
+    }
+    return nullptr;
 }

@@ -17,4 +17,7 @@ private:
     float mGravityAccel = -980.0f;
     float mJumpSpeed = 350.0f;
     bool mIsGrounded = false;
+    
+    
+    class ColliderComponent* FindFootCollider();
 };

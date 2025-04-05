@@ -1,5 +1,5 @@
 #include "HeroActor.h"
-
+#include <iostream>
 
 HeroActor::HeroActor(Application* a)
 : Actor(a)
@@ -52,19 +52,19 @@ HeroActor::HeroActor(Application* a)
 
     // --- 移動コンポーネント ---
     //mMoveComp = CreateComponent<MoveComponent>();
-    mMoveComp = CreateComponent<FPSMoveComponent>();
-    //mMoveComp = CreateComponent<DirMoveComponent>();
+    //mMoveComp = CreateComponent<FPSMoveComponent>();
+    mMoveComp = CreateComponent<DirMoveComponent>();
     
     
     // --- カメラコンポーネント ---
-    //mCameraComp = CreateComponent<OrbitCameraComponent>();
-    mCameraComp = CreateComponent<FollowCameraComponent>();
+    mCameraComp = CreateComponent<OrbitCameraComponent>();
+    //mCameraComp = CreateComponent<FollowCameraComponent>();
     
     auto foot = CreateComponent<ColliderComponent>();
     foot->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
     foot->SetColliderType(C_FOOT);
-    auto grav = CreateComponent<GravityComponent>();
-    SetPosition(Vector3(0,100,0));
+    mGravComp = CreateComponent<GravityComponent>();
+    //SetPosition(Vector3(0,100,0));
 }
 
 HeroActor::~HeroActor()
@@ -74,7 +74,7 @@ HeroActor::~HeroActor()
 
 void HeroActor::UpdateActor(float deltaTime)
 {
-    
+    std::cout << GetPosition().y << std::endl;
 }
 
 void HeroActor::ActorInput(const InputState& state)
@@ -108,7 +108,12 @@ void HeroActor::ActorInput(const InputState& state)
             mAnimID = H_Stab;
             inputAttack = true;
         }
-
+        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_Q) == EPressed ||
+                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
+        {
+            //inputAttack = true;
+            mGravComp->Jump();
+        }
         // 攻撃入力があれば移動ロック
         if (inputAttack)
         {

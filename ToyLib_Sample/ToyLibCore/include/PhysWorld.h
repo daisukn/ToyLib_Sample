@@ -39,13 +39,23 @@ private:
     bool IsCollideBoxOBB(const OBB* cA, const OBB* cB);
     bool JudgeWithRadius(class ColliderComponent* col1, class ColliderComponent* col2);
 
-    Vector3 ComputePushBackDirection(class ColliderComponent* a, class ColliderComponent* b);
+    Vector3 ComputePushBackDirection(class ColliderComponent* a, class ColliderComponent* b, bool allowY);
     bool CompareLengthOBB_MTV(const OBB* cA, const OBB* cB, const Vector3& vSep, const Vector3& vDistance, MTVResult& mtv);
     bool IsCollideBoxOBB_MTV(const OBB* cA, const OBB* cB, MTVResult& mtv);
 
     // 地表計算
     bool IsInPolygon(const struct Polygon* pl, const struct Vector3 p) const;
     float PolygonHeight(const struct Polygon* pl, const struct Vector3 p) const;
+    
+    // 判定用コールバック
+    void CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
+                            const std::vector<ColliderComponent*>& groupB,
+                            bool doPushBack = false,
+                            bool allowY = false,
+                            bool stopVerticalSpeed = false);
+    
+    class ColliderComponent* FindFootCollider(const Actor* a) const;
+    
 
     // コライダー保持
     std::vector<class ColliderComponent*> mColliders;

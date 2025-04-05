@@ -433,6 +433,7 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
         if (comp->IsVisible() && comp->GetLayer() == layer)
         {
             auto s = GetVisualShader(comp);
+            SetLightUniforms(s);
             comp->Draw(s);
         }
     }
