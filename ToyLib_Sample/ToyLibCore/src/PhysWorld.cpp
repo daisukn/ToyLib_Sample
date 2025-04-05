@@ -525,6 +525,7 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
     float bestY = -FLT_MAX;
     bool found = false;
 
+    // --- C_FOOT コライダーを使った接地判定 ---
     for (const auto* c : mCollFoot)
     {
         if (c->GetOwner() == a) continue;
@@ -548,9 +549,19 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
         }
     }
 
+    // --- 地形ポリゴンを使った接地判定 ---
+    Vector3 center = a->GetPosition();
+    float terrainY = GetGroundHeightAt(center);
+    if (terrainY > bestY)
+    {
+        bestY = terrainY;
+        found = true;
+    }
+
     if (found) outY = bestY;
     return found;
 }
+
 float PhysWorld::GetGroundHeightAt(const Vector3& pos) const
 {
     float highestY = -FLT_MAX;

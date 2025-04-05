@@ -21,6 +21,7 @@
 #include "ColliderComponent.h"
 #include "BoundingVolumeComponent.h"
 #include "LaserColliderComponent.h"
+#include "GravityComponent.h"
 
 // --- Visual Components ---
 #include "MeshComponent.h"

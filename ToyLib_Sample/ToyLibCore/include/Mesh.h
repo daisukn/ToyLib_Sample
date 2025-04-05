@@ -27,7 +27,7 @@ public:
     void Unload();
 
     // VertexArrayを取得
-    std::vector<class VertexArray*> GetVertexArray() { return mVertexArrayPtr; }
+    const std::vector<class VertexArray*>& GetVertexArray() { return mVertexArrayPtr; }
     // Textureを取得
     class Texture* GetTexture(size_t index);
     

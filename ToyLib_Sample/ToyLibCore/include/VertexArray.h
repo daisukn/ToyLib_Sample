@@ -47,12 +47,12 @@ public:
     // 頂点数
     unsigned int GetNumVerts() const { return mNumVerts; }
     // 面データ
-    //std::vector<struct Polygon*> GetPolygon() const { return mPolygons; }
-    const std::vector<std::unique_ptr<struct Polygon>>& GetPolygons() const { return mPolygons; }
-    
+    //std::vector<std::unique_ptr<struct Polygon>>  GetPolygon() const { return mPolygons; }
+    //const std::vector<std::unique_ptr<struct Polygon>>& GetPolygons() const { return mPolygons; }
+    const std::vector<struct Polygon>& GetPolygons() const { return mPolygons; }
 
 private:
-    // 頂点の数
+    // 頂点の
     unsigned int mNumVerts;
     // インデックスの数
     unsigned int mNumIndices;
@@ -68,10 +68,10 @@ private:
     unsigned int mTextureID;
     
     // ポリゴンデータ格納（計算用途）
-    //std::vector<struct Polygon*> mPolygons;
-    std::vector<std::unique_ptr<struct Polygon>> mPolygons;
+    //std::vector<std::unique_ptr<struct Polygon>> mPolygons;
+    std::vector<Polygon> mPolygons;
     
-    void CreatePolygon(const float* verts, const unsigned int* indices, const unsigned int num);
+    void CreatePolygons(const float* verts, const unsigned int* indices, const unsigned int num);
     
 };
 

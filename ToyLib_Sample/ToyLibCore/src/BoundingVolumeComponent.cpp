@@ -73,18 +73,18 @@ void BoundingVolumeComponent::ComputeBoundingVolume(const std::vector<VertexArra
     for (const auto& v : va)
     {
         const auto& polygons = v->GetPolygons();
-        for (const auto& p : polygons)
+        for (const auto& poly : polygons)
         {
-            const auto* poly = p.get();
+            //const auto poly = p;
 
-            mBoundingBox->min.x = std::min({mBoundingBox->min.x, poly->a.x, poly->b.x, poly->c.x});
-            mBoundingBox->max.x = std::max({mBoundingBox->max.x, poly->a.x, poly->b.x, poly->c.x});
+            mBoundingBox->min.x = std::min({mBoundingBox->min.x, poly.a.x, poly.b.x, poly.c.x});
+            mBoundingBox->max.x = std::max({mBoundingBox->max.x, poly.a.x, poly.b.x, poly.c.x});
 
-            mBoundingBox->min.y = std::min({mBoundingBox->min.y, poly->a.y, poly->b.y, poly->c.y});
-            mBoundingBox->max.y = std::max({mBoundingBox->max.y, poly->a.y, poly->b.y, poly->c.y});
+            mBoundingBox->min.y = std::min({mBoundingBox->min.y, poly.a.y, poly.b.y, poly.c.y});
+            mBoundingBox->max.y = std::max({mBoundingBox->max.y, poly.a.y, poly.b.y, poly.c.y});
 
-            mBoundingBox->min.z = std::min({mBoundingBox->min.z, poly->a.z, poly->b.z, poly->c.z});
-            mBoundingBox->max.z = std::max({mBoundingBox->max.z, poly->a.z, poly->b.z, poly->c.z});
+            mBoundingBox->min.z = std::min({mBoundingBox->min.z, poly.a.z, poly.b.z, poly.c.z});
+            mBoundingBox->max.z = std::max({mBoundingBox->max.z, poly.a.z, poly.b.z, poly.c.z});
         }
     }
     

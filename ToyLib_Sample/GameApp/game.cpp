@@ -29,7 +29,7 @@ void Game::InitGame()
 
     
     auto treeActor = CreateActor<Actor>();
-    treeActor->SetPosition(Vector3(0.0f, 2.5f, 0.0f));
+    treeActor->SetPosition(Vector3(0.0f, 5.f, 0.0f));
     treeActor->SetScale(0.02);
     auto treeBillboard = treeActor->CreateComponent<BillboardComponent>(100);
     treeBillboard->SetTexture(GetRenderer()->GetTexture("Assets/tree.png"));
@@ -38,15 +38,15 @@ void Game::InitGame()
     auto shadow = treeActor->CreateComponent<ShadowSpriteComponent>(10);
     shadow->SetTexture(GetRenderer()->GetTexture("Assets/shadowcircle.png"));
     shadow->SetVisible(true);
-    shadow->SetOffsetPosition(Vector3(0.0f, -4.3f, 0.0f));
+    shadow->SetOffsetPosition(Vector3(0.0f, -4.9f, 0.0f));
     shadow->SetOffsetScale(0.03f);
     
     
     auto particleActor = CreateActor<Actor>();
-    particleActor->SetPosition(Vector3(-15, -3, 15));
+    particleActor->SetPosition(Vector3(-15, 0, 15));
     auto particleComp = particleActor->CreateComponent<ParticleComponent>();
     particleComp->SetTexture(GetRenderer()->GetTexture("Assets/fire.png"));
-    particleComp->CreateParticles(Vector3(0, 1, 0),
+    particleComp->CreateParticles(Vector3(0, 0, 0),
                                   10,
                                   1000,
                                   0.3,
@@ -68,7 +68,7 @@ void Game::LoadData()
     stanMesh->SetAnimID(6, PLAY_CYCLIC);
     stanMesh->SetToonRender(true, 1.015f);
     
-    stanActor->SetPosition(Vector3(-3,-2,10));
+    stanActor->SetPosition(Vector3(-3,0,10));
     stanActor->SetScale(0.5f);
     Quaternion q = Quaternion(Vector3::UnitY, Math::ToRadians(-30));
     stanActor->SetRotation(q);
@@ -105,7 +105,7 @@ void Game::LoadData()
     towerCollider->SetColliderType(C_WALL);
     towerCollider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
     
-    towerActor->SetPosition(Vector3(15, -2, 15));
+    towerActor->SetPosition(Vector3(15, 0, 15));
     towerActor->SetScale(0.003f);
     q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
@@ -116,7 +116,7 @@ void Game::LoadData()
     auto fireMesh = fireActor->CreateComponent<MeshComponent>();
     fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
     
-    fireActor->SetPosition(Vector3(-15, -2, 15));
+    fireActor->SetPosition(Vector3(-15, 0, 15));
     fireActor->SetScale(0.01f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
@@ -127,11 +127,22 @@ void Game::LoadData()
     auto b = CreateActor<Actor>();
     auto g = b->CreateComponent<MeshComponent>();
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
-    b->SetPosition(Vector3(0,-2,20));
-    b->SetScale(0.5);
+    b->SetPosition(Vector3(0,0,0));
+    b->SetScale(1.0);
     g->SetToonRender(false);
     
-
+    auto groundMesh = GetRenderer()->GetMesh("Assets/ground.x");
+    auto va = groundMesh->GetVertexArray();
+    auto& vaList = groundMesh->GetVertexArray();
+    for (auto* va : vaList)
+    {
+        const auto& polys = va->GetPolygons();
+        GetPhysWorld()->SetGroundPolygons(polys); // or 統合してまとめる
+    }
+    /*auto foot = b->CreateComponent<ColliderComponent>();
+    foot->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/ground.x")->GetVertexArray());
+    foot->SetColliderType(C_FOOT);
+    */
 }
 
 void Game::UpdateGame(float deltaTime)

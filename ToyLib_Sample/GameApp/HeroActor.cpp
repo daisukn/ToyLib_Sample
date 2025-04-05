@@ -59,6 +59,12 @@ HeroActor::HeroActor(Application* a)
     // --- カメラコンポーネント ---
     //mCameraComp = CreateComponent<OrbitCameraComponent>();
     mCameraComp = CreateComponent<FollowCameraComponent>();
+    
+    auto foot = CreateComponent<ColliderComponent>();
+    foot->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
+    foot->SetColliderType(C_FOOT);
+    auto grav = CreateComponent<GravityComponent>();
+    SetPosition(Vector3(0,100,0));
 }
 
 HeroActor::~HeroActor()
