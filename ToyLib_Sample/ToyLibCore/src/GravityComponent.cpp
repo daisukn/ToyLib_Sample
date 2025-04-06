@@ -17,7 +17,7 @@ GravityComponent::GravityComponent(Actor* a)
 
 void GravityComponent::Update(float deltaTime)
 {
-    if (mIsGrounded) return;
+    //if (mIsGrounded) return;
     // 重力加速度を加算
     mVelocityY += mGravityAccel;
     // 現在座標を取得
@@ -40,7 +40,7 @@ void GravityComponent::Update(float deltaTime)
         if (footY+mVelocityY*deltaTime < groundY)
         {
             float offset = pos.y - footY;
-            pos.y = groundY + offset;
+            pos.y = groundY + offset+0.01;
             mVelocityY = 0.0f;
             mIsGrounded = true;
             mOwnerActor->SetPosition(pos);
