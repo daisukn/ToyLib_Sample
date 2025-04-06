@@ -11,8 +11,9 @@ std::unique_ptr<Application> CreateUserApplication();
     std::unique_ptr<Application> CreateUserApplication() {  \
         return std::make_unique<AppType>(__VA_ARGS__);      \
     }
-
+/*
 #define TOYLIB_REGISTER_APP_WITH_ARGS(AppType, ...)         \
     std::unique_ptr<Application> CreateUserApplication() {  \
         return std::make_unique<AppType>(__VA_ARGS__);      \
     }
+*/

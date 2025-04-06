@@ -2,7 +2,8 @@
 #include "ApplicationEntry.h"
 #include "HeroActor.h"
 
-TOYLIB_REGISTER_APP_WITH_ARGS(Game)
+// ToyLibの起動Applicationとして登録
+TOYLIB_REGISTER_APP(Game)
 
 
 Game::Game()

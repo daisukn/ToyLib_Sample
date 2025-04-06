@@ -108,6 +108,7 @@ void DirMoveComponent::AdjustDir()
 void DirMoveComponent::AdjustDir()
 {
     Vector3 moveVal = mOwnerActor->GetPosition() - mPrevPosition;
+    moveVal.y = 0.f;
     if (moveVal.LengthSq() > 0.01f)
     {
         float rot = Math::Atan2(moveVal.x, moveVal.z);
