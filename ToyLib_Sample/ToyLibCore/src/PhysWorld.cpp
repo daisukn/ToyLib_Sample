@@ -24,8 +24,6 @@ PhysWorld::~PhysWorld()
 
 void PhysWorld::Test()
 {
-    std::cout << "C_GTOUNDの数" << mCollGround.size() << std::endl;
-    
     
     for (auto c : mColliders)
     {
@@ -565,45 +563,98 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
 
     return Vector3::Zero;
 }
-
+/*
 bool PhysWorld::GetNearestGroundY(const Actor* a, float velocity, float& outY) const
 {
-    if (!a) return false;
-    if (velocity > 0) return false;
+    if (!a || velocity > 0.0f) return false; // 無効なActor or 上昇中はスキップ
 
     const auto* foot = FindFootCollider(a);
     if (!foot) return false;
 
     const Cube box = foot->GetBoundingVolume()->GetWorldAABB();
-    std::cout << "自分のAABBのmin:" << box.min.x << ":" << box.min.y << " " << box.min.z << std::endl;
+    const float predictedFootY = box.min.y + velocity;
 
     float bestY = -FLT_MAX;
     float smallestGap = FLT_MAX;
     bool found = false;
 
-    // --- C_GROUND コライダーによる接地判定 ---
+    // --- C_GROUND との接地判定 ---
+    for (const auto* ground : mCollGround)
+    {
+        if (ground->GetOwner() == a) continue;
+
+        const Cube other = ground->GetBoundingVolume()->GetWorldAABB();
+
+        // 横方向に重なってる？
+        const bool xzOverlap =
+            box.max.x > other.min.x && box.min.x < other.max.x &&
+            box.max.z > other.min.z && box.min.z < other.max.z;
+
+        const float groundY = other.max.y;
+        const float yGap = box.min.y - groundY;
+
+        // 落下によって足が貫通しそうな場合に、最も近い地面Yを拾う
+        if (xzOverlap && predictedFootY < groundY && yGap < smallestGap)
+        {
+            if (box.min.y > groundY)
+            {
+                bestY = groundY;
+                smallestGap = yGap;
+                found = true;
+            }
+        }
+    }
+
+    // --- 地形メッシュによる補助的な接地判定 ---
+    const float terrainY = GetGroundHeightAt(a->GetPosition());
+    if (terrainY > bestY)
+    {
+        bestY = terrainY;
+        found = true;
+    }
+
+    if (found) outY = bestY;
+    return found;
+}
+*/
+
+bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
+{
+    if (!a) return false;
+    //if (velocity > 0) return false;
+
+    const auto* foot = FindFootCollider(a);
+    if (!foot) return false;
+
+    const Cube box = foot->GetBoundingVolume()->GetWorldAABB();
+    std::cout << "自分のAABBのmin:" << box.min.y << std::endl;
+
+
+    float highest = -FLT_MAX;
+    bool found = false;
+    
+    float footY = box.min.y;
+
+    // C_GROUND コライダーから、一番高い地面を探す
     for (const auto* c : mCollGround)
     {
         if (c->GetOwner() == a) continue;
 
         const Cube other = c->GetBoundingVolume()->GetWorldAABB();
-        std::cout << "相手のAABBのmax:" << other.max.x << ":" << other.max.y << " " << other.max.z << std::endl;
+        //std::cout << "相手のAABBのmax:" << other.max.y << std::endl;
+        //if (other.max.y > nextFootY) continue;
 
         const bool xzOverlap =
             box.max.x > other.min.x && box.min.x < other.max.x &&
             box.max.z > other.min.z && box.min.z < other.max.z;
 
-        const float yGap = box.min.y - other.max.y;
-        std::cout << "yGap :" << yGap << std::endl;
-        
-        
+        const float yGap = footY - other.max.y;
 
-        //if (xzOverlap && yGap >= -0.001f && yGap < smallestGap)
-        if (xzOverlap && box.min.y + velocity < other.max.y && yGap < smallestGap)
+        
+        
+        if (xzOverlap && yGap > 0.0f && highest < other.max.y)
         {
-            bestY = other.max.y;
-            //std::cout << "besty is " << bestY << std::endl;
-            smallestGap = yGap;
+            highest = other.max.y;
             found = true;
         }
     }
@@ -611,17 +662,17 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float velocity, float& outY) c
     // --- 地形ポリゴンによる接地判定（オプション） ---
     const Vector3 center = a->GetPosition();
     const float terrainY = GetGroundHeightAt(center);
-    if (terrainY > bestY)
+    if (terrainY > highest)
     {
-        bestY = terrainY;
+        highest = terrainY;
         //std::cout << "地面" << bestY << std::endl;
         found = true;
     }
 
-    if (found) outY = bestY;
+    if (found) outY = highest;
     return found;
 }
- 
+
 float PhysWorld::GetGroundHeightAt(const Vector3& pos) const
 {
     float highestY = -FLT_MAX;
@@ -644,7 +695,7 @@ void PhysWorld::SetGroundPolygons(const std::vector<Polygon>& polys)
     mTerrainPolygons = polys;
 }
 
-// 実装（PhysWorld.cpp）
+// 衝突判定コールバック
 void PhysWorld::CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
                                    const std::vector<ColliderComponent*>& groupB,
                                    bool doPushBack,

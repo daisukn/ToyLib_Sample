@@ -13,10 +13,10 @@ public:
     bool IsGrounded() const { return mIsGrounded; }
 
 private:
-    float mVelocityY = 0.0f;
-    float mGravityAccel = -980.0f;
-    float mJumpSpeed = 350.0f;
-    bool mIsGrounded = false;
+    float mVelocityY;
+    float mGravityAccel;
+    float mJumpSpeed;
+    bool mIsGrounded;
     
     
     class ColliderComponent* FindFootCollider();

@@ -124,7 +124,7 @@ void Game::LoadData()
     auto fireMesh = fireActor->CreateComponent<MeshComponent>();
     fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
     
-    fireActor->SetPosition(Vector3(-15, 050, 15));
+    fireActor->SetPosition(Vector3(-15, 00, 15));
     fireActor->SetScale(0.1f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());

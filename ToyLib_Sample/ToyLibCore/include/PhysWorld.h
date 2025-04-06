@@ -30,7 +30,7 @@ public:
     // 地面情報インターフェイス
     float GetGroundHeightAt(const Vector3& pos) const;
     // 一番近い地面の高さを調べる
-    bool GetNearestGroundY(const class Actor* a, const float velocity, float& outY) const;
+    bool GetNearestGroundY(const class Actor* a, float& outY) const;
     void SetGroundPolygons(const std::vector<Polygon>& polys);
 
 private:
