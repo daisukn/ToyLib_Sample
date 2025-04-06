@@ -42,7 +42,6 @@ void main()
     // フォグを適用
     vec3 c = mix(uFoginfo.color, col.rgb, fogFactor);
     outColor = vec4(c, col.a);
-    //outColor = col;
 
    
 }
