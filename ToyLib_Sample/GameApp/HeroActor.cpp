@@ -112,6 +112,7 @@ void HeroActor::ActorInput(const InputState& state)
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
         {
             //inputAttack = true;
+            mAnimID = H_Jump;
             mGravComp->Jump();
         }
         // 攻撃入力があれば移動ロック
