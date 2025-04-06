@@ -131,6 +131,20 @@ void Game::LoadData()
     fireCollider->SetDisp(true);
     fireCollider->SetColliderType(C_GROUND);
     
+    
+    // 焚き火
+    auto fireActor2 = CreateActor<Actor>();
+    auto fireMesh2 = fireActor->CreateComponent<MeshComponent>();
+    fireMesh2->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
+    fireActor2->SetPosition(Vector3(-15, 6, 15));
+    fireActor2->SetScale(0.05f);
+    auto fireCollider3 = fireActor->CreateComponent<ColliderComponent>();
+    fireCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
+    fireCollider3->SetDisp(true);
+    fireCollider3->SetColliderType(C_GROUND);
+
+
+
     // 地面
     auto b = CreateActor<Actor>();
     auto g = b->CreateComponent<MeshComponent>();
