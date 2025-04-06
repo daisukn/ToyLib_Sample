@@ -111,7 +111,7 @@ void HeroActor::ActorInput(const InputState& state)
         else if (state.Keyboard.GetKeyState(SDL_SCANCODE_Q) == EPressed ||
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
         {
-            //inputAttack = true;
+            inputAttack = true;
             mAnimID = H_Jump;
             mGravComp->Jump();
         }
