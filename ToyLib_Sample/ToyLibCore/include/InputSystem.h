@@ -5,7 +5,6 @@
 #include <SDL2/SDL_gamecontroller.h>
 //#include <SDL2/SDL_mouse.h>
 
-
 // ボタンステータスの定義
 enum ButtonState
 {
@@ -85,13 +84,14 @@ public:
     
     // 状態を返す
     const InputState& GetState() const { return mState; }
-    
 
 private:
     float Filter1D(int input);
     Vector2 Filter2D(int inputX, int inputY);
     SDL_GameController* mController;
     InputState mState;
+    
+
 };
 
 

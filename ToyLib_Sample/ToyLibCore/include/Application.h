@@ -40,12 +40,18 @@ public:
     // 物理エンジンを取得
     class PhysWorld* GetPhysWorld() const { return mPhysWorld.get(); }
     
+    // IMEをオフにする
+    void InitIMEControl(SDL_Window* sdlWindow);
+
+    
+    
 protected:
     virtual void UpdateGame(float deltaTime) { };
     virtual void InitGame() {};
     virtual void ShutdownGame() {};
     
-    
+    // WindowsのIME制御
+    void SetIMEEnabled(bool enabled);
 private:
     
     // アプリの名前、Windowのタイトルバーに出る
@@ -89,6 +95,9 @@ private:
 
     // pause
     bool mIsPause;
+    
+    // IME 制御のためにハンドル保存（Windows以外はnullptrで良い）
+    void* mNativeWindowHandle;
 
 };
 

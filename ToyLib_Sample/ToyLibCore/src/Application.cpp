@@ -3,15 +3,17 @@
 #include "Renderer.h"
 #include "InputSystem.h"
 #include "PhysWorld.h"
+#include "IMEUtil.h"
 
 #include <algorithm>
+#include <SDL2/SDL_syswm.h>
 
 
-// コンストラクタ
 Application::Application()
 : mIsActive(false)
 , mIsUpdatingActors(false)
 , mIsPause(false)
+, mNativeWindowHandle(nullptr)
 {
     mRenderer = std::make_unique<class Renderer>();
     mInputSys = std::make_unique<class InputSystem>();
@@ -50,6 +52,20 @@ bool Application::Initialize()
     
     mIsActive = true;
     mTicksCount = SDL_GetTicks();
+    
+    
+    // IME制御
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    if (SDL_GetWindowWMInfo(GetRenderer()->GetSDLWindow(), &wmInfo))
+    {
+#if defined(_WIN32)
+        mNativeWindowHandle = static_cast<void*>(wmInfo.info.win.window);
+#else
+        mNativeWindowHandle = nullptr;
+#endif
+    }
+
     return true;
 }
 
@@ -210,4 +226,10 @@ void Application::UpdateFrame()
                                  [](const std::unique_ptr<Actor>& actor) {
                                     return actor->GetState() == Actor::EDead;
                                 }),mActors.end());
+}
+
+// IME制御
+void Application::SetIMEEnabled(bool enabled)
+{
+    IMEUtil::SetIMEEnabled(mNativeWindowHandle, enabled);
 }

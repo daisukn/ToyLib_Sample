@@ -1,4 +1,5 @@
 #include "InputSystem.h"
+#include "IMEUtil.h"
 
 #include <SDL2/SDL.h>
 #include <cstring>
@@ -193,6 +194,4 @@ Vector2 InputSystem::Filter2D(int inputX, int inputY)
 
     return dir;
 }
-
-
 

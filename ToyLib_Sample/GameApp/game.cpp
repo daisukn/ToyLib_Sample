@@ -19,6 +19,8 @@ Game::~Game()
 void Game::InitGame()
 {
     LoadData();
+    
+    SetIMEEnabled(false);
 
     auto spActor = CreateActor<Actor>();
     spActor->SetPosition(Vector3(-460.0f, -330.0f, 0.0f));
@@ -135,7 +137,7 @@ void Game::LoadData()
     fireCollider2->SetDisp(true);
     fireCollider2->SetColliderType(C_WALL);
     
-    /*
+
     
     // 焚き火
     auto fireActor2 = CreateActor<Actor>();
@@ -147,7 +149,6 @@ void Game::LoadData()
     fireCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider3->SetDisp(true);
     fireCollider3->SetColliderType(C_GROUND);
-*/
 
 
     // 地面

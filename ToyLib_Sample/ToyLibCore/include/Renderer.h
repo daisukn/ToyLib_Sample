@@ -37,6 +37,8 @@ public:
       
     // 初期化
     bool Initialize();
+    SDL_Window* GetSDLWindow() const { return mWindow; }
+    
     // 描画（Applicationから呼ばれる）
     void Draw();
 
