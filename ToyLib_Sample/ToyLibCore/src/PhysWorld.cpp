@@ -24,6 +24,9 @@ PhysWorld::~PhysWorld()
 
 void PhysWorld::Test()
 {
+    std::cout << "C_GTOUNDの数" << mCollGround.size() << std::endl;
+    
+    
     for (auto c : mColliders)
     {
         c->ClearCollidBuffer();
@@ -562,15 +565,17 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
 
     return Vector3::Zero;
 }
-/*
-bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
+
+bool PhysWorld::GetNearestGroundY(const Actor* a, float velocity, float& outY) const
 {
     if (!a) return false;
+    if (velocity > 0) return false;
 
     const auto* foot = FindFootCollider(a);
     if (!foot) return false;
 
     const Cube box = foot->GetBoundingVolume()->GetWorldAABB();
+    std::cout << "自分のAABBのmin:" << box.min.x << ":" << box.min.y << " " << box.min.z << std::endl;
 
     float bestY = -FLT_MAX;
     float smallestGap = FLT_MAX;
@@ -582,17 +587,22 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
         if (c->GetOwner() == a) continue;
 
         const Cube other = c->GetBoundingVolume()->GetWorldAABB();
+        std::cout << "相手のAABBのmax:" << other.max.x << ":" << other.max.y << " " << other.max.z << std::endl;
 
         const bool xzOverlap =
             box.max.x > other.min.x && box.min.x < other.max.x &&
             box.max.z > other.min.z && box.min.z < other.max.z;
 
         const float yGap = box.min.y - other.max.y;
+        std::cout << "yGap :" << yGap << std::endl;
+        
+        
 
-        if (xzOverlap && yGap >= -0.001f && yGap < smallestGap)
+        //if (xzOverlap && yGap >= -0.001f && yGap < smallestGap)
+        if (xzOverlap && box.min.y + velocity < other.max.y && yGap < smallestGap)
         {
             bestY = other.max.y;
-            std::cout << "besty is " << bestY << std::endl;
+            //std::cout << "besty is " << bestY << std::endl;
             smallestGap = yGap;
             found = true;
         }
@@ -604,15 +614,15 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
     if (terrainY > bestY)
     {
         bestY = terrainY;
-        std::cout << "地面" << bestY << std::endl;
+        //std::cout << "地面" << bestY << std::endl;
         found = true;
     }
 
     if (found) outY = bestY;
     return found;
 }
- */
-
+ 
+/*
 bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
 {
     if (!a) return false;
@@ -664,7 +674,65 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
     if (found) outY = bestY;
     return found;
 }
+*/
+/*
+bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
+{
+    if (!a) return false;
 
+    const auto* foot = FindFootCollider(a);
+    if (!foot) return false;
+
+    const Cube footBox = foot->GetBoundingVolume()->GetWorldAABB();
+    const float footY = footBox.min.y;
+
+    float bestY = -FLT_MAX;
+    float smallestGap = FLT_MAX;
+    bool foundGround = false;
+
+    // C_GROUND コライダーの中から最も近い足元を探す
+    for (const auto* ground : mCollGround)
+    {
+        if (ground->GetOwner() == a) continue;
+
+        const Cube groundBox = ground->GetBoundingVolume()->GetWorldAABB();
+
+        const bool xzOverlap =
+            footBox.max.x > groundBox.min.x && footBox.min.x < groundBox.max.x &&
+            footBox.max.z > groundBox.min.z && footBox.min.z < groundBox.max.z;
+
+        const float groundY = groundBox.max.y;
+        const float yGap = footY - groundY;
+
+        if (xzOverlap && yGap >= -0.01f && yGap < smallestGap)
+        {
+            bestY = groundY;
+            smallestGap = yGap;
+            foundGround = true;
+        }
+    }
+
+    // 地形ポリゴンもチェック
+    const Vector3 center = a->GetPosition();
+    const float terrainY = GetGroundHeightAt(center);
+    const float terrainGap = footY - terrainY;
+
+    if (terrainGap >= -0.01f && terrainGap < smallestGap)
+    {
+        bestY = terrainY;
+        smallestGap = terrainGap;
+        foundGround = true;
+    }
+
+    if (foundGround)
+    {
+        outY = bestY;
+        return true;
+    }
+
+    return false;
+}
+*/
 float PhysWorld::GetGroundHeightAt(const Vector3& pos) const
 {
     float highestY = -FLT_MAX;

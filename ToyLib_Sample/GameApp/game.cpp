@@ -103,14 +103,14 @@ void Game::LoadData()
     towerCollider->SetDisp(true);
     towerCollider->SetColliderType(C_WALL);
     towerCollider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
-
+/*
     auto towerFootColl = towerActor->CreateComponent<ColliderComponent>();
     towerFootColl->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/house.x")->GetVertexArray());
     towerFootColl->GetBoundingVolume()->CreateVArray();
     towerFootColl->SetDisp(true);
     towerFootColl->SetColliderType(C_GROUND);
     towerFootColl->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
-
+*/
     
     
     towerActor->SetPosition(Vector3(15, 0, 15));
@@ -124,7 +124,7 @@ void Game::LoadData()
     auto fireMesh = fireActor->CreateComponent<MeshComponent>();
     fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
     
-    fireActor->SetPosition(Vector3(-15, 0, 15));
+    fireActor->SetPosition(Vector3(100, 0, 100));
     fireActor->SetScale(0.1f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
@@ -135,7 +135,7 @@ void Game::LoadData()
     auto b = CreateActor<Actor>();
     auto g = b->CreateComponent<MeshComponent>();
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
-    b->SetPosition(Vector3(0,0,0));
+    b->SetPosition(Vector3(0,-0,0));
     b->SetScale(1.0);
     g->SetToonRender(false);
     

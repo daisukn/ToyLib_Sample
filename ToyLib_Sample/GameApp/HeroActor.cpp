@@ -74,7 +74,7 @@ HeroActor::~HeroActor()
 
 void HeroActor::UpdateActor(float deltaTime)
 {
-    std::cout << GetPosition().y << std::endl;
+    //std::cout << GetPosition().y << std::endl;
 }
 
 void HeroActor::ActorInput(const InputState& state)
