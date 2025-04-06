@@ -130,7 +130,12 @@ void Game::LoadData()
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider->SetDisp(true);
     fireCollider->SetColliderType(C_GROUND);
+    auto fireCollider2 = fireActor->CreateComponent<ColliderComponent>();
+    fireCollider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
+    fireCollider2->SetDisp(true);
+    fireCollider2->SetColliderType(C_WALL);
     
+    /*
     
     // 焚き火
     auto fireActor2 = CreateActor<Actor>();
@@ -142,7 +147,7 @@ void Game::LoadData()
     fireCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider3->SetDisp(true);
     fireCollider3->SetColliderType(C_GROUND);
-
+*/
 
 
     // 地面
@@ -161,10 +166,7 @@ void Game::LoadData()
         const auto& polys = va->GetPolygons();
         GetPhysWorld()->SetGroundPolygons(polys); // or 統合してまとめる
     }
-    /*auto foot = b->CreateComponent<ColliderComponent>();
-    foot->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/ground.x")->GetVertexArray());
-    foot->SetColliderType(C_FOOT);
-    */
+
 }
 
 void Game::UpdateGame(float deltaTime)
