@@ -71,9 +71,9 @@ void OrbitCameraComponent::Update(float deltaTime)
     
     mOffset.y += mChangeOffset;
     // 縦移動の範囲を絞る
-    if(cameraPos.y < 0)
+    if(cameraPos.y < -15)
     {
-        cameraPos.y = 0;
+        cameraPos.y = -15;
         if( mChangeOffset < 0.0f)
         {
             mOffset.y -= mChangeOffset;

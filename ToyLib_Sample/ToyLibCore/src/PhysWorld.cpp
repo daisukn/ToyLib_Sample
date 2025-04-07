@@ -692,6 +692,10 @@ float PhysWorld::GetGroundHeightAt(const Vector3& pos) const
 
 void PhysWorld::SetGroundPolygons(const std::vector<Polygon>& polys)
 {
+    
+    
+    
+    
     mTerrainPolygons = polys;
 }
 

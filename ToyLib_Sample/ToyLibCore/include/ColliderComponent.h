@@ -6,6 +6,28 @@
 #include <vector>
 #include <memory>
 
+#define ENABLE_BITMASK_OPERATORS(x)                                \
+inline x operator|(x a, x b) { return static_cast<x>(static_cast<int>(a) | static_cast<int>(b)); } \
+inline x operator&(x a, x b) { return static_cast<x>(static_cast<int>(a) & static_cast<int>(b)); } \
+inline x& operator|=(x& a, x b) { a = a | b; return a; }            \
+inline x& operator&=(x& a, x b) { a = a & b; return a; }            \
+inline x operator~(x a) { return static_cast<x>(~static_cast<int>(a)); }
+
+enum ColliderType : uint32_t
+{
+    C_NONE    = 0,
+    C_PLAYER  = 1 << 0,
+    C_ENEMY   = 1 << 1,
+    C_BULLET  = 1 << 2,
+    C_LASER   = 1 << 3,
+    C_WALL    = 1 << 4,
+    C_GROUND  = 1 << 5,
+    C_FOOT    = 1 << 6,
+};
+
+ENABLE_BITMASK_OPERATORS(ColliderType)
+
+/*
 // 通知される相手のタイプ
 enum ColliderType
 {
@@ -18,6 +40,7 @@ enum ColliderType
     C_GROUND,    // 地面
     C_FOOT      // 足元を判定する
 };
+*/
 
 class ColliderComponent : public Component
 {

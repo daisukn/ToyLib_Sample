@@ -191,6 +191,22 @@ void VertexArray::CreatePolygons(const float* verts, const unsigned int* indices
     }
 }
 
+std::vector<Polygon> VertexArray::GetWorldPolygons(const Matrix4& worldTransform) const
+{
+    std::vector<Polygon> result;
+    result.reserve(mPolygons.size());
+
+    for (const auto& poly : mPolygons)
+    {
+        Polygon wp;
+        wp.a = Vector3::Transform(poly.a, worldTransform);
+        wp.b = Vector3::Transform(poly.b, worldTransform);
+        wp.c = Vector3::Transform(poly.c, worldTransform);
+        result.emplace_back(wp);
+    }
+
+    return result;
+}
 
 VertexArray::~VertexArray()
 {

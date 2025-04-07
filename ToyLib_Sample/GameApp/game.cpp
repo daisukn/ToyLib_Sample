@@ -82,11 +82,13 @@ void Game::LoadData()
     stanCllider->SetDisp(true);
     stanCllider->SetColliderType(C_WALL);
     
+    stanActor->CreateComponent<GravityComponent>();
+    
     auto stanCllider2 = stanActor->CreateComponent<ColliderComponent>();
     stanCllider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
     stanCllider2->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
     stanCllider2->SetDisp(true);
-    stanCllider2->SetColliderType(C_ENEMY);
+    stanCllider2->SetColliderType(C_FOOT);
 
     
     auto stanMove = stanActor->CreateComponent<FollowMoveComponent>();
@@ -121,7 +123,7 @@ void Game::LoadData()
     q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
     
-    
+
     // 焚き火
     auto fireActor = CreateActor<Actor>();
     auto fireMesh = fireActor->CreateComponent<MeshComponent>();
@@ -137,16 +139,17 @@ void Game::LoadData()
     fireCollider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider2->SetDisp(true);
     fireCollider2->SetColliderType(C_WALL);
-    
+
 
     
     // 焚き火
     auto fireActor2 = CreateActor<Actor>();
-    auto fireMesh2 = fireActor->CreateComponent<MeshComponent>();
+    auto fireMesh2 = fireActor2->CreateComponent<MeshComponent>();
     fireMesh2->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
-    fireActor2->SetPosition(Vector3(-15, 6, 15));
-    fireActor2->SetScale(0.05f);
-    auto fireCollider3 = fireActor->CreateComponent<ColliderComponent>();
+
+    fireActor2->SetPosition(Vector3(-12, 6, 15));
+    fireActor2->SetScale(0.1f);
+    auto fireCollider3 = fireActor2->CreateComponent<ColliderComponent>();
     fireCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider3->SetDisp(true);
     fireCollider3->SetColliderType(C_GROUND);
@@ -154,18 +157,19 @@ void Game::LoadData()
 
     // 地面
     auto b = CreateActor<Actor>();
-    auto g = b->CreateComponent<MeshComponent>();
-    g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
-    b->SetPosition(Vector3(0,-0,0));
-    b->SetScale(1.0);
+    auto g = b->CreateComponent<MeshComponent>(false, MESH_BG);
+    g->SetMesh(GetRenderer()->GetMesh("Assets/ground2.x"));
+    b->SetPosition(Vector3(0,-10,0));
+    b->SetScale(1);
     g->SetToonRender(false);
     
-    auto groundMesh = GetRenderer()->GetMesh("Assets/ground.x");
+    auto groundMesh = GetRenderer()->GetMesh("Assets/ground2.x");
     auto va = groundMesh->GetVertexArray();
     auto& vaList = groundMesh->GetVertexArray();
     for (auto* va : vaList)
     {
-        const auto& polys = va->GetPolygons();
+        b->ComputeWorldTransform();
+        const auto& polys = va->GetWorldPolygons(b->GetWorldTransform());
         GetPhysWorld()->SetGroundPolygons(polys); // or 統合してまとめる
     }
 

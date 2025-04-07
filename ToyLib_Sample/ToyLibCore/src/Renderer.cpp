@@ -138,6 +138,7 @@ void Renderer::Draw()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    DrawBackGround();
     DrawDebugger();
     DrawVisualLayer(VisualLayer::Background2D);
     DrawMesh();

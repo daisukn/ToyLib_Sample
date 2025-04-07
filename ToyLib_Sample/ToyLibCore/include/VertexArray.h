@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MathUtils.h"
 #include <memory>
 #include <vector>
 
@@ -47,9 +48,8 @@ public:
     // 頂点数
     unsigned int GetNumVerts() const { return mNumVerts; }
     // 面データ
-    //std::vector<std::unique_ptr<struct Polygon>>  GetPolygon() const { return mPolygons; }
-    //const std::vector<std::unique_ptr<struct Polygon>>& GetPolygons() const { return mPolygons; }
     const std::vector<struct Polygon>& GetPolygons() const { return mPolygons; }
+    std::vector<struct Polygon> GetWorldPolygons(const Matrix4& worldTransform) const;
 
 private:
     // 頂点の

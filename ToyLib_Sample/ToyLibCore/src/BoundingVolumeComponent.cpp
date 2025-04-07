@@ -272,7 +272,7 @@ void BoundingVolumeComponent::Draw(Shader* shader)
     // WorldマトリックスをShaderに送る
     shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
     mVertexArray->SetActive();
-    glDrawElements(GL_LINE_STRIP, 36, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_LINE_STRIP, NUM_VERTEX * 3, GL_UNSIGNED_INT, nullptr);
 }
 
 // ワールド空間でのバウンディングボックスを取得
