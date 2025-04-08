@@ -64,7 +64,7 @@ void Game::InitGame()
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/campfile.x")->GetVertexArray());
     fireCollider->SetDisp(true);
     fireCollider->SetFlags(C_GROUND | C_WALL | C_FOOT);
-    auto fireGrav = fireActor->CreateComponent<GravityComponent>();
+    fireActor->CreateComponent<GravityComponent>();
     
     // 炎
     auto particleActor = CreateActor<Actor>();

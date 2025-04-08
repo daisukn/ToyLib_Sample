@@ -23,7 +23,8 @@ enum class VisualLayer
     Background2D,
     Effect3D,
     Object3D,
-    UI
+    UI,
+    Sky
 };
 
 // 描画エンジン
@@ -54,6 +55,7 @@ public:
     Matrix4 GetViewMatrix() const { return mViewMatrix; }
     Matrix4 GetInvViewMatrix() const { return mInvView; }
     Matrix4 GetProjectionMatrix() const { return mProjectionMatrix; }
+    Matrix4 GetViewProjMatrix() const { return mViewMatrix * mProjectionMatrix; }
     
     // FOV取得（度）
     float GetPerspectiveFov() const { return mPerspectiveFOV; }
