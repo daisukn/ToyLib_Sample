@@ -29,7 +29,7 @@ void PhysWorld::Test()
     
     CollideAndCallback(C_PLAYER, C_ENEMY);                       // ヒットのみ
     CollideAndCallback(C_PLAYER, C_BULLET);                      // ヒットのみ
-    CollideAndCallback(C_PLAYER, C_WALL, true, false);          // 壁ずり（Y方向除外）
+    //CollideAndCallback(C_PLAYER, C_WALL, true, false);          // 壁ずり（Y方向除外）
     CollideAndCallback(C_ENEMY, C_WALL, true, false);           // 敵の壁押し戻し
     // Laser vs Enemy（Ray vs Mesh）
     for (auto c1 : mColliders)
@@ -315,7 +315,8 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
         {
             delta = Vector3::UnitZ;
         }
-        return delta * 0.05f;
+        return delta * 0.1f;
+        //return delta * 0.05f;
     }
 
     // MTVに基づく押し戻し（Y方向を除外して壁ずり対応）
@@ -332,7 +333,7 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
     if (pushAxis.LengthSq() > Math::NearZeroEpsilon)
     {
         pushAxis.Normalize();
-        return pushAxis * (mtv.depth + 0.01f);
+        return pushAxis * (mtv.depth + 0.05f);
     }
 
     return Vector3::Zero;
@@ -469,4 +470,85 @@ ColliderComponent* PhysWorld::FindFootCollider(const Actor* a) const
             return comp;
     }
     return nullptr;
+}
+
+
+
+bool PhysWorld::IntersectRayOBB(const Ray& ray, const OBB* obb, float& outT) const
+{
+    const float epsilon = 1e-6f;
+    Vector3 p = obb->pos - ray.start;
+    float tMin = 0.0f;
+    float tMax = Math::Infinity;
+
+    for (int i = 0; i < 3; ++i)
+    {
+        Vector3 axis;
+        float r = 0.0f;
+
+        if (i == 0) { axis = obb->axisX; r = obb->radius.x; }
+        if (i == 1) { axis = obb->axisY; r = obb->radius.y; }
+        if (i == 2) { axis = obb->axisZ; r = obb->radius.z; }
+
+        float e = Vector3::Dot(axis, p);
+        float f = Vector3::Dot(ray.dir, axis);
+
+        if (fabsf(f) > epsilon)
+        {
+            float t1 = (e + r) / f;
+            float t2 = (e - r) / f;
+            if (t1 > t2) std::swap(t1, t2);
+
+            tMin = std::max(tMin, t1);
+            tMax = std::min(tMax, t2);
+
+            if (tMin > tMax)
+                return false;
+        }
+        else
+        {
+            if (-e - r > 0.0f || -e + r < 0.0f)
+                return false;
+        }
+    }
+
+    outT = tMin;
+    return true;
+}
+
+bool PhysWorld::RayHitWall(const Vector3& start, const Vector3& end, Vector3& hitPos) const
+{
+    Ray ray;
+    ray.start = start;
+    ray.dir = end - start;
+    float rayLen = ray.dir.Length();
+    if (rayLen < Math::NearZeroEpsilon) return false;
+    ray.dir.Normalize();
+
+    float closestT = rayLen;
+    bool hit = false;
+
+    for (auto* col : mColliders)
+    {
+        if (!col->HasFlag(C_WALL)) continue;
+        const OBB* obb = col->GetBoundingVolume()->GetOBB();
+
+        float t;
+        if (IntersectRayOBB(ray, obb, t))
+        {
+            if (t < closestT)
+            {
+                closestT = t;
+                hit = true;
+            }
+        }
+    }
+
+    if (hit)
+    {
+        hitPos = ray.start + ray.dir * (closestT - 0.01f); // ほんの少し手前で止める
+        return true;
+    }
+
+    return false;
 }

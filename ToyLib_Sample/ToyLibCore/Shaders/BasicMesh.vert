@@ -28,7 +28,7 @@ void main()
     gl_Position = pos * uViewProj;
 
     // 法線ベクトルのワールド変換
-    fragNormal = (vec4(inNormal, 0.0f) * uWorldTransform).xyz;
+    fragNormal = normalize(mat3(uWorldTransform) * inNormal);
 
     // UV座標
     fragTexCoord = inTexCoord;

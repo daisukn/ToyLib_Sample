@@ -1,5 +1,9 @@
 #include "MoveComponent.h"
 #include "Actor.h"
+#include "Application.h"
+#include "PhysWorld.h"
+#include "ColliderComponent.h"
+
 
 // コンストラクタ
 MoveComponent::MoveComponent(class Actor* a, int updateOrder)
@@ -43,4 +47,28 @@ void MoveComponent::Reset()
     mForwardSpeed = 0.0f;
     mRightSpeed = 0.0f;
     mVerticalSpeed = 0.0f;
+}
+
+
+bool MoveComponent::TryMoveWithRayCheck(const Vector3& moveVec, float deltaTime)
+{
+    if (!mOwnerActor || !mIsMovable) return false;
+
+    Vector3 start = mOwnerActor->GetPosition();
+    Vector3 goal = start + moveVec * deltaTime;
+
+    Vector3 stopPos;
+    if (mOwnerActor->GetApp()->GetPhysWorld()->RayHitWall(start, goal, stopPos))
+    {
+        mOwnerActor->SetPosition(stopPos);
+    }
+    else
+    {
+        mOwnerActor->SetPosition(goal);
+    }
+
+    // 念のための押し戻し（MTV）
+    mOwnerActor->GetApp()->GetPhysWorld()->CollideAndCallback(C_PLAYER, C_WALL, true, false);
+
+    return true;
 }

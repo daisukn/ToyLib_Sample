@@ -28,7 +28,8 @@ public:
     bool GetIsTurnable() const { return mIsTurnable; }
     
     void Reset();
-
+    // 壁すり抜け防止機能付きの移動
+    bool TryMoveWithRayCheck(const Vector3& moveVec, float deltaTime);
 
 protected:
     float mAngularSpeed;    // 回転

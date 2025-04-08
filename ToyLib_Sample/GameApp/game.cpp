@@ -23,6 +23,7 @@ void Game::InitGame()
     
     SetIMEEnabled(false);
 
+    // スプライト
     auto spActor = CreateActor<Actor>();
     spActor->SetPosition(Vector3(-460.0f, -330.0f, 0.0f));
     spActor->SetScale(1);
@@ -31,13 +32,19 @@ void Game::InitGame()
     spSprite->SetVisible(true);
 
     
+    // 木（ビルボード）
     auto treeActor = CreateActor<Actor>();
     treeActor->SetPosition(Vector3(0.0f, 5.f, 0.0f));
     treeActor->SetScale(0.02);
     auto treeBillboard = treeActor->CreateComponent<BillboardComponent>(100);
     treeBillboard->SetTexture(GetRenderer()->GetTexture("Assets/tree.png"));
     treeBillboard->SetVisible(true);
-
+    treeActor->CreateComponent<GravityComponent>();
+    auto treeCollider = treeActor->CreateComponent<ColliderComponent>();
+    treeCollider->GetBoundingVolume()->ComputeBoundingVolume(Vector3(-256, -256, -4), Vector3(256,256,4));
+    treeCollider->SetFlags(C_WALL | C_FOOT);
+    
+    // シャドウ用スプライト
     auto shadow = treeActor->CreateComponent<ShadowSpriteComponent>(10);
     shadow->SetTexture(GetRenderer()->GetTexture("Assets/shadowcircle.png"));
     shadow->SetVisible(true);
@@ -56,7 +63,8 @@ void Game::InitGame()
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/campfile.x")->GetVertexArray());
     fireCollider->SetDisp(true);
-    fireCollider->SetFlags(C_GROUND | C_WALL);
+    fireCollider->SetFlags(C_GROUND | C_WALL | C_FOOT);
+    auto fireGrav = fireActor->CreateComponent<GravityComponent>();
     
     // 炎
     auto particleActor = CreateActor<Actor>();
@@ -101,6 +109,7 @@ void Game::LoadData()
     auto stanMove = stanActor->CreateComponent<FollowMoveComponent>();
     stanMove->SetTarget(hero);
     stanMove->SetFollowSpeed(1);
+    stanActor->CreateComponent<GravityComponent>();
 
     
     
@@ -112,12 +121,13 @@ void Game::LoadData()
     auto towerCollider = towerActor->CreateComponent<ColliderComponent>();
     towerCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/house.x")->GetVertexArray());
     towerCollider->SetDisp(true);
-    towerCollider->SetFlags(C_WALL | C_GROUND);
+    towerCollider->SetFlags(C_WALL | C_GROUND | C_FOOT);
     towerCollider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
     towerActor->SetPosition(Vector3(15, 0, 15));
     towerActor->SetScale(0.003f);
     q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
+    towerActor->CreateComponent<GravityComponent>();
     
 
 
@@ -130,41 +140,47 @@ void Game::LoadData()
     brickActor->SetScale(5.f);
     auto brickCollider = brickActor->CreateComponent<ColliderComponent>();
     brickCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/brick.x")->GetVertexArray());
-    brickCollider->SetFlags(C_GROUND | C_WALL);
+    brickCollider->SetFlags(C_GROUND | C_WALL | C_FOOT);
+    brickActor->CreateComponent<GravityComponent>();
+    
 
     // レンガ２
     auto brickActor2 = CreateActor<Actor>();
     auto brickMesh2 = brickActor2->CreateComponent<MeshComponent>();
     brickMesh2->SetMesh(GetRenderer()->GetMesh("Assets/brick.x"));
     
-    brickActor2->SetPosition(Vector3(-10, 5, -15));
+    brickActor2->SetPosition(Vector3(-10, 10, -15));
     brickActor2->SetScale(5.f);
     auto brickCollider2 = brickActor2->CreateComponent<ColliderComponent>();
     brickCollider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/brick.x")->GetVertexArray());
-    brickCollider2->SetFlags(C_GROUND | C_WALL);
+    brickCollider2->SetFlags(C_GROUND | C_WALL | C_FOOT);
+    brickActor2->CreateComponent<GravityComponent>();
+
     
     // レンガ3
     auto brickActor3 = CreateActor<Actor>();
     auto brickMesh3 = brickActor3->CreateComponent<MeshComponent>();
     brickMesh3->SetMesh(GetRenderer()->GetMesh("Assets/brick.x"));
     
-    brickActor3->SetPosition(Vector3(-5, 10, -10));
+    brickActor3->SetPosition(Vector3(-5, 20, -10));
     brickActor3->SetScale(5.f);
     auto brickCollider3 = brickActor3->CreateComponent<ColliderComponent>();
     brickCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/brick.x")->GetVertexArray());
-    brickCollider3->SetFlags(C_GROUND | C_WALL);
+    brickCollider3->SetFlags(C_GROUND | C_WALL | C_FOOT);
+    brickActor3->CreateComponent<GravityComponent>();
+
 
 
 
     // 地面
     auto b = CreateActor<Actor>();
-    auto g = b->CreateComponent<MeshComponent>(false, MESH_BG);
-    g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
+    auto g = b->CreateComponent<MeshComponent>();
+    g->SetMesh(GetRenderer()->GetMesh("Assets/ground2.x"));
     b->SetPosition(Vector3(0,0,0));
     b->SetScale(1);
-    g->SetToonRender(false);
+    g->SetToonRender(false, 1.0);
     
-    auto groundMesh = GetRenderer()->GetMesh("Assets/ground.x");
+    auto groundMesh = GetRenderer()->GetMesh("Assets/ground2.x");
     auto va = groundMesh->GetVertexArray();
     auto& vaList = groundMesh->GetVertexArray();
     for (auto* va : vaList)

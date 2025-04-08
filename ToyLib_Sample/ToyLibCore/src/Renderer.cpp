@@ -155,15 +155,24 @@ void Renderer::DrawBackGround()
    
     
     // 背景用メッシュ描画
-    mMeshShader->SetActive();
-    mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    // Update lighting uniforms
-    SetLightUniforms(mMeshShader.get());
+    
+    Shader* shader = mMeshShader.get();
+    
+    shader->SetActive();
+
+    SetLightUniforms(shader);
+
     for (auto bg : mBgMesh)
     {
         if (bg->GetVisible())
         {
-            bg->Draw(mMeshShader.get());
+            shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+            shader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
+            shader->SetTextureUniform("uShadowMap", 1);
+            shader->SetFloatUniform("uShadowBias", 0.005);
+            shader->SetBooleanUniform("uUseToon", bg->GetToon()); // トゥーンON/OFF
+
+            bg->Draw(shader);
         }
     }
     

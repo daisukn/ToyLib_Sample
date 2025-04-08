@@ -8,7 +8,7 @@
 GravityComponent::GravityComponent(Actor* a)
 : Component(a)
 , mVelocityY(0.0f)
-, mGravityAccel(-3.f)
+, mGravityAccel(-2.8f)
 , mJumpSpeed(50.0f)
 , mIsGrounded(false)
 {

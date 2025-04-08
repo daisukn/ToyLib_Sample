@@ -55,12 +55,22 @@ void FollowMoveComponent::Update(float deltaTime)
                 rot = Quaternion::Concatenate(rot, inc);
                 mOwnerActor->SetRotation(rot);
             }
+            /*
             // 距離が一定以上なら前進
             if (dist > mFollowDistance)
             {
                 Vector3 pos = mOwnerActor->GetPosition();
                 pos += mOwnerActor->GetForward() * mFollowSpeed * deltaTime;
                 mOwnerActor->SetPosition(pos);
+            }
+             */
+            // 壁回避付きの移動
+            if (dist > mFollowDistance)
+            {
+                Vector3 moveDir = mOwnerActor->GetForward();
+                moveDir.y = 0.0f;
+                moveDir.Normalize();
+                TryMoveWithRayCheck(moveDir * (-mFollowSpeed), deltaTime);
             }
         }
     }

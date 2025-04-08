@@ -138,6 +138,8 @@ void BoundingVolumeComponent::ComputeBoundingVolume(const Vector3 min, const Vec
 {
     mBoundingBox->min = min;
     mBoundingBox->max = max;
+    CreateVArray();
+    CreatePolygons();
 }
 
 // バウンディングボックスを手動調整する（場所とサイズ（倍率））

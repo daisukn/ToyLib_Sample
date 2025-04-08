@@ -3,6 +3,7 @@
 #include "Actor.h"
 #include "Application.h"
 #include "Renderer.h"
+#include "PhysWorld.h"
 
 
 DirMoveComponent::DirMoveComponent(class Actor* a, int order)
@@ -17,7 +18,7 @@ DirMoveComponent::~DirMoveComponent()
 {
     
 }
-
+/*
 void DirMoveComponent::Update(float deltaTime)
 {
     // 移動マトリックスを設定
@@ -46,6 +47,33 @@ void DirMoveComponent::Update(float deltaTime)
         AdjustDir();
     }
     
+    mPrevPosition = mOwnerActor->GetPosition();
+}
+ */
+ 
+void DirMoveComponent::Update(float deltaTime)
+{
+    //Vector3 pos = mOwnerActor->GetPosition();
+
+    // カメラ基準の移動方向を計算
+    Vector3 forward = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix().GetZAxis();
+    Vector3 right = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix().GetXAxis();
+
+    forward.y = 0.0f;
+    right.y = 0.0f;
+    forward.Normalize();
+    right.Normalize();
+
+    Vector3 moveDir = forward * mForwardSpeed + right * mRightSpeed;
+
+    if (moveDir.LengthSq() > Math::NearZeroEpsilon)
+    {
+        moveDir.Normalize();
+        moveDir.Normalize();
+        TryMoveWithRayCheck(moveDir * mSpeed, deltaTime);
+    }
+
+    AdjustDir();
     mPrevPosition = mOwnerActor->GetPosition();
 }
 

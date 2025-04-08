@@ -31,6 +31,17 @@ public:
     // 一番近い地面の高さを調べる
     bool GetNearestGroundY(const class Actor* a, float& outY) const;
     void SetGroundPolygons(const std::vector<Polygon>& polys);
+    
+    // RayCCB実装用
+    bool RayHitWall(const Vector3& start, const Vector3& end, Vector3& hitPos) const;
+    bool IntersectRayOBB(const Ray& ray, const struct OBB* obb, float& outT) const;
+    
+    // 判定用コールバック
+    void CollideAndCallback(uint32_t flagA,
+                            uint32_t flagB,
+                            bool doPushBack = false,
+                            bool allowY = false,
+                            bool stopVerticalSpeed = false);
 
 private:
     // 衝突判定
@@ -48,17 +59,6 @@ private:
     bool IsInPolygon(const struct Polygon* pl, const struct Vector3 p) const;
     float PolygonHeight(const struct Polygon* pl, const struct Vector3 p) const;
     
-    // 判定用コールバック
-    //void CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
-    //                        const std::vector<ColliderComponent*>& groupB,
-    //                        bool doPushBack = false,
-    //                        bool allowY = false,
-    //                        bool stopVerticalSpeed = false);
-    void CollideAndCallback(uint32_t flagA,
-                            uint32_t flagB,
-                            bool doPushBack = false,
-                            bool allowY = false,
-                            bool stopVerticalSpeed = false);
     
     
     class ColliderComponent* FindFootCollider(const Actor* a) const;
