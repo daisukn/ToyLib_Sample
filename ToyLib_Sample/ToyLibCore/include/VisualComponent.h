@@ -11,7 +11,8 @@ enum class VisualType
     Sprite,
     Billboard,
     Particle,
-    ShadowSprite
+    ShadowSprite,
+    SkyDome
 };
 
 class VisualComponent : public Component

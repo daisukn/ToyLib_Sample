@@ -6,12 +6,13 @@
 #include "Application.h"
 #include "Renderer.h"
 
-SkyDomeComponent::SkyDomeComponent(Actor* owner)
-: VisualComponent(owner, 100, VisualLayer::Sky),
+SkyDomeComponent::SkyDomeComponent(Actor* a)
+: Component(a),
 mTime(0.0f),
 mSunDir(Vector3::UnitY)
 {
-    mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f); // 半球
+    mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
+    mOwnerActor->GetApp()->GetRenderer()->SetSkyDome(this);
 }
 
 void SkyDomeComponent::SetTime(float t) {
@@ -28,16 +29,17 @@ void SkyDomeComponent::Draw(Shader* shader)
 
     Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
     Vector3 camPos = invView.GetTranslation();
-    Matrix4 model = Matrix4::CreateScale(1000.0f) * Matrix4::CreateTranslation(camPos);
+    Matrix4 model = Matrix4::CreateScale(1.0f) * Matrix4::CreateTranslation(camPos);
     Matrix4 mvp = mOwnerActor->GetApp()->GetRenderer()->GetViewProjMatrix() * model;
 
     shader->SetActive();
     shader->SetMatrixUniform("uMVP", mvp);
     shader->SetFloatUniform("uTime", mTime);
     shader->SetVectorUniform("uSunDir", mSunDir);
-
+    //glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE); // Z書き込みを無効
     mSkyVAO->SetActive();
     glDrawElements(GL_TRIANGLES, mSkyVAO->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
     glDepthMask(GL_TRUE);
+    //glEnable(GL_CULL_FACE);
 }

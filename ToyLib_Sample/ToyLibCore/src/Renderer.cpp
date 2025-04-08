@@ -9,6 +9,7 @@
 #include "ParticleComponent.h"
 #include "BillboardComponent.h"
 #include "VisualComponent.h"
+#include "SkyDomeComponent.h"
 
 #include "WireframeComponent.h"
 
@@ -138,6 +139,7 @@ void Renderer::Draw()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    DrawSky();
     DrawBackGround();
     DrawDebugger();
     DrawVisualLayer(VisualLayer::Background2D);
@@ -176,6 +178,36 @@ void Renderer::DrawBackGround()
         }
     }
     
+}
+
+void Renderer::DrawSky()
+{
+    if (!mSkyDomeComp) return;
+
+    Shader* shader = nullptr;
+
+    // 天気に応じてシェーダー選択（GetShaderForWeather()を後で用意）
+    switch (mSkyDomeComp->GetWeatherType())
+    {
+        case WeatherType::CLEAR:
+            shader = mSkyShader_Clear.get();
+            break;
+        case WeatherType::CLOUDY:
+            //shader = mSkyShader_Cloudy.get();
+            break;
+        case WeatherType::RAIN:
+            //shader = mSkyShader_Rain.get();
+            break;
+        // 必要に応じて追加
+        default:
+            shader = mSkyShader_Clear.get();
+            break;
+    }
+
+    if (shader)
+    {
+        mSkyDomeComp->Draw(shader);
+    }
 }
 
 // メッシュの描画
@@ -368,6 +400,16 @@ bool Renderer::LoadShaders()
         return false;
     }
     
+    // 天気シェーダー（晴れ）
+    mSkyShader_Clear = std::make_unique<Shader>();
+    vShaderName = mShaderPath + "Weather_Clear.vert";
+    fShaderName = mShaderPath + "Weather_Clear.frag";
+    if (!mSkyShader_Clear->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+
+    
     // ビューマトリックス、プロジェクションマトリックス（デフォルト値）
     mViewMatrix = Matrix4::CreateLookAt(Vector3(0, 0.5f, -3), Vector3(0, 0, 10), Vector3::UnitY);
     mProjectionMatrix = Matrix4::CreatePerspectiveFOV(Math::ToRadians(mPerspectiveFOV), mScreenWidth, mScreenHeight, 1.0f, 2000.0f);
@@ -478,6 +520,7 @@ class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
             mSpriteShader->SetActive();
             mSpriteShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
             s = mSpriteShader.get();
+            break;
 
         default:
             break;

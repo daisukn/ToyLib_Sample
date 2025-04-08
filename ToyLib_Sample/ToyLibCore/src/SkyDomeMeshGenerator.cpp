@@ -40,7 +40,7 @@ std::unique_ptr<class VertexArray> CreateSkyDomeVAO(int slices, int stacks, floa
         }
     }
 
-    for (int y = 0; y < stacks; ++y) {
+    for (int y = 0; y < stacks -1; ++y) {
         for (int x = 0; x < slices; ++x) {
             int i0 = y * (slices + 1) + x;
             int i1 = i0 + 1;
