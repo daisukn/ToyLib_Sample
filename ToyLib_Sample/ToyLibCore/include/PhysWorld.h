@@ -25,7 +25,6 @@ public:
     // コライダー管理
     void AddCollider(class ColliderComponent* c);
     void RemoveCollider(class ColliderComponent* c);
-    void AddColliderType(class ColliderComponent* c, ColliderType t);
 
     // 地面情報インターフェイス
     float GetGroundHeightAt(const Vector3& pos) const;
@@ -50,24 +49,23 @@ private:
     float PolygonHeight(const struct Polygon* pl, const struct Vector3 p) const;
     
     // 判定用コールバック
-    void CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
-                            const std::vector<ColliderComponent*>& groupB,
+    //void CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
+    //                        const std::vector<ColliderComponent*>& groupB,
+    //                        bool doPushBack = false,
+    //                        bool allowY = false,
+    //                        bool stopVerticalSpeed = false);
+    void CollideAndCallback(uint32_t flagA,
+                            uint32_t flagB,
                             bool doPushBack = false,
                             bool allowY = false,
                             bool stopVerticalSpeed = false);
+    
     
     class ColliderComponent* FindFootCollider(const Actor* a) const;
     
 
     // コライダー保持
     std::vector<class ColliderComponent*> mColliders;
-    std::vector<class ColliderComponent*> mCollPlayer;
-    std::vector<class ColliderComponent*> mCollEnemy;
-    std::vector<class ColliderComponent*> mCollLaser;
-    std::vector<class ColliderComponent*> mCollBullet;
-    std::vector<class ColliderComponent*> mCollWall;
-    std::vector<class ColliderComponent*> mCollGround;
-    std::vector<class ColliderComponent*> mCollFoot;
 
     // 地形（静的Mesh）
     std::vector<struct Polygon> mTerrainPolygons;

@@ -24,23 +24,8 @@ enum ColliderType : uint32_t
     C_GROUND  = 1 << 5,
     C_FOOT    = 1 << 6,
 };
-
 ENABLE_BITMASK_OPERATORS(ColliderType)
 
-/*
-// 通知される相手のタイプ
-enum ColliderType
-{
-    C_NONE,     // 
-    C_PLAYER,   // プレーヤー
-    C_ENEMY,    // 敵
-    C_BULLET,   // 弾丸
-    C_LASER,
-    C_WALL,     // 壁
-    C_GROUND,    // 地面
-    C_FOOT      // 足元を判定する
-};
-*/
 
 class ColliderComponent : public Component
 {
@@ -49,8 +34,12 @@ public:
     virtual ~ColliderComponent();
 
     // 自分のタイプ
-    void SetColliderType(const ColliderType t);
-    ColliderType GetColliderType() const { return mType; }
+    void SetFlags(uint32_t flags) { mFlags = flags; }
+    void AddFlag(uint32_t flag) { mFlags |= flag; }
+    void RemoveFlag(uint32_t flag) { mFlags &= ~flag; }
+    bool HasFlag(uint32_t flag) const { return (mFlags & flag) != 0; }
+    bool HasAnyFlag(uint32_t flags) const { return (mFlags & flags) != 0; }
+    uint32_t GetFlags() const { return mFlags; }
     
     // 衝突した
     void Collided(ColliderComponent* c);
@@ -81,7 +70,7 @@ private:
     
     class BoundingVolumeComponent* mBoundingVolume;
     
-    ColliderType mType;
+    uint32_t mFlags;
     std::vector<ColliderComponent*> mTargetColliders;
     
 };

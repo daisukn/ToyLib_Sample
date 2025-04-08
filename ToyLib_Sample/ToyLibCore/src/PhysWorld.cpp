@@ -29,70 +29,23 @@ void PhysWorld::Test()
     {
         c->ClearCollidBuffer();
     }
-
-    CollideAndCallback(mCollPlayer, mCollEnemy);                      // ヒットのみ
-    CollideAndCallback(mCollPlayer, mCollBullet);                      // ヒットのみ
-    CollideAndCallback(mCollPlayer, mCollWall, true, false);          // 壁ずり（Y方向除外）
-    CollideAndCallback(mCollEnemy, mCollWall, true, false);           // 敵の壁押し戻し
-    //CollideAndCallback(mCollPlayer, mCollFoot, true, true, true);     // 足場に着地
-    //CollideAndCallback(mCollPlayer, mCollGround, true, true, true);   // 地形に着地
     
-    /*
-    // Player vs Enemy
-    for (auto c1 : mCollPlayer)
-    {
-        if (!c1->GetDisp()) continue;
-        for (auto c2 : mCollEnemy)
-        {
-            if (!c2->GetDisp()) continue;
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2) )
-            {
-                c1->Collided(c2);
-                c2->Collided(c1);
-            }
-        }
-    }
-    
-    // Player vs Bullet
-    for (auto c1 : mCollPlayer)
-    {
-        if (!c1->GetDisp()) continue;
-        for (auto c2 : mCollBullet)
-        {
-            if (!c2->GetDisp()) continue;
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2) )
-            {
-                c1->Collided(c2);
-                c2->Collided(c1);
-            }
-        }
-    }
- */
-    // Laser vs Enemy
-/*    for (auto c1 : mCollLaser)
-    {
-        if (!c1->GetDisp()) continue;
-        for (auto c2 : mCollEnemy)
-        {
-            if (!c2->GetDisp()) continue;
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
-            {
-                c1->Collided(c2);
-                c2->Collided(c1);
-                
-            }
-        }
-    }
-*/
+    CollideAndCallback(C_PLAYER, C_ENEMY);                       // ヒットのみ
+    CollideAndCallback(C_PLAYER, C_BULLET);                      // ヒットのみ
+    CollideAndCallback(C_PLAYER, C_WALL, true, false);          // 壁ずり（Y方向除外）
+    CollideAndCallback(C_ENEMY, C_WALL, true, false);           // 敵の壁押し戻し
     // Laser vs Enemy（Ray vs Mesh）
-    for (auto c1 : mCollLaser)
+    for (auto c1 : mColliders)
     {
+        if (!c1->HasFlag(C_LASER)) continue;
         if (!c1->GetDisp()) continue;
 
         Ray ray = c1->GetRay();  // Laserが保持するRay（要実装）
 
-        for (auto c2 : mCollEnemy)
+        for (auto c2 : mColliders)
         {
+            if (c1 == c2) continue;
+            if (!c2->HasFlag(C_ENEMY)) continue;
             if (!c2->GetDisp()) continue;
 
             const auto& polygons = c2->GetBoundingVolume()->GetPolygons(); // Polygon配列
@@ -124,131 +77,7 @@ void PhysWorld::Test()
             }
         }
     }
-    /*
-    // Player vs Wall
-    for (auto c1 : mCollPlayer)
-    {
-        if (!c1->GetDisp()) continue;
-        Vector3 totalPush = Vector3::Zero;
-        bool collided = false;
 
-        
-        for (auto c2 : mCollWall)
-        {
-            if (c1->GetOwner() == c2->GetOwner()) continue;
-            
-            if (!c2->GetDisp()) continue;
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
-            {
-                // 押し戻し処理
-                Vector3 pushDir = ComputePushBackDirection(c1, c2, false);
-                totalPush += pushDir;
-                collided = true;
-                
-                c1->Collided(c2);
-                c2->Collided(c1);
-            }
-        }
-        if (collided)
-        {
-            Vector3 newPos = c1->GetOwner()->GetPosition() + totalPush;
-            c1->GetOwner()->SetPosition(newPos);
-        }
-    }
-    
-    // Enemy vs Wall
-    for (auto c1 : mCollEnemy)
-    {
-        if (!c1->GetDisp()) continue;
-        Vector3 totalPush = Vector3::Zero;
-        bool collided = false;
-        
-        for (auto c2 : mCollWall)
-        {
-            if (c1->GetOwner() == c2->GetOwner()) continue;
-            
-            if (!c2->GetDisp()) continue;
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
-            {
-                // 押し戻し処理
-                Vector3 pushDir = ComputePushBackDirection(c1, c2, false);
-                totalPush += pushDir;
-                collided = true;
-                
-                c1->Collided(c2);
-                c2->Collided(c1);
-            }
-        }
-        if (collided)
-        {
-            Vector3 newPos = c1->GetOwner()->GetPosition() + totalPush;
-            c1->GetOwner()->SetPosition(newPos);
-        }
-    }
-    
-    // Player vs Ground
-    // Player vs Ground or Foot（押し戻しではなく Y補正ベース）
-    for (auto c1 : mCollPlayer)
-    {
-        if (!c1->GetDisp()) continue;
-
-        float bestGroundY = -FLT_MAX;
-        bool found = false;
-
-        // C_FOOT
-        for (auto c2 : mCollFoot)
-        {
-            if (!c2->GetDisp()) continue;
-            if (c1->GetOwner() == c2->GetOwner()) continue;
-
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
-            {
-                float groundY = c2->GetOwner()->GetPosition().y + c2->GetBoundingVolume()->GetBoundingBox()->max.y * c2->GetOwner()->GetScale();
-                if (groundY > bestGroundY)
-                {
-                    bestGroundY = groundY;
-                    found = true;
-                }
-            }
-        }
-
-        // C_GROUND
-        for (auto c2 : mCollGround)
-        {
-            if (!c2->GetDisp()) continue;
-
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
-            {
-                float groundY = c2->GetOwner()->GetPosition().y + c2->GetBoundingVolume()->GetBoundingBox()->max.y * c2->GetOwner()->GetScale();
-                if (groundY > bestGroundY)
-                {
-                    bestGroundY = groundY;
-                    found = true;
-                }
-            }
-        }
-
-        if (found)
-        {
-            Vector3 pos = c1->GetOwner()->GetPosition();
-            const Cube* box = c1->GetBoundingVolume()->GetBoundingBox();
-            float scale = c1->GetOwner()->GetScale();
-            float footOffset = box->min.y * scale;
-
-            float actorFootY = pos.y + footOffset;
-            if (actorFootY < bestGroundY + 0.01f)
-            {
-                pos.y = bestGroundY - footOffset;
-                c1->GetOwner()->SetPosition(pos);
-
-                if (auto* move = c1->GetOwner()->GetComponent<MoveComponent>())
-                {
-                    move->SetVerticalSpeed(0.0f);
-                }
-            }
-        }
-    }
-    */
 }
 
 // OBBの投影距離比較
@@ -357,38 +186,6 @@ bool PhysWorld::JudgeWithRadius(class ColliderComponent* col1, class ColliderCom
     }
 }
 
-// コライダーの登録
-void PhysWorld::AddColliderType(ColliderComponent* c, ColliderType t)
-{
-    switch(t)
-    {
-        case C_NONE:
-            break;
-        case C_PLAYER:
-            mCollPlayer.emplace_back(c);
-            break;
-        case C_ENEMY:
-            mCollEnemy.emplace_back(c);
-            break;
-        case C_BULLET:
-            mCollBullet.emplace_back(c);
-            break;
-        case C_LASER:
-            mCollLaser.emplace_back(c);
-            break;
-        case C_WALL:
-            mCollWall.emplace_back(c);
-            break;
-        case C_GROUND:
-            mCollGround.emplace_back(c);
-            break;
-        case C_FOOT:
-            mCollFoot.emplace_back(c);
-            break;
-    }
-}
-
-// 高さを知らせるべきActorを登録
 void PhysWorld::AddCollider(ColliderComponent* c)
 {
     mColliders.emplace_back(c);
@@ -396,9 +193,11 @@ void PhysWorld::AddCollider(ColliderComponent* c)
 void PhysWorld::RemoveCollider(ColliderComponent* c)
 {
     auto iter = std::find(mColliders.begin(), mColliders.end(), c);
-    mColliders.erase(iter);
+    if (iter != mColliders.end())
+    {
+        mColliders.erase(iter);
+    }
 }
-
 
 
 // XZ平面に投影し、点がポリゴン内に存在すればTrue
@@ -431,8 +230,6 @@ float PhysWorld::PolygonHeight(const Polygon* pl, const Vector3 p) const
 {
 
     float wa, wb, wc;    // 平明方程式の係数
-    //float height;        // 高さが入る
-
 
     wa = (pl->c.z - pl->a.z) * (pl->b.y - pl->a.y) -
          (pl->c.y - pl->a.y) * (pl->b.z - pl->a.z);
@@ -445,26 +242,6 @@ float PhysWorld::PolygonHeight(const Polygon* pl, const Vector3 p) const
     return -(wa * (p.x - pl->a.x) + wb * (p.z - pl->a.z)) / wc + pl->a.y;
 }
 
-/*
-// 押し戻し方向の計算
-Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderComponent* b)
-{
-    Vector3 delta = a->GetPosition() - b->GetPosition();
-    delta.y = 0.0f; // 上下方向には押さない
-    if (delta.LengthSq() > Math::NearZeroEpsilon)
-    {
-        delta.Normalize();
-    }
-    else
-    {
-        delta = Vector3::UnitZ; // fallback
-    }
-
-    const float pushAmount = 0.1f; // 微調整
-    return delta * pushAmount;
-}
-*/
- 
 bool PhysWorld::CompareLengthOBB_MTV(const OBB* cA, const OBB* cB, const Vector3& vSep, const Vector3& vDistance, MTVResult& mtv)
 {
     if (vSep.LengthSq() < 1e-6f) return true; // 無効軸はスキップ
@@ -563,60 +340,6 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
 
     return Vector3::Zero;
 }
-/*
-bool PhysWorld::GetNearestGroundY(const Actor* a, float velocity, float& outY) const
-{
-    if (!a || velocity > 0.0f) return false; // 無効なActor or 上昇中はスキップ
-
-    const auto* foot = FindFootCollider(a);
-    if (!foot) return false;
-
-    const Cube box = foot->GetBoundingVolume()->GetWorldAABB();
-    const float predictedFootY = box.min.y + velocity;
-
-    float bestY = -FLT_MAX;
-    float smallestGap = FLT_MAX;
-    bool found = false;
-
-    // --- C_GROUND との接地判定 ---
-    for (const auto* ground : mCollGround)
-    {
-        if (ground->GetOwner() == a) continue;
-
-        const Cube other = ground->GetBoundingVolume()->GetWorldAABB();
-
-        // 横方向に重なってる？
-        const bool xzOverlap =
-            box.max.x > other.min.x && box.min.x < other.max.x &&
-            box.max.z > other.min.z && box.min.z < other.max.z;
-
-        const float groundY = other.max.y;
-        const float yGap = box.min.y - groundY;
-
-        // 落下によって足が貫通しそうな場合に、最も近い地面Yを拾う
-        if (xzOverlap && predictedFootY < groundY && yGap < smallestGap)
-        {
-            if (box.min.y > groundY)
-            {
-                bestY = groundY;
-                smallestGap = yGap;
-                found = true;
-            }
-        }
-    }
-
-    // --- 地形メッシュによる補助的な接地判定 ---
-    const float terrainY = GetGroundHeightAt(a->GetPosition());
-    if (terrainY > bestY)
-    {
-        bestY = terrainY;
-        found = true;
-    }
-
-    if (found) outY = bestY;
-    return found;
-}
-*/
 
 bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
 {
@@ -636,8 +359,9 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
     float footY = box.min.y;
 
     // C_GROUND コライダーから、一番高い地面を探す
-    for (const auto* c : mCollGround)
+    for (auto c : mColliders)
     {
+        if (!c->HasFlag(C_GROUND)) continue;
         if (c->GetOwner() == a) continue;
 
         const Cube other = c->GetBoundingVolume()->GetWorldAABB();
@@ -698,7 +422,7 @@ void PhysWorld::SetGroundPolygons(const std::vector<Polygon>& polys)
     
     mTerrainPolygons = polys;
 }
-
+/*
 // 衝突判定コールバック
 void PhysWorld::CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
                                    const std::vector<ColliderComponent*>& groupB,
@@ -747,11 +471,62 @@ void PhysWorld::CollideAndCallback(const std::vector<ColliderComponent*>& groupA
         }
     }
 }
+*/
+
+void PhysWorld::CollideAndCallback(uint32_t flagA,
+                                   uint32_t flagB,
+                                   bool doPushBack,
+                                   bool allowY,
+                                   bool stopVerticalSpeed)
+{
+    for (auto* c1 : mColliders)
+    {
+        if (!c1->GetDisp() || !c1->HasFlag(flagA)) continue;
+
+        Vector3 totalPush = Vector3::Zero;
+        bool collided = false;
+
+        for (auto* c2 : mColliders)
+        {
+            if (!c2->GetDisp() || !c2->HasFlag(flagB)) continue;
+            if (c1->GetOwner() == c2->GetOwner()) continue;
+
+            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
+            {
+                c1->Collided(c2);
+                c2->Collided(c1);
+                collided = true;
+
+                if (doPushBack)
+                {
+                    Vector3 push = ComputePushBackDirection(c1, c2, allowY);
+                    totalPush += push;
+                }
+            }
+        }
+
+        if (collided && doPushBack)
+        {
+            Vector3 newPos = c1->GetOwner()->GetPosition() + totalPush;
+            c1->GetOwner()->SetPosition(newPos);
+
+            if (stopVerticalSpeed)
+            {
+                if (auto* move = c1->GetOwner()->GetComponent<MoveComponent>())
+                {
+                    move->SetVerticalSpeed(0.0f);
+                }
+            }
+        }
+    }
+}
+
+ 
 ColliderComponent* PhysWorld::FindFootCollider(const Actor* a) const
 {
     for (auto* comp : a->GetAllComponents<ColliderComponent>())
     {
-        if (comp->GetColliderType() == C_FOOT)
+        if (comp->HasFlag(C_FOOT))
             return comp;
     }
     return nullptr;

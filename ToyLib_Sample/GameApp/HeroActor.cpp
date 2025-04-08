@@ -47,7 +47,7 @@ HeroActor::HeroActor(Application* a)
     JsonHelper::GetVector3(json["collider"], "bounding_box_scale", vScale);
     mCollComp->GetBoundingVolume()->AdjustBoundingBox(vOffset, vScale);
     mCollComp->GetBoundingVolume()->SetVisible(true);
-    mCollComp->SetColliderType(C_PLAYER);
+    mCollComp->SetFlags(C_FOOT | C_PLAYER);
     mCollComp->SetDisp(true);
 
     // --- 移動コンポーネント ---
@@ -60,9 +60,7 @@ HeroActor::HeroActor(Application* a)
     mCameraComp = CreateComponent<OrbitCameraComponent>();
     //mCameraComp = CreateComponent<FollowCameraComponent>();
     
-    auto foot = CreateComponent<ColliderComponent>();
-    foot->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
-    foot->SetColliderType(C_FOOT);
+
     mGravComp = CreateComponent<GravityComponent>();
     //SetPosition(Vector3(0,100,0));
 }
@@ -84,13 +82,14 @@ void HeroActor::ActorInput(const InputState& state)
     if (mMovable)
     {
         // 攻撃・ジャンプ入力判定
-        if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
+        /*if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
             state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed)
         {
             mAnimID = H_Jump;
             inputAttack = true;
         }
-        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed ||
+        */
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed ||
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_B) == EPressed)
         {
             mAnimID = H_Slash;
@@ -111,7 +110,7 @@ void HeroActor::ActorInput(const InputState& state)
         else if (state.Keyboard.GetKeyState(SDL_SCANCODE_Q) == EPressed ||
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
         {
-            inputAttack = true;
+            //inputAttack = true;
             mAnimID = H_Jump;
             mGravComp->Jump();
         }

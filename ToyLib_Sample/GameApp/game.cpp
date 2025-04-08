@@ -80,15 +80,8 @@ void Game::LoadData()
     stanCllider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
     stanCllider->GetBoundingVolume()->CreateVArray();
     stanCllider->SetDisp(true);
-    stanCllider->SetColliderType(C_WALL);
+    stanCllider->SetFlags(C_WALL | C_ENEMY | C_FOOT);
     
-    stanActor->CreateComponent<GravityComponent>();
-    
-    auto stanCllider2 = stanActor->CreateComponent<ColliderComponent>();
-    stanCllider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/stan.gltf")->GetVertexArray());
-    stanCllider2->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
-    stanCllider2->SetDisp(true);
-    stanCllider2->SetColliderType(C_FOOT);
 
     
     auto stanMove = stanActor->CreateComponent<FollowMoveComponent>();
@@ -101,21 +94,12 @@ void Game::LoadData()
     auto towerActor = CreateActor<Actor>();
     auto towerMesh = towerActor->CreateComponent<MeshComponent>();
     towerMesh->SetMesh(GetRenderer()->GetMesh("Assets/house.x"));
-    //towerMesh->SetScale(0.001f);
     
     auto towerCollider = towerActor->CreateComponent<ColliderComponent>();
     towerCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/house.x")->GetVertexArray());
     towerCollider->SetDisp(true);
-    towerCollider->SetColliderType(C_WALL);
+    towerCollider->SetFlags(C_WALL | C_GROUND);
     towerCollider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
-/*
-    auto towerFootColl = towerActor->CreateComponent<ColliderComponent>();
-    towerFootColl->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/house.x")->GetVertexArray());
-    towerFootColl->GetBoundingVolume()->CreateVArray();
-    towerFootColl->SetDisp(true);
-    towerFootColl->SetColliderType(C_GROUND);
-    towerFootColl->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
-*/
     
     
     towerActor->SetPosition(Vector3(15, 0, 15));
@@ -130,16 +114,11 @@ void Game::LoadData()
     fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
     
     fireActor->SetPosition(Vector3(-15, 00, 15));
-    fireActor->SetScale(0.1f);
+    fireActor->SetScale(0.09f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
     fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider->SetDisp(true);
-    fireCollider->SetColliderType(C_GROUND);
-    auto fireCollider2 = fireActor->CreateComponent<ColliderComponent>();
-    fireCollider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
-    fireCollider2->SetDisp(true);
-    fireCollider2->SetColliderType(C_WALL);
-
+    fireCollider->SetFlags(C_GROUND | C_WALL);
 
     
     // 焚き火
@@ -147,23 +126,23 @@ void Game::LoadData()
     auto fireMesh2 = fireActor2->CreateComponent<MeshComponent>();
     fireMesh2->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
 
-    fireActor2->SetPosition(Vector3(-12, 6, 15));
-    fireActor2->SetScale(0.1f);
+    fireActor2->SetPosition(Vector3(-12, 5, 15));
+    fireActor2->SetScale(0.09f);
     auto fireCollider3 = fireActor2->CreateComponent<ColliderComponent>();
     fireCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
     fireCollider3->SetDisp(true);
-    fireCollider3->SetColliderType(C_GROUND);
+    fireCollider3->SetFlags(C_GROUND | C_WALL);
 
 
     // 地面
     auto b = CreateActor<Actor>();
     auto g = b->CreateComponent<MeshComponent>(false, MESH_BG);
-    g->SetMesh(GetRenderer()->GetMesh("Assets/ground2.x"));
-    b->SetPosition(Vector3(0,-10,0));
+    g->SetMesh(GetRenderer()->GetMesh("Assets/ground.x"));
+    b->SetPosition(Vector3(0,0,0));
     b->SetScale(1);
     g->SetToonRender(false);
     
-    auto groundMesh = GetRenderer()->GetMesh("Assets/ground2.x");
+    auto groundMesh = GetRenderer()->GetMesh("Assets/ground.x");
     auto va = groundMesh->GetVertexArray();
     auto& vaList = groundMesh->GetVertexArray();
     for (auto* va : vaList)

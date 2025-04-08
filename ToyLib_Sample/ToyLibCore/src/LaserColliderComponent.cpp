@@ -5,7 +5,7 @@ LaserColliderComponent::LaserColliderComponent(Actor* a)
 : ColliderComponent(a)
 , mLength(100.0f) // デフォルトの射程
 {
-    SetColliderType(C_LASER);
+    SetFlags(C_LASER);
 }
 
 Ray LaserColliderComponent::GetRay() const

@@ -69,7 +69,7 @@ ColliderComponent* GravityComponent::FindFootCollider()
 {
     for (auto* comp : mOwnerActor->GetAllComponents<ColliderComponent>())
     {
-        if (comp->GetColliderType() == C_FOOT)
+        if (comp->HasFlag(C_FOOT))
         {
             return comp;
         }

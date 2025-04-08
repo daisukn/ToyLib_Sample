@@ -9,14 +9,13 @@
 // コンストラクタ
 ColliderComponent::ColliderComponent(Actor* a)
 : Component(a)
-, mType(C_NONE)
+, mFlags(C_NONE)
 , mIsCollided(false)
 , mIsDisp(true)
 //, targetType(C_NONE)
 {
     mBoundingVolume = mOwnerActor->CreateComponent<BoundingVolumeComponent>();
     mOwnerActor->GetApp()->GetPhysWorld()->AddCollider(this);
-
 }
 
 ColliderComponent::~ColliderComponent()
@@ -38,11 +37,4 @@ void ColliderComponent::Collided(ColliderComponent* c)
         mTargetColliders.emplace_back(c);
         mIsCollided = true;
     }
-}
-
-void ColliderComponent::SetColliderType(const ColliderType t)
-{
-    mType = t;
-    mOwnerActor->GetApp()->GetPhysWorld()->AddColliderType(this, t);
-    
 }
