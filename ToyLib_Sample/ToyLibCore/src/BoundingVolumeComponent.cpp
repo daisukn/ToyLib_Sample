@@ -129,67 +129,7 @@ void BoundingVolumeComponent::CreatePolygons()
     // Y- 面（下）
     mPolygons[10] = { V3, V0, V1 };
     mPolygons[11] = { V3, V1, V2 };
-/*
-    // 0, 1, 3
-    mPolygons[0].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    mPolygons[0].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    mPolygons[0].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    
-    // 3, 2, 0
-    mPolygons[1].a = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    mPolygons[1].b = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    mPolygons[1].c = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    
-    // 4, 2, 3
-    mPolygons[2].a = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    mPolygons[2].b = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    mPolygons[2].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    
-    // 3, 5, 4
-    mPolygons[3].a = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    mPolygons[3].b = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    mPolygons[3].c = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    
-    // 5, 4, 6
-    mPolygons[4].a = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    mPolygons[4].b = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    mPolygons[4].c = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    
-    // 3, 7, 6
-    mPolygons[5].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    mPolygons[5].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    mPolygons[5].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    
-    // 0, 6, 7
-    mPolygons[6].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    mPolygons[6].b = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    mPolygons[6].c = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    
-    // 7. 1. 0
-    mPolygons[7].a = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    mPolygons[7].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    mPolygons[7].c = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    
-    // 3, 1, 7
-    mPolygons[8].a = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    mPolygons[8].b = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    mPolygons[8].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    
-    // 7, 6, 5
-    mPolygons[9].a = Vector3(mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    mPolygons[9].b = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->max.z);
-    mPolygons[9].c = Vector3(mBoundingBox->max.x, mBoundingBox->max.y, mBoundingBox->min.z);
-    
-    // 2, 4, 6
-    mPolygons[10].a = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    mPolygons[10].b = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    mPolygons[10].c = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    
-    // 6, 0, 2
-    mPolygons[11].a = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->max.z);
-    mPolygons[11].b = Vector3(mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z);
-    mPolygons[11].c = Vector3(mBoundingBox->max.x, mBoundingBox->min.y, mBoundingBox->min.z);
-*/
+
 }
 
 
@@ -273,6 +213,49 @@ void BoundingVolumeComponent::Draw(Shader* shader)
     shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
     mVertexArray->SetActive();
     glDrawElements(GL_LINE_STRIP, NUM_VERTEX * 3, GL_UNSIGNED_INT, nullptr);
+
+    /*
+    // AABBを表示する
+    Matrix4 worldMatrix = mOwnerActor->GetWorldTransform();
+    // 列ベクトルからスケール成分を抽出
+    float scaleX = Vector3(worldMatrix.mat[0][0], worldMatrix.mat[0][1], worldMatrix.mat[0][2]).Length();
+    float scaleY = Vector3(worldMatrix.mat[1][0], worldMatrix.mat[1][1], worldMatrix.mat[1][2]).Length();
+    float scaleZ = Vector3(worldMatrix.mat[2][0], worldMatrix.mat[2][1], worldMatrix.mat[2][2]).Length();
+    // 平行移動成分
+    float transX = worldMatrix.mat[3][0];
+    float transY = worldMatrix.mat[3][1];
+    float transZ = worldMatrix.mat[3][2];
+    
+    Matrix4 mat;
+    // X軸スケール
+    mat.mat[0][0] = scaleX;
+    mat.mat[0][1] = 0.0f;
+    mat.mat[0][2] = 0.0f;
+    mat.mat[0][3] = 0.0f;
+
+    // Y軸スケール
+    mat.mat[1][0] = 0.0f;
+    mat.mat[1][1] = scaleY;
+    mat.mat[1][2] = 0.0f;
+    mat.mat[1][3] = 0.0f;
+
+    // Z軸スケール
+    mat.mat[2][0] = 0.0f;
+    mat.mat[2][1] = 0.0f;
+    mat.mat[2][2] = scaleZ;
+    mat.mat[2][3] = 0.0f;
+
+    // Translation（平行移動）
+    mat.mat[3][0] = transX;
+    mat.mat[3][1] = transY;
+    mat.mat[3][2] = transZ;
+    mat.mat[3][3] = 1.0f;
+    
+    shader->SetMatrixUniform("uWorldTransform", mat);
+    shader->SetVectorUniform("uSolColor", Vector3(1.f, 0.f, 0.f));
+    mVertexArray->SetActive();
+    glDrawElements(GL_LINE_STRIP, NUM_VERTEX * 3, GL_UNSIGNED_INT, nullptr);
+*/
 }
 
 // ワールド空間でのバウンディングボックスを取得

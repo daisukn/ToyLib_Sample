@@ -45,14 +45,28 @@ void Game::InitGame()
     shadow->SetOffsetScale(0.03f);
     
     
+    
+    // 焚き火
+    auto fireActor = CreateActor<Actor>();
+    auto fireMesh = fireActor->CreateComponent<MeshComponent>();
+    fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
+    
+    fireActor->SetPosition(Vector3(-15, 0, 15));
+    fireActor->SetScale(0.05f);
+    auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
+    fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
+    fireCollider->SetDisp(true);
+    fireCollider->SetFlags(C_GROUND | C_WALL);
+    
+    // 炎
     auto particleActor = CreateActor<Actor>();
     particleActor->SetPosition(Vector3(-15, 0, 15));
     auto particleComp = particleActor->CreateComponent<ParticleComponent>();
     particleComp->SetTexture(GetRenderer()->GetTexture("Assets/fire.png"));
-    particleComp->CreateParticles(Vector3(0, 0, 0),
+    particleComp->CreateParticles(Vector3(0, 2, 0),
                                   10,
                                   1000,
-                                  0.3,
+                                  0.5,
                                   1.5,
                                   ParticleComponent::P_SMOKE);
     particleComp->SetAddBlend(true);
@@ -80,7 +94,7 @@ void Game::LoadData()
     stanCllider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0.0f, 0, 0), Vector3(0.5, 1.f, 0.6));
     stanCllider->GetBoundingVolume()->CreateVArray();
     stanCllider->SetDisp(true);
-    stanCllider->SetFlags(C_WALL | C_ENEMY | C_FOOT);
+    stanCllider->SetFlags(C_WALL | C_ENEMY | C_FOOT | C_GROUND);
     
 
     
@@ -100,38 +114,24 @@ void Game::LoadData()
     towerCollider->SetDisp(true);
     towerCollider->SetFlags(C_WALL | C_GROUND);
     towerCollider->GetBoundingVolume()->AdjustBoundingBox(Vector3(0,0,0), Vector3(0.9, 0.9, 0.9));
-    
-    
     towerActor->SetPosition(Vector3(15, 0, 15));
     towerActor->SetScale(0.003f);
     q = Quaternion(Vector3::UnitY, Math::ToRadians(150));
     towerActor->SetRotation(q);
     
 
-    // 焚き火
-    auto fireActor = CreateActor<Actor>();
-    auto fireMesh = fireActor->CreateComponent<MeshComponent>();
-    fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
+/*
+    // レンガ
+    auto brickActor = CreateActor<Actor>();
+    auto brickMesh = brickActor->CreateComponent<MeshComponent>();
+    brickMesh->SetMesh(GetRenderer()->GetMesh("Assets/brick.x"));
     
-    fireActor->SetPosition(Vector3(-15, 00, 15));
-    fireActor->SetScale(0.09f);
-    auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
-    fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
-    fireCollider->SetDisp(true);
-    fireCollider->SetFlags(C_GROUND | C_WALL);
-
-    
-    // 焚き火
-    auto fireActor2 = CreateActor<Actor>();
-    auto fireMesh2 = fireActor2->CreateComponent<MeshComponent>();
-    fireMesh2->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
-
-    fireActor2->SetPosition(Vector3(-12, 5, 15));
-    fireActor2->SetScale(0.09f);
-    auto fireCollider3 = fireActor2->CreateComponent<ColliderComponent>();
-    fireCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
-    fireCollider3->SetDisp(true);
-    fireCollider3->SetFlags(C_GROUND | C_WALL);
+    brickActor->SetPosition(Vector3(-15, 00, -15));
+    brickActor->SetScale(1.f);
+    auto brickCollider = brickActor->CreateComponent<ColliderComponent>();
+    brickCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/brick.x")->GetVertexArray());
+    brickCollider->SetFlags(C_GROUND | C_WALL);
+*/
 
 
     // 地面
