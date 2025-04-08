@@ -78,6 +78,7 @@ void HeroActor::UpdateActor(float deltaTime)
 void HeroActor::ActorInput(const InputState& state)
 {
     bool inputAttack = false;
+    bool inputJump = false;
 
     if (mMovable)
     {
@@ -107,12 +108,12 @@ void HeroActor::ActorInput(const InputState& state)
             mAnimID = H_Stab;
             inputAttack = true;
         }
-        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_Q) == EPressed ||
+        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
         {
             //inputAttack = true;
-            mAnimID = H_Jump;
             mGravComp->Jump();
+            inputJump = true;
         }
         // 攻撃入力があれば移動ロック
         if (inputAttack)
@@ -132,6 +133,10 @@ void HeroActor::ActorInput(const InputState& state)
             {
                 mAnimID = H_Run;
             }
+            if (mGravComp->GetVelocityY() != 0.0f)
+            {
+                mAnimID = H_Jump;
+            }
         }
     }
     else
@@ -145,8 +150,7 @@ void HeroActor::ActorInput(const InputState& state)
 
     // アニメーション再生
     mMeshComp->SetAnimID(mAnimID,
-        (mAnimID == H_Run || mAnimID == H_Stand) ? PLAY_CYCLIC : PLAY_ONCE);
-
+                             (mAnimID == H_Run || mAnimID == H_Stand) ? PLAY_CYCLIC : PLAY_ONCE);
     // 移動ロックをMoveComponentに伝える
     mMoveComp->SetIsMovable(mMovable);
 }

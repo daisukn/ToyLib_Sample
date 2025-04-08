@@ -4,7 +4,6 @@
 #include "BoundingVolumeComponent.h"
 #include "PhysWorld.h"
 #include "Application.h"
-#include <iostream>
 
 GravityComponent::GravityComponent(Actor* a)
 : Component(a)
@@ -33,8 +32,6 @@ void GravityComponent::Update(float deltaTime)
         ->GetNearestGroundY(mOwnerActor, groundY))
     {
         // 自分より下に地面がある
-        std::cout << "groundY=" << groundY << std::endl;
-
         // AABBから最低座標を取得
         float footY = collider->GetBoundingVolume()->GetWorldAABB().min.y;
         if (footY+mVelocityY*deltaTime < groundY)

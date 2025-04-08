@@ -7,10 +7,7 @@
 #include "Polygon.h"
 #include "ColliderComponent.h"
 #include "MoveComponent.h"
-
 #include "MathUtils.h"
-
-#include <iostream>
 #include <algorithm>
 
 
@@ -350,7 +347,6 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
     if (!foot) return false;
 
     const Cube box = foot->GetBoundingVolume()->GetWorldAABB();
-    std::cout << "自分のAABBのmin:" << box.min.y << std::endl;
 
 
     float highest = -FLT_MAX;
@@ -365,17 +361,15 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
         if (c->GetOwner() == a) continue;
 
         const Cube other = c->GetBoundingVolume()->GetWorldAABB();
-        //std::cout << "相手のAABBのmax:" << other.max.y << std::endl;
-        //if (other.max.y > nextFootY) continue;
-
+        
+        // XZ平面上の重なりをチェック
         const bool xzOverlap =
             box.max.x > other.min.x && box.min.x < other.max.x &&
             box.max.z > other.min.z && box.min.z < other.max.z;
 
         const float yGap = footY - other.max.y;
 
-        
-        
+        // 自分の足より低くて、これまでのColliderより高ければ記録
         if (xzOverlap && yGap > 0.0f && highest < other.max.y)
         {
             highest = other.max.y;
@@ -389,7 +383,6 @@ bool PhysWorld::GetNearestGroundY(const Actor* a, float& outY) const
     if (terrainY > highest)
     {
         highest = terrainY;
-        //std::cout << "地面" << bestY << std::endl;
         found = true;
     }
 
@@ -416,62 +409,8 @@ float PhysWorld::GetGroundHeightAt(const Vector3& pos) const
 
 void PhysWorld::SetGroundPolygons(const std::vector<Polygon>& polys)
 {
-    
-    
-    
-    
     mTerrainPolygons = polys;
 }
-/*
-// 衝突判定コールバック
-void PhysWorld::CollideAndCallback(const std::vector<ColliderComponent*>& groupA,
-                                   const std::vector<ColliderComponent*>& groupB,
-                                   bool doPushBack,
-                                   bool allowY,
-                                   bool stopVerticalSpeed)
-{
-    for (auto* c1 : groupA)
-    {
-        if (!c1->GetDisp()) continue;
-
-        Vector3 totalPush = Vector3::Zero;
-        bool collided = false;
-
-        for (auto* c2 : groupB)
-        {
-            if (!c2->GetDisp()) continue;
-            if (c1->GetOwner() == c2->GetOwner()) continue;
-
-            if (JudgeWithRadius(c1, c2) && JudgeWithOBB(c1, c2))
-            {
-                c1->Collided(c2);
-                c2->Collided(c1);
-                collided = true;
-
-                if (doPushBack)
-                {
-                    Vector3 push = ComputePushBackDirection(c1, c2, allowY);
-                    totalPush += push;
-                }
-            }
-        }
-
-        if (collided && doPushBack)
-        {
-            Vector3 newPos = c1->GetOwner()->GetPosition() + totalPush;
-            c1->GetOwner()->SetPosition(newPos);
-
-            if (stopVerticalSpeed)
-            {
-                if (auto* move = c1->GetOwner()->GetComponent<MoveComponent>())
-                {
-                    move->SetVerticalSpeed(0.0f);
-                }
-            }
-        }
-    }
-}
-*/
 
 void PhysWorld::CollideAndCallback(uint32_t flagA,
                                    uint32_t flagB,
