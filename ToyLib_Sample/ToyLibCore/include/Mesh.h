@@ -29,7 +29,7 @@ public:
     // VertexArrayを取得
     const std::vector<class VertexArray*>& GetVertexArray() { return mVertexArrayPtr; }
     // Textureを取得
-    class Texture* GetTexture(size_t index);
+    //class Texture* GetTexture(size_t index);
     
     // マテリアル取得
     std::shared_ptr<class Material> GetMaterial(size_t index);
@@ -102,7 +102,7 @@ private:
 
     
     // TextureのVector
-    std::vector<class Texture*> mTextures;
+    //std::vector<class Texture*> mTextures;
     // VertexArrayのVector
     std::vector<class VertexArray*> mVertexArrayPtr;
     std::vector<std::unique_ptr<class VertexArray>> mVertexArray;

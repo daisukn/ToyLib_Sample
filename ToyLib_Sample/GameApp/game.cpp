@@ -49,12 +49,12 @@ void Game::InitGame()
     // 焚き火
     auto fireActor = CreateActor<Actor>();
     auto fireMesh = fireActor->CreateComponent<MeshComponent>();
-    fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/Campfire.fbx"));
+    fireMesh->SetMesh(GetRenderer()->GetMesh("Assets/campfile.x"));
     
     fireActor->SetPosition(Vector3(-15, 0, 15));
-    fireActor->SetScale(0.05f);
+    fireActor->SetScale(0.03f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
-    fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/Campfire.fbx")->GetVertexArray());
+    fireCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/campfile.x")->GetVertexArray());
     fireCollider->SetDisp(true);
     fireCollider->SetFlags(C_GROUND | C_WALL);
     
@@ -120,18 +120,40 @@ void Game::LoadData()
     towerActor->SetRotation(q);
     
 
-/*
+
     // レンガ
     auto brickActor = CreateActor<Actor>();
     auto brickMesh = brickActor->CreateComponent<MeshComponent>();
     brickMesh->SetMesh(GetRenderer()->GetMesh("Assets/brick.x"));
     
     brickActor->SetPosition(Vector3(-15, 00, -15));
-    brickActor->SetScale(1.f);
+    brickActor->SetScale(5.f);
     auto brickCollider = brickActor->CreateComponent<ColliderComponent>();
     brickCollider->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/brick.x")->GetVertexArray());
     brickCollider->SetFlags(C_GROUND | C_WALL);
-*/
+
+    // レンガ２
+    auto brickActor2 = CreateActor<Actor>();
+    auto brickMesh2 = brickActor2->CreateComponent<MeshComponent>();
+    brickMesh2->SetMesh(GetRenderer()->GetMesh("Assets/brick.x"));
+    
+    brickActor2->SetPosition(Vector3(-10, 5, -15));
+    brickActor2->SetScale(5.f);
+    auto brickCollider2 = brickActor2->CreateComponent<ColliderComponent>();
+    brickCollider2->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/brick.x")->GetVertexArray());
+    brickCollider2->SetFlags(C_GROUND | C_WALL);
+    
+    // レンガ3
+    auto brickActor3 = CreateActor<Actor>();
+    auto brickMesh3 = brickActor3->CreateComponent<MeshComponent>();
+    brickMesh3->SetMesh(GetRenderer()->GetMesh("Assets/brick.x"));
+    
+    brickActor3->SetPosition(Vector3(-5, 10, -10));
+    brickActor3->SetScale(5.f);
+    auto brickCollider3 = brickActor3->CreateComponent<ColliderComponent>();
+    brickCollider3->GetBoundingVolume()->ComputeBoundingVolume(GetRenderer()->GetMesh("Assets/brick.x")->GetVertexArray());
+    brickCollider3->SetFlags(C_GROUND | C_WALL);
+
 
 
     // 地面

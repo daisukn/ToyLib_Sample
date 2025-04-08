@@ -30,22 +30,31 @@ void FollowMoveComponent::Update(float deltaTime)
             dot = Math::Clamp(dot, -1.0f, 1.0f);
             float angle = Math::Acos(dot);
 
+            // 1度未満なら無視
             if (angle > Math::ToRadians(1.0f))
             {
                 float maxRot = mRotationSpeed * deltaTime;
-                if (angle > maxRot)
-                    angle = maxRot;
+                angle = Math::Min(angle, maxRot);
 
-                Vector3 cross = Vector3::Cross(forward, toTarget);
-                if (cross.y < 0)
-                    angle = -angle;
+                // Y軸投影で回転方向を決定
+                Vector3 f2D(forward.x, 0.0f, forward.z);
+                Vector3 t2D(toTarget.x, 0.0f, toTarget.z);
+                f2D.Normalize();
+                t2D.Normalize();
+
+                float signedAngle = Math::Atan2(
+                    Vector3::Cross(f2D, t2D).y,
+                    Vector3::Dot(f2D, t2D)
+                );
+
+                // 最終的な回転角
+                float yaw = Math::Clamp(signedAngle, -angle, angle);
 
                 Quaternion rot = mOwnerActor->GetRotation();
-                Quaternion inc(Vector3::UnitY, angle);
+                Quaternion inc(Vector3::UnitY, yaw);
                 rot = Quaternion::Concatenate(rot, inc);
                 mOwnerActor->SetRotation(rot);
             }
-
             // 距離が一定以上なら前進
             if (dist > mFollowDistance)
             {

@@ -76,11 +76,10 @@ void MeshComponent::Draw(Shader* shader)
         std::vector<VertexArray*> va = mMesh->GetVertexArray();
         for (auto v : va)
         {
-            //Texture* t = mMesh->GetTexture(v->GetTextureID());
             auto mat = mMesh->GetMaterial(v->GetTextureID());
             if (mat)
             {
-                mat->BindToShader(shader);
+                mat->BindToShader(shader, 0);
             }
             v->SetActive();
             glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);

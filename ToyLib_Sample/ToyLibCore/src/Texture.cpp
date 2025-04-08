@@ -109,6 +109,7 @@ bool Texture::LoadFromMemory(const void* data, int size)
     SDL_FreeSurface(image);
     return true;
 }
+/*
 bool Texture::LoadFromMemory(const void* data, int width, int height)
 {
     glGenTextures(1, &mTextureID);
@@ -128,7 +129,34 @@ bool Texture::LoadFromMemory(const void* data, int width, int height)
 
     return true;
 }
+*/
 
+bool Texture::LoadFromMemory(const void* data, int width, int height)
+{
+    if (mTextureID != 0)
+    {
+        glDeleteTextures(1, &mTextureID);
+    }
+
+    glGenTextures(1, &mTextureID);
+    glBindTexture(GL_TEXTURE_2D, mTextureID);
+
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA8,  // ← 内部フォーマットを明示
+        width, height, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE, data
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // ← 追加
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // ← 追加
+
+    mWidth = width;
+    mHeight = height;
+
+    return true;
+}
 // レンダリング用テクスチャを生成
 void Texture::CreateForRendering(int w, int h, unsigned int format)
 {

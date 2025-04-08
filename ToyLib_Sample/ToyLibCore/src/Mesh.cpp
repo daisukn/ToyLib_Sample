@@ -605,7 +605,7 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
                 if (index >= 0 && index < (int)mScene->mNumTextures)
                 {
                     aiTexture* aiTex = mScene->mTextures[index];
-                    std::string key = "EMBED_" + std::to_string(index);
+                    std::string key = fileName + "_EMBED_" + std::to_string(index);
                     
                     const uint8_t* imageData = reinterpret_cast<const uint8_t*>(aiTex->pcData);
                     size_t imageSize = (aiTex->mHeight == 0)
@@ -633,9 +633,6 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
 
         mMaterials.push_back(mat);
     }
-    
-
-    
     return true;
 }
 
@@ -646,20 +643,20 @@ void Mesh::Unload()
     mScene = nullptr;
     mVertexArray.clear();
 }
-
+/*
 // テクスチャIDからGetter
 Texture* Mesh::GetTexture(size_t index)
 {
-    if (index < mTextures.size())
+//    if (index < mTextures.size())
     {
-        return mTextures[index];
+        //return mTextures[index];
     }
-    else
+   // else
     {
         return nullptr;
     }
 }
-
+*/
 std::shared_ptr<Material> Mesh::GetMaterial(size_t index)
 {
     if (index < mMaterials.size())

@@ -155,15 +155,15 @@ void Renderer::DrawBackGround()
    
     
     // 背景用メッシュ描画
-    mBackGroundShader->SetActive();
-    mBackGroundShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+    mMeshShader->SetActive();
+    mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
     // Update lighting uniforms
-    SetLightUniforms(mBackGroundShader.get());
+    SetLightUniforms(mMeshShader.get());
     for (auto bg : mBgMesh)
     {
         if (bg->GetVisible())
         {
-            bg->Draw(mBackGroundShader.get());
+            bg->Draw(mMeshShader.get());
         }
     }
     
