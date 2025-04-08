@@ -7,9 +7,10 @@
 #include "Renderer.h"
 
 SkyDomeComponent::SkyDomeComponent(Actor* a)
-: Component(a),
-mTime(0.0f),
-mSunDir(Vector3::UnitY)
+: Component(a)
+, mTime(0.0f)
+, mSunDir(Vector3::UnitY)
+, mWeatherType(WeatherType::CLEAR)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
     mOwnerActor->GetApp()->GetRenderer()->SetSkyDome(this);
@@ -39,7 +40,7 @@ void SkyDomeComponent::Draw(Shader* shader)
     //glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE); // Z書き込みを無効
     mSkyVAO->SetActive();
-    glDrawElements(GL_TRIANGLES, mSkyVAO->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_LINE_STRIP, mSkyVAO->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
     glDepthMask(GL_TRUE);
     //glEnable(GL_CULL_FACE);
 }
