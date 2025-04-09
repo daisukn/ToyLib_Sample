@@ -13,11 +13,13 @@ std::unique_ptr<class VertexArray> CreateSkyDomeVAO(int slices, int stacks, floa
     std::vector<float> texCoords;
     std::vector<unsigned int> indices;
 
-    for (int y = 0; y <= stacks; ++y) {
+    for (int y = 0; y <= stacks; ++y)
+    {
         float v = static_cast<float>(y) / stacks;
         float phi = v * Math::PiOver2; // π/2 まで：半球のみ
 
-        for (int x = 0; x <= slices; ++x) {
+        for (int x = 0; x <= slices; ++x)
+        {
             float u = static_cast<float>(x) / slices;
             float theta = u * Math::TwoPi;
 
@@ -40,8 +42,10 @@ std::unique_ptr<class VertexArray> CreateSkyDomeVAO(int slices, int stacks, floa
         }
     }
 
-    for (int y = 0; y < stacks -1; ++y) {
-        for (int x = 0; x < slices; ++x) {
+    for (int y = 0; y < stacks -1; ++y)
+    {
+        for (int x = 0; x < slices; ++x)
+        {
             int i0 = y * (slices + 1) + x;
             int i1 = i0 + 1;
             int i2 = i0 + (slices + 1);
