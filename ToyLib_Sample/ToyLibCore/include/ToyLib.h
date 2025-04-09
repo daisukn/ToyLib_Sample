@@ -33,6 +33,7 @@
 #include "BillboardComponent.h"
 #include "ParticleComponent.h"
 #include "WireframeComponent.h"
+#include "SkyDomeComponent.h"
 
 // --- Utility ---
 #include "MathUtils.h"
@@ -44,6 +45,7 @@
 #include "Polygon.h"
 #include "Mesh.h"
 #include "Material.h"
+#include "SkyDomeMeshGenerator.h"
 
 // --- Camera / View ---
 #include "CameraComponent.h"

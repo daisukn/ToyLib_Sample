@@ -127,6 +127,12 @@ public:
 		x = inX;
 		y = inY;
 	}
+    
+    // Cast to a const float pointer
+    const float* GetAsFloatPtr() const
+    {
+        return reinterpret_cast<const float*>(&x);
+    }
 
 	// Vector addition (a + b)
 	friend Vector2 operator+(const Vector2& a, const Vector2& b)

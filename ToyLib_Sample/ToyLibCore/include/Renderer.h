@@ -23,7 +23,7 @@ enum class VisualLayer
     Background2D,
     Effect3D,
     Object3D,
-    UI
+    UI,
 };
 
 // 描画エンジン
@@ -54,6 +54,7 @@ public:
     Matrix4 GetViewMatrix() const { return mViewMatrix; }
     Matrix4 GetInvViewMatrix() const { return mInvView; }
     Matrix4 GetProjectionMatrix() const { return mProjectionMatrix; }
+    Matrix4 GetViewProjMatrix() const { return mViewMatrix * mProjectionMatrix; }
     
     // FOV取得（度）
     float GetPerspectiveFov() const { return mPerspectiveFOV; }
@@ -113,6 +114,17 @@ public:
     // フォグ情報設定
     void SetFogInfo(const float max, const float min, Vector3 color);
     
+    // スカイドーム登録
+    void SetSkyDome(class SkyDomeComponent* sky) { mSkyDomeComp = sky; }
+    class SkyDomeComponent* GetSkyDome() const { return mSkyDomeComp; }
+    
+    // 雨エフェクト
+    void SetRainAmount(const float amt) { mRainAmount = amt; };
+    void DrawRainOverlay();
+    // 霧エフェクト
+    void SetFogAmount(const float amt) { mRainAmount = amt; };
+    void DrawFogOverlay();
+    
 private:
     // セッティング読み込み
     bool LoadSettings(const std::string& filePath);
@@ -166,6 +178,15 @@ private:
     SDL_Window* mWindow;
     // GLコンテキスト
     SDL_GLContext mGLContext;
+    
+    // 雨の強さ
+    float mRainAmount;
+    // 霧の強さ
+    float mFogAmount;
+    std::unique_ptr<class Shader> mRainShader;
+    std::unique_ptr<class Shader> mFogShader;
+    std::unique_ptr<class VertexArray> mFullScreenQuad;
+    void CreateFullScreenQuad();
 
     // メッシュ用シェーダー
     std::unique_ptr<class Shader> mMeshShader;
@@ -186,6 +207,8 @@ private:
     std::unique_ptr<class Shader> mShadowSkinnedShader;
     // シャドウマップ用シェーダー
     std::unique_ptr<class Shader> mShadowMeshShader;
+    // 晴れ用シェーダー
+    std::unique_ptr<class Shader> mSkyShader_Clear;
 
     // シェーダー一括ロード
     bool LoadShaders();
@@ -218,9 +241,9 @@ private:
     std::vector<class MeshComponent*> mEffectMesh;
     std::vector<class SkeletalMeshComponent*> mSkeletalMeshes;
     std::vector<class WireframeComponent*> mWireframeComps;
+    class SkyDomeComponent* mSkyDomeComp; // Gameアプリ側で生成、生ポインタを保持
     
-    
-
+    void DrawSky();
     void DrawBackGround();
     void DrawMesh();
     void DrawDebugger();
