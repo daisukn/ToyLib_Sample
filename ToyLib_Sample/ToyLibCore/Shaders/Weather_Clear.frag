@@ -38,10 +38,12 @@ void main()
     float cloudDensity = fbm(cloudUV); // 自然な雲形状
 
     float t = clamp(vWorldDir.y, 0.0, 1.0);
-    vec3 skyColor = mix(vec3(0.7, 0.8, 1.0), vec3(0.2, 0.3, 0.6), t); // 青空グラデ
+    //vec3 skyColor = mix(vec3(0.7, 0.8, 1.0), vec3(0.2, 0.3, 0.6), t); // 青空グラデ
+    vec3 skyColor = mix(vec3(0.2, 0.3, 0.6), vec3(0.01, 0.03, 0.06), t); // 青空グラデ
 
     float cloudAlpha = smoothstep(0.3, 0.6, cloudDensity); // 雲らしいふんわり具合
-    vec3 finalColor = mix(skyColor, vec3(1.0), cloudAlpha * 0.8);     // 白雲を合成
+    //vec3 finalColor = mix(skyColor, vec3(1.0), cloudAlpha * 0.8);     // 白雲を合成
+    vec3 finalColor = mix(skyColor, vec3(1.0), cloudAlpha * 0.2);     // 白雲を合成
 
     FragColor = vec4(finalColor, 1.0);
 }

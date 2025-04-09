@@ -35,7 +35,7 @@ void SkyDomeComponent::Draw(Shader* shader)
     Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
     Matrix4 proj = mOwnerActor->GetApp()->GetRenderer()->GetProjectionMatrix();
     Matrix4 mvp = model * view * proj;
-    //Matrix4 mvp = proj * view * model;
+
     
     
 

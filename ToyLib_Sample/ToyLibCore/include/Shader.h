@@ -26,6 +26,7 @@ public:
     void SetMatrixUniform(const char* name, const Matrix4& matrix);
     void SetMatrixUniforms(const char* name, Matrix4* matrices, unsigned count);
     void SetVectorUniform(const char* name, const Vector3& vector);
+    void SetVector2Uniform(const char* name, const Vector2& vector);
     void SetFloatUniform(const char* name, float value);
     void SetBooleanUniform(const char* name, bool value);
     void SetTextureUniform(const char* name, GLuint textureUnit);

@@ -118,6 +118,12 @@ public:
     void SetSkyDome(class SkyDomeComponent* sky) { mSkyDomeComp = sky; }
     class SkyDomeComponent* GetSkyDome() const { return mSkyDomeComp; }
     
+    // 雨エフェクト
+    void SetRainAmount(const float amt) { mRainAmount = amt; };
+    void DrawRainOverlay();
+    // 霧エフェクト
+    void SetFogAmount(const float amt) { mRainAmount = amt; };
+    void DrawFogOverlay();
     
 private:
     // セッティング読み込み
@@ -172,6 +178,15 @@ private:
     SDL_Window* mWindow;
     // GLコンテキスト
     SDL_GLContext mGLContext;
+    
+    // 雨の強さ
+    float mRainAmount;
+    // 霧の強さ
+    float mFogAmount;
+    std::unique_ptr<class Shader> mRainShader;
+    std::unique_ptr<class Shader> mFogShader;
+    std::unique_ptr<class VertexArray> mFullScreenQuad;
+    void CreateFullScreenQuad();
 
     // メッシュ用シェーダー
     std::unique_ptr<class Shader> mMeshShader;

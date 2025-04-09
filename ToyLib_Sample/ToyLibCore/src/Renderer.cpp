@@ -45,6 +45,8 @@ Renderer::Renderer()
 , mWindow(nullptr)
 , mGLContext(nullptr)
 , mShaderPath("ToyLibCore/Shaders/")
+, mRainAmount(0.6f)
+, mFogAmount(0.5f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -103,6 +105,9 @@ bool Renderer::Initialize()
     // シェーダー のロードなどはここでやる
     LoadShaders();
     CreateSpriteVerts();
+    
+    // レインエフェクト用の初期化
+    CreateFullScreenQuad();
 
     
     // シャドウマッピング初期化
@@ -146,6 +151,10 @@ void Renderer::Draw()
     DrawMesh();
     DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
+    
+    DrawRainOverlay();
+    DrawFogOverlay();
+    
     DrawVisualLayer(VisualLayer::UI);
 
     SDL_GL_SwapWindow(mWindow);
@@ -841,4 +850,83 @@ void Renderer::SetFogInfo(const float max, const float min, Vector3 color)
     mFogMaxDist = max;
     mFogMinDist = min;
     mFogColor = color;
+}
+
+// 雨エフェクトの初期化
+void Renderer::CreateFullScreenQuad()
+{
+    // クアッド作成
+    float quadVerts[] = {
+        -1.0f, -1.0f,
+         1.0f, -1.0f,
+         1.0f,  1.0f,
+        -1.0f,  1.0f
+    };
+    unsigned int quadIndices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+    mFullScreenQuad = std::make_unique<VertexArray>(quadVerts, 4, quadIndices, 6, true);
+
+
+    // 雨エフェクト用シェーダー生成
+    mRainShader = std::make_unique<Shader>();
+    std::string vShaderName = mShaderPath + "RainScreen.vert";
+    std::string fShaderName = mShaderPath + "RainFront.frag";
+    if (!mRainShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return;
+    }
+    mFogShader = std::make_unique<Shader>();
+    vShaderName = mShaderPath + "RainScreen.vert";
+    fShaderName = mShaderPath + "FogFront.frag";
+    if (!mFogShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return;
+    }
+}
+void Renderer::DrawRainOverlay()
+{
+    if (mRainAmount <= 0.0f || !mRainShader || !mFullScreenQuad)
+        return;
+
+    mRainShader->SetActive();
+    mRainShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f);
+    mRainShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
+    mRainShader->SetFloatUniform("uRainAmount", mRainAmount);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    mFullScreenQuad->SetActive();
+    glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+
+    glDisable(GL_BLEND);
+}
+void Renderer::DrawFogOverlay()
+{
+    if (!mFogShader || !mFullScreenQuad) return;
+
+    // フルスクリーン用設定
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // シェーダーをアクティブ化
+    mFogShader->SetActive();
+
+    // ユニフォーム設定
+    mFogShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f); // 経過時間（秒）
+    mFogShader->SetFloatUniform("uFogAmount", mFogAmount); // 0〜1で設定
+    mRainShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
+
+    // フルスクリーンポリゴンを描画
+    mFullScreenQuad->SetActive();
+    glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+
+    // 状態戻す
+    glDisable(GL_BLEND);
+    glDepthMask(GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
 }

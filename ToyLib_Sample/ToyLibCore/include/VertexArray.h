@@ -34,6 +34,13 @@ public:
                 unsigned int num_indices,
                 const unsigned int* indices);
     
+    // 雨やフルスクリーンエフェクト用
+    VertexArray(const float* verts,
+                unsigned int numVerts,
+                const unsigned int* indices,
+                unsigned int numIndices,
+                bool isVec2Only);
+    
     // デストラクタ
     ~VertexArray();
     
