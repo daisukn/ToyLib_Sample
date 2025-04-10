@@ -852,6 +852,11 @@ void Renderer::SetFogInfo(const float max, const float min, Vector3 color)
     mFogColor = color;
 }
 
+void Renderer::SetDirectionalLightColor(const Vector3 &col)
+{
+    mDiffuseColor = col;
+}
+
 // 雨エフェクトの初期化
 void Renderer::CreateFullScreenQuad()
 {

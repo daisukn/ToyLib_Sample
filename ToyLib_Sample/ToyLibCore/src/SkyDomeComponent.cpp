@@ -33,7 +33,7 @@ void SkyDomeComponent::Draw(Shader* shader)
 
     Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
     
-    Vector3 camPos = invView.GetTranslation() + Vector3(0, -40, 0);
+    Vector3 camPos = invView.GetTranslation() + Vector3(0, -20, 0);
     Matrix4 model = Matrix4::CreateScale(100.0f) * Matrix4::CreateTranslation(camPos);
     Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
     Matrix4 proj = mOwnerActor->GetApp()->GetRenderer()->GetProjectionMatrix();
@@ -73,5 +73,35 @@ void SkyDomeComponent::Update(float deltaTime)
     mSunDir.Normalize();
     
     mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
+
+    
+    float time = fmod(mTime, 1.0f); // 0.0 ~ 1.0
+
+    Vector3 color;
+
+    if (time < 0.2f) {
+        // 🌃 夜明け前
+        color = Vector3(0.1f, 0.1f, 0.15f);
+    }
+    else if (time < 0.4f) {
+        // 🌅 朝〜昼
+        float t = (time - 0.2f) / 0.2f;
+        color = Vector3::Lerp(Vector3(1.0f, 0.6f, 0.3f), Vector3(1.0f, 1.0f, 1.0f), t); // 暖→白
+    }
+    else if (time < 0.6f) {
+        // ☀ 昼
+        color = Vector3(1.0f, 1.0f, 1.0f);
+    }
+    else if (time < 0.8f) {
+        // 🌇 夕方〜夜
+        float t = (time - 0.6f) / 0.2f;
+        color = Vector3::Lerp(Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 0.5f, 0.3f), t); // 白→赤
+    }
+    else {
+        // 🌌 夜
+        color = Vector3(0.05f, 0.05f, 0.1f);
+    }
+
+    mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightColor(color);
     
 }
