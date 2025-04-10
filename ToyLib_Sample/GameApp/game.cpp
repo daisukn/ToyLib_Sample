@@ -174,7 +174,7 @@ void Game::LoadData()
 
     // 地面
     auto b = CreateActor<Actor>();
-    auto g = b->CreateComponent<MeshComponent>();
+    auto g = b->CreateComponent<MeshComponent>(false, MESH_BG);
     g->SetMesh(GetRenderer()->GetMesh("Assets/ground2.x"));
     b->SetPosition(Vector3(0,0,0));
     b->SetScale(1);

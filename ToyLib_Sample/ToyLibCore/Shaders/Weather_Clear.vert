@@ -21,10 +21,8 @@ void main()
 layout (location = 0) in vec3 aPosition;
 
 uniform mat4 uMVP;
-uniform mat4 uModel;
 
 out vec3 vWorldDir; // 雲ノイズに使う方向ベクトル
-//out float vY;
 
 void main()
 {

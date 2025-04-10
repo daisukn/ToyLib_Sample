@@ -5,10 +5,11 @@
 
 enum class WeatherType
 {
-    CLEAR,
+    CLEAR = 0,
+    CLOUDY,
     RAIN,
     STORM,
-    CLOUDY
+    SNOW
 };
 
 
@@ -19,6 +20,7 @@ public:
     void SetTime(float t);
     void SetSunDirection(const Vector3& dir);
     void Draw(class Shader* shader);
+    void Update(float deltaTime);
     
     WeatherType GetWeatherType() const { return mWeatherType; }
     void SetWeatherType(WeatherType weather) { mWeatherType = weather; }
@@ -26,6 +28,7 @@ public:
 private:
     std::unique_ptr<class VertexArray> mSkyVAO;
     float mTime;
+    float mTimeSpeed;
     Vector3 mSunDir;
     WeatherType mWeatherType;
 };

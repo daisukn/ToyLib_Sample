@@ -119,15 +119,9 @@ void main()
     if (uWeatherType <= 1)
     {
         float sunAmount = clamp(dot(normalize(vWorldDir), -normalize(uSunDir)), 0.0, 1.0);
-        vec3 sunGlow = vec3(1.2, 1.0, 0.8) * pow(sunAmount, 10.0);
+        vec3 sunGlow = vec3(1.2, 1.0, 0.8) * pow(sunAmount, 320.0);
         finalColor += sunGlow * (1.0 - cloudAlpha); // 雲が薄いほど強く見える
-        //FragColor = vec4(sunGlow, 1.0);
-        /*
-        float sunAmount = clamp(dot(normalize(vWorldDir), -normalize(uSunDir)), 0.0, 1.0);
-        sunAmount = pow(sunAmount, 6.0); // 12.0 → 6.0 くらいで見える範囲拡大
-        vec3 sunGlow = vec3(1.4, 1.2, 0.9) * sunAmount;
-        finalColor += sunGlow * (1.0 - cloudAlpha); // 雲が薄いほど強く見える
-         */
+
     }
 
     FragColor = vec4(finalColor, 1.0);
