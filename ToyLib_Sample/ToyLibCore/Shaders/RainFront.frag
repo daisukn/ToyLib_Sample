@@ -11,7 +11,7 @@ float hash(vec2 p) {
 }
 
 float rainPattern(vec2 uv) {
-    uv *= vec2(250.0, 1.0);            // ← 横密度UP
+    uv *= vec2(300.0, 1.0);            // ← 横密度UP
     uv.y += uTime * 8.0;              // ← 落下速度速め
 
     float id = floor(uv.x);

@@ -28,9 +28,8 @@ out vec3 vWorldDir; // 雲ノイズに使う方向ベクトル
 
 void main()
 {
-    vec4 worldPos = vec4(aPosition, 1.0);// * uModel;
-    vWorldDir = normalize(worldPos.xyz); // 単位方向で出す
+    vWorldDir = normalize(aPosition);
+    
     gl_Position = vec4(aPosition, 1.0) * uMVP;
-    //vY = aPosition.y; // 高さ（Y）を渡す
 }
 

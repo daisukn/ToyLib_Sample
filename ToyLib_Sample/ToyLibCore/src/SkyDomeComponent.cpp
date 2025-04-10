@@ -48,7 +48,11 @@ void SkyDomeComponent::Draw(Shader* shader)
     shader->SetFloatUniform("uTimeOfDay", t);
     shader->SetIntUniform("uWeatherType", 1);
     shader->SetFloatUniform("uTimeOfDay", fmod(gTimeOfDay, 1.0f)); // 0.0〜1.0
-    shader->SetVectorUniform("uSunDir", Vector3::UnitY); // -Z方向など
+    
+    Vector3 sunDir = Vector3(0.0f, 1.f, 0.f); // カメラの前方＆上方向
+    sunDir.Normalize();
+    shader->SetVectorUniform("uSunDir", sunDir);
+    //shader->SetVectorUniform("uSunDir", Vector3::UnitY); // -Z方向など
     
     
     glDisable(GL_CULL_FACE);
