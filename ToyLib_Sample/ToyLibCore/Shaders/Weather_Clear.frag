@@ -38,7 +38,7 @@ vec3 getSkyColor(float time)
 {
     vec3 night = vec3(0.01, 0.02, 0.05);
     vec3 day   = vec3(0.7, 0.8, 1.0);
-    vec3 dusk  = vec3(0.7, 0.3, 0.35);
+    vec3 dusk  = vec3(0.9, 0.4, 0.35);
 
     time = fract(time);
 

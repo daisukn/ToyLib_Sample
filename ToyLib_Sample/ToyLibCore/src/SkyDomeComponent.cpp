@@ -46,9 +46,9 @@ void SkyDomeComponent::Draw(Shader* shader)
     
     float t = fmod(SDL_GetTicks() / 1000.0f, 60.0f) / 60.0f; // 0〜1で60秒周期
     shader->SetFloatUniform("uTimeOfDay", t);
-    shader->SetIntUniform("uWeatherType", 0);
+    shader->SetIntUniform("uWeatherType", 1);
     shader->SetFloatUniform("uTimeOfDay", fmod(gTimeOfDay, 1.0f)); // 0.0〜1.0
-    shader->SetVectorUniform("uSunDir", Vector3(0,1,1)); // -Z方向など
+    shader->SetVectorUniform("uSunDir", Vector3::UnitY); // -Z方向など
     
     
     glDisable(GL_CULL_FACE);
