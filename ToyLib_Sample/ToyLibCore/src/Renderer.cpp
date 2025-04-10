@@ -45,8 +45,8 @@ Renderer::Renderer()
 , mWindow(nullptr)
 , mGLContext(nullptr)
 , mShaderPath("ToyLibCore/Shaders/")
-, mRainAmount(0.6f)
-, mFogAmount(0.5f)
+, mRainAmount(0.f)
+, mFogAmount(0.f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -805,7 +805,7 @@ void Renderer::RenderShadowMap()
         }
     }
     
-    // 通常メッシュのシャドウ描画（他のメッシュも追加してOK）
+    // 通常メッシュのシャドウ描画
     mShadowMeshShader->SetActive();
     mShadowMeshShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
     

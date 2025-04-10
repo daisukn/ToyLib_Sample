@@ -5,7 +5,7 @@
 
 OrbitCameraComponent::OrbitCameraComponent(Actor* actor)
     : CameraComponent(actor)
-    , mOffset(-0.0f, 2.0f, -10.0f)
+    , mOffset(-0.0f, 1.0f, -5.0f)
     , mUpVector(Vector3::UnitY)
     , mPitchSpeed(0.0f)
     , mYawSpeed(0.0f)
@@ -70,7 +70,7 @@ void OrbitCameraComponent::Update(float deltaTime)
     
     
     mOffset.y += mChangeOffset;
-    // 縦移動の範囲を絞る
+    /*// 縦移動の範囲を絞る
     if(cameraPos.y < 0)
     {
         cameraPos.y = 0;
@@ -90,7 +90,7 @@ void OrbitCameraComponent::Update(float deltaTime)
         }
         
     }
-
+*/
     mCameraPosition = cameraPos;
      
 

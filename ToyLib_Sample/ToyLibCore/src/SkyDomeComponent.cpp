@@ -24,30 +24,37 @@ void SkyDomeComponent::SetSunDirection(const Vector3& dir) {
     mSunDir = dir;
 }
 
+float gTimeOfDay = 0.f;
+
 void SkyDomeComponent::Draw(Shader* shader)
 {
     if (!mSkyVAO || !shader) return;
 
     Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
     
-    Vector3 camPos = invView.GetTranslation() + Vector3(0, -4, 0);
-    Matrix4 model = Matrix4::CreateScale(10.0f) * Matrix4::CreateTranslation(camPos);
+    Vector3 camPos = invView.GetTranslation() + Vector3(0, -40, 0);
+    Matrix4 model = Matrix4::CreateScale(100.0f) * Matrix4::CreateTranslation(camPos);
     Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
     Matrix4 proj = mOwnerActor->GetApp()->GetRenderer()->GetProjectionMatrix();
     Matrix4 mvp = model * view * proj;
 
-    
+    gTimeOfDay += 0.001f;
     
 
     shader->SetActive();
     shader->SetMatrixUniform("uMVP", mvp);
-    shader->SetFloatUniform("uTime", mTime);
-    shader->SetVectorUniform("uSunDir", mSunDir);
+    
+    float t = fmod(SDL_GetTicks() / 1000.0f, 60.0f) / 60.0f; // 0〜1で60秒周期
+    shader->SetFloatUniform("uTimeOfDay", t);
+    shader->SetIntUniform("uWeatherType", 0);
+    shader->SetFloatUniform("uTimeOfDay", fmod(gTimeOfDay, 1.0f)); // 0.0〜1.0
+    shader->SetVectorUniform("uSunDir", Vector3(0,1,1)); // -Z方向など
+    
     
     glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE); // Z書き込みを無効
     mSkyVAO->SetActive();
-    glDrawElements(GL_TRIANGLE_STRIP, mSkyVAO->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, mSkyVAO->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
     glDepthMask(GL_TRUE);
     glEnable(GL_CULL_FACE);
 }

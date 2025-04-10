@@ -110,6 +110,14 @@ void Shader::SetTextureUniform(const char* name, GLuint textureUnit)
     glUniform1i(loc, textureUnit);  // ユニフォーム変数にテクスチャユニットを設定
 }
 
+// 整数を送る
+void Shader::SetIntUniform(const char* name, GLuint value)
+{
+    GLuint loc = glGetUniformLocation(mShaderProgramID, name);
+    glUniform1i(loc, value);  // ユニフォーム変数にテクスチャユニットを設定
+}
+
+
 // コンパイル
 bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader){
     // シェーダーファイル読み込み

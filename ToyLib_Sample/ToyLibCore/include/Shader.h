@@ -30,6 +30,8 @@ public:
     void SetFloatUniform(const char* name, float value);
     void SetBooleanUniform(const char* name, bool value);
     void SetTextureUniform(const char* name, GLuint textureUnit);
+    void SetIntUniform(const char* name, GLuint value);
+    
     
 private:
     // 頂点シェーダーのID

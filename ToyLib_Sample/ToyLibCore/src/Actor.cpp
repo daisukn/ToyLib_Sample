@@ -28,7 +28,6 @@ Actor::~Actor()
 // メインルーチン
 void Actor::Update(float deltaTime)
 {
-
     // EActiveの場合にComponentもUpdate
     if (mStatus == EActive)
     {
@@ -39,7 +38,6 @@ void Actor::Update(float deltaTime)
         // 座標系更新
         ComputeWorldTransform();
     }
-
 }
 
 // コンポーネントのUpdateを呼ぶ
