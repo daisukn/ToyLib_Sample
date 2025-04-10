@@ -38,7 +38,7 @@ void SkyDomeComponent::Draw(Shader* shader)
     Matrix4 proj = mOwnerActor->GetApp()->GetRenderer()->GetProjectionMatrix();
     Matrix4 mvp = model * view * proj;
 
-    gTimeOfDay += 0.001f;
+    gTimeOfDay += 0.00051f;
     
 
     shader->SetActive();
@@ -49,7 +49,12 @@ void SkyDomeComponent::Draw(Shader* shader)
     shader->SetIntUniform("uWeatherType", 1);
     shader->SetFloatUniform("uTimeOfDay", fmod(gTimeOfDay, 1.0f)); // 0.0〜1.0
     
-    Vector3 sunDir = Vector3(0.0f, 1.f, 0.f); // カメラの前方＆上方向
+    // 時間帯 (0.0〜1.0) に基づいて太陽のベクトルを算出
+    // 夜: 0.0, 朝: 0.25, 昼: 0.5, 夕: 0.75, 夜: 1.0
+    float angle = Math::TwoPi * gTimeOfDay - Math::PiOver2; // -90° から 270° 回転
+    // 半球上の円弧に沿って太陽を動かす（Z前方、Y上下）
+    Vector3 sunDir = Vector3(0.0f, -sinf(angle), cosf(angle));
+
     sunDir.Normalize();
     shader->SetVectorUniform("uSunDir", sunDir);
     //shader->SetVectorUniform("uSunDir", Vector3::UnitY); // -Z方向など

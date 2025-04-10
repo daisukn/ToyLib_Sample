@@ -56,8 +56,8 @@ vec3 getSkyColor(float time) {
 vec3 getCloudColor(float time) {
     time = fract(time);
     vec3 dayColor   = vec3(1.0);
-    vec3 duskColor  = vec3(1.0, 0.5, 0.2);
-    vec3 nightColor = vec3(0.1, 0.1, 0.15);
+    vec3 duskColor  = vec3(0.5, 0.2, 0.2);
+    vec3 nightColor = vec3(0.001, 0.001, 0.0015);
 
     if (time < 0.2)
         return mix(nightColor, duskColor, smoothstep(0.0, 0.2, time));
@@ -79,9 +79,9 @@ void main()
     vec3 rawSky   = getSkyColor(uTimeOfDay);
     vec3 rawCloud = getCloudColor(uTimeOfDay);
     vec3 baseSky     = mix(vec3(0.4, 0.4, 0.5), rawSky, weatherFade);
-    vec3 cloudColor  = mix(vec3(0.5, 0.5, 0.5), rawCloud, weatherFade);
+    vec3 cloudColor  = mix(vec3(0.4, 0.4, 0.4), rawCloud, weatherFade);
 
-    vec3 skyColor = mix(baseSky * 0.4, baseSky, t);
+    vec3 skyColor = mix(baseSky * 0.6, baseSky, t);
 
     float cloudAlpha = 0.0;
 
@@ -121,10 +121,18 @@ void main()
         float sunAmount = clamp(dot(normalize(vWorldDir), -normalize(uSunDir)), 0.0, 1.0);
         vec3 sunGlow = vec3(1.2, 1.0, 0.8) * pow(sunAmount, 10.0);
         finalColor += sunGlow * (1.0 - cloudAlpha); // 雲が薄いほど強く見える
+        //FragColor = vec4(sunGlow, 1.0);
+        /*
+        float sunAmount = clamp(dot(normalize(vWorldDir), -normalize(uSunDir)), 0.0, 1.0);
+        sunAmount = pow(sunAmount, 6.0); // 12.0 → 6.0 くらいで見える範囲拡大
+        vec3 sunGlow = vec3(1.4, 1.2, 0.9) * sunAmount;
+        finalColor += sunGlow * (1.0 - cloudAlpha); // 雲が薄いほど強く見える
+         */
     }
 
     FragColor = vec4(finalColor, 1.0);
 }
+
 /*
 #version 410 core
 

@@ -5,7 +5,7 @@
 
 OrbitCameraComponent::OrbitCameraComponent(Actor* actor)
     : CameraComponent(actor)
-    , mOffset(-0.0f, 1.0f, -5.0f)
+    , mOffset(-0.0f, 3.0f, -10.0f)
     , mUpVector(Vector3::UnitY)
     , mPitchSpeed(0.0f)
     , mYawSpeed(0.0f)
