@@ -67,13 +67,31 @@ void SkyDomeComponent::Update(float deltaTime)
     
     // 時間帯 (0.0〜1.0) に基づいて太陽のベクトルを算出
     // 夜: 0.0, 朝: 0.25, 昼: 0.5, 夕: 0.75, 夜: 1.0
-    float angle = Math::TwoPi * mTime - Math::PiOver2; // -90° から 270° 回転
+    /*float angle = Math::TwoPi * mTime - Math::PiOver2; // -90° から 270° 回転
     // 半球上の円弧に沿って太陽を動かす（Z前方、Y上下）
     mSunDir = Vector3(0.0f, -sinf(angle), cosf(angle));
     mSunDir.Normalize();
     
     mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
 
+     */
+     
+     // ゲーム時間 0.0〜1.0 → 0〜180度（π）を回す
+     float angle = Math::Pi * fmod(mTime, 1.0f); // 0.0〜π（180°）
+
+     // 軌道の定義：XZ平面で +X からスタート、+Z に向かって傾く円弧
+     // 例えば、XY平面ではなく XZ平面に投影しながら、Yも上下に
+    mSunDir = Vector3(
+         -cosf(angle),        // +X方向から -X方向へ移動
+         -sinf(angle),       // 太陽が昇って沈む（Y軸）
+         0.2f * cosf(angle)  // 南方向に傾ける（+Z成分）
+     );
+    mSunDir.Normalize();
+
+     // セット（ディレクショナルライトとシェーダー両方に）
+     mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
+    
+    std::cout << "time = " << fmod(mTime, 1.0f) << std::endl;
     
     float time = fmod(mTime, 1.0f); // 0.0 ~ 1.0
 
