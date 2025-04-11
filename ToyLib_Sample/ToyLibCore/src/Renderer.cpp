@@ -388,8 +388,8 @@ bool Renderer::LoadShaders()
     
     // 天気シェーダー（晴れ）
     mSkyShader_Clear = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "Weather_Clear.vert";
-    fShaderName = mShaderPath + "Weather_Clear.frag";
+    vShaderName = mShaderPath + "WeatherDome.vert";
+    fShaderName = mShaderPath + "WeatherDome.frag";
     if (!mSkyShader_Clear->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
