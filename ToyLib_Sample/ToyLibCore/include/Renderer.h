@@ -123,13 +123,13 @@ public:
     void SetSkyDome(class SkyDomeComponent* sky) { mSkyDomeComp = sky; }
     class SkyDomeComponent* GetSkyDome() const { return mSkyDomeComp; }
     
-    // 雨エフェクト
-    void SetRainAmount(const float amt) { mRainAmount = amt; };
-    void DrawRainOverlay();
-    // 霧エフェクト
-    void SetFogAmount(const float amt) { mFogAmount = amt; };
-    void DrawFogOverlay();
-    
+    // 雨エフェクトのセット
+    void SetRainAmount(const float amt) { mRainAmount = amt; }
+    // 霧エフェクトのセット
+    void SetFogAmount(const float amt) { mFogAmount = amt; }
+    // 雪エフェクトのセット
+    void SetSnowAmout(const float amt) { mSnowAmount = amt; }
+
 private:
     // セッティング読み込み
     bool LoadSettings(const std::string& filePath);
@@ -188,10 +188,19 @@ private:
     float mRainAmount;
     // 霧の強さ
     float mFogAmount;
+    // 雪の強さ
+    float mSnowAmount;
     std::unique_ptr<class Shader> mRainShader;
     std::unique_ptr<class Shader> mFogShader;
+    std::unique_ptr<class Shader> mWeatherScreenShader;
     std::unique_ptr<class VertexArray> mFullScreenQuad;
     void CreateFullScreenQuad();
+    
+    // 天気エフェクトのオーバーレイ
+    void DrawWatherOverlay();
+    void DrawFogOverlay();
+    void DrawRainOverlay();
+    
 
     // メッシュ用シェーダー
     std::unique_ptr<class Shader> mMeshShader;

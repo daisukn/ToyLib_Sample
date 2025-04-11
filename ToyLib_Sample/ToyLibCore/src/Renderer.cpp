@@ -47,6 +47,7 @@ Renderer::Renderer()
 , mShaderPath("ToyLibCore/Shaders/")
 , mRainAmount(0.f)
 , mFogAmount(0.f)
+, mSnowAmount(0.f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -386,10 +387,35 @@ bool Renderer::LoadShaders()
         return false;
     }
     
-    // 天気シェーダー（晴れ）
+    // スカイドームシェーダー
     mSkyShader_Clear = std::make_unique<Shader>();
     vShaderName = mShaderPath + "WeatherDome.vert";
     fShaderName = mShaderPath + "WeatherDome.frag";
+    if (!mSkyShader_Clear->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    
+    // オーバーレイ用シェーダー生成
+    mRainShader = std::make_unique<Shader>();
+    vShaderName = mShaderPath + "WeatherScreen.vert";
+    fShaderName = mShaderPath + "RainFront.frag";
+    if (!mRainShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    mFogShader = std::make_unique<Shader>();
+    vShaderName = mShaderPath + "WeatherScreen.vert";
+    fShaderName = mShaderPath + "FogFront.frag";
+    if (!mFogShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    
+    // 天気シェーダー（統合版）
+    mSkyShader_Clear = std::make_unique<Shader>();
+    vShaderName = mShaderPath + "WeatherScreen.vert";
+    fShaderName = mShaderPath + "WeatherScreen.frag";
     if (!mSkyShader_Clear->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
@@ -850,22 +876,6 @@ void Renderer::CreateFullScreenQuad()
     };
     mFullScreenQuad = std::make_unique<VertexArray>(quadVerts, 4, quadIndices, 6, true);
 
-
-    // 雨エフェクト用シェーダー生成
-    mRainShader = std::make_unique<Shader>();
-    std::string vShaderName = mShaderPath + "WeatherScreen.vert";
-    std::string fShaderName = mShaderPath + "RainFront.frag";
-    if (!mRainShader->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return;
-    }
-    mFogShader = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "WeatherScreen.vert";
-    fShaderName = mShaderPath + "FogFront.frag";
-    if (!mFogShader->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return;
-    }
 }
 void Renderer::DrawRainOverlay()
 {
@@ -912,4 +922,9 @@ void Renderer::DrawFogOverlay()
     glDisable(GL_BLEND);
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
+}
+
+void Renderer::DrawWatherOverlay()
+{
+    
 }
