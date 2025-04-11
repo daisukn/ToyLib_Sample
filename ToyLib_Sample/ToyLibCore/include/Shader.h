@@ -30,7 +30,7 @@ public:
     void SetFloatUniform(const char* name, float value);
     void SetBooleanUniform(const char* name, bool value);
     void SetTextureUniform(const char* name, GLuint textureUnit);
-    void SetIntUniform(const char* name, GLuint value);
+    void SetIntUniform(const char* name, int value);
     
     
 private:

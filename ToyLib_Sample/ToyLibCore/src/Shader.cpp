@@ -111,10 +111,10 @@ void Shader::SetTextureUniform(const char* name, GLuint textureUnit)
 }
 
 // 整数を送る
-void Shader::SetIntUniform(const char* name, GLuint value)
+void Shader::SetIntUniform(const char* name, int value)
 {
     GLuint loc = glGetUniformLocation(mShaderProgramID, name);
-    glUniform1i(loc, value);  // ユニフォーム変数にテクスチャユニットを設定
+    glUniform1i(loc, value);
 }
 
 
