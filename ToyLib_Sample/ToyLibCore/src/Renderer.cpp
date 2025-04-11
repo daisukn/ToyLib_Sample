@@ -192,31 +192,8 @@ void Renderer::DrawBackGround()
 void Renderer::DrawSky()
 {
     if (!mSkyDomeComp) return;
+    mSkyDomeComp->Draw(mSkyShader_Clear.get());
 
-    Shader* shader = nullptr;
-
-    // 天気に応じてシェーダー選択（GetShaderForWeather()を後で用意）
-    switch (mSkyDomeComp->GetWeatherType())
-    {
-        case WeatherType::CLEAR:
-            shader = mSkyShader_Clear.get();
-            break;
-        case WeatherType::CLOUDY:
-            //shader = mSkyShader_Cloudy.get();
-            break;
-        case WeatherType::RAIN:
-            //shader = mSkyShader_Rain.get();
-            break;
-        // 必要に応じて追加
-        default:
-            shader = mSkyShader_Clear.get();
-            break;
-    }
-
-    if (shader)
-    {
-        mSkyDomeComp->Draw(shader);
-    }
 }
 
 // メッシュの描画

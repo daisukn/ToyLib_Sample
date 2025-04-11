@@ -37,7 +37,7 @@ float fbm(vec2 p) {
 vec3 getSkyColor(float time) {
     vec3 night = vec3(0.01, 0.02, 0.05);
     vec3 day   = vec3(0.7, 0.8, 1.0);
-    vec3 dusk  = vec3(0.9, 0.4, 0.35);
+    vec3 dusk  = vec3(0.9, 0.4, 0.2);
 
     time = fract(time);
     if (time < 0.2)
@@ -68,7 +68,7 @@ vec3 getCloudColor(float time) {
     else if (time < 0.8)
         return mix(dayColor, duskColor, smoothstep(0.6, 0.8, time));
     else
-        return mix(duskColor, nightColor, smoothstep(0.8, 1.0, time));
+        return mix(duskColor, nightColor, smoothstep(0.9, 1.0, time));
 }
 
 void main()
@@ -86,14 +86,37 @@ void main()
     float cloudAlpha = 0.0;
 
     // --- 雲ノイズ ---
-    if (uWeatherType >= 1)
+    if (uWeatherType >= 0) // ← CLEARも対象にする
     {
         vec2 cloudUV = vWorldDir.xz * 10.0 + vec2(uTime * 0.05, 0.0);
         float density = fbm(cloudUV);
-        cloudAlpha = smoothstep(0.3, 0.6, density);
+
+        // 天気ごとに個別設定
+        if (uWeatherType == 0) {
+            cloudAlpha = smoothstep(0.5, 0.75, density); // CLEAR：薄め
+        }
+        else if (uWeatherType == 1) {
+            cloudAlpha = smoothstep(0.3, 0.6, density);  // CLOUDY：中程度
+            cloudColor = vec3(0.6);
+            skyColor = mix(skyColor, vec3(0.3), 0.5);
+        }
+        else if (uWeatherType == 2) {
+            cloudAlpha = smoothstep(0.2, 0.5, density);  // RAIN：濃いめ
+            skyColor *= 0.4;
+            cloudColor = vec3(0.5);
+        }
+        else if (uWeatherType == 3) {
+            cloudAlpha = smoothstep(0.2, 0.5, density);  // STORM：濃いめ
+            skyColor = vec3(0.15);
+            cloudColor = vec3(0.7);
+        }
+        else if (uWeatherType == 4) {
+            cloudAlpha = smoothstep(0.3, 0.6, density);  // SNOW：ふわっと
+            skyColor = vec3(0.85);
+            cloudColor = vec3(1.0);
+        }
 
         if (uWeatherType >= 2) {
-            skyColor *= 0.5;
             cloudAlpha = min(cloudAlpha + 0.4, 1.0);
         }
     }
