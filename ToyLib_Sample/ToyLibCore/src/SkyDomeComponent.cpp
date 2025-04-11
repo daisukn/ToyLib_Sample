@@ -5,6 +5,7 @@
 #include "Actor.h"
 #include "Application.h"
 #include "Renderer.h"
+#include <algorithm>
 
 SkyDomeComponent::SkyDomeComponent(Actor* a)
 : Component(a)
