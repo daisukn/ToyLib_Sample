@@ -11,7 +11,7 @@ SkyDomeComponent::SkyDomeComponent(Actor* a)
 , mTime(0.0f)
 , mTimeSpeed(0.0005f)
 , mSunDir(Vector3::UnitY)
-, mWeatherType(WeatherType::CLEAR)
+, mWeatherType(WeatherType::STORM)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
     mOwnerActor->GetApp()->GetRenderer()->SetSkyDome(this);
@@ -45,7 +45,7 @@ void SkyDomeComponent::Draw(Shader* shader)
     
     float t = fmod(SDL_GetTicks() / 1000.0f, 40.0f) / 60.0f; // 0〜1で60秒周期
     shader->SetFloatUniform("uTime", t);
-    shader->SetIntUniform("uWeatherType", 1);
+    shader->SetIntUniform("uWeatherType", static_cast<int>(mWeatherType));
     shader->SetFloatUniform("uTimeOfDay", fmod(mTime, 1.0f)); // 0.0〜1.0
     
 
@@ -72,6 +72,7 @@ float SkyDomeComponent::SmoothStep(float edge0, float edge1, float x)
 void SkyDomeComponent::Update(float deltaTime)
 {
     mTime += mTimeSpeed;
+    mTime = 0.9f;
     
      // ゲーム時間 0.0〜1.0 → 0〜180度（π）を回す
      float angle = Math::Pi * fmod(mTime, 1.0f); // 0.0〜π（180°）
