@@ -222,7 +222,7 @@ private:
     // シャドウマップ用シェーダー
     std::unique_ptr<class Shader> mShadowMeshShader;
     // 晴れ用シェーダー
-    std::unique_ptr<class Shader> mSkyShader_Clear;
+    std::unique_ptr<class Shader> mSkyDomeShader;
 
     // シェーダー一括ロード
     bool LoadShaders();

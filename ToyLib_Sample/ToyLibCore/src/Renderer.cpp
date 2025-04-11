@@ -187,13 +187,12 @@ void Renderer::DrawBackGround()
             bg->Draw(shader);
         }
     }
-    
 }
 
 void Renderer::DrawSky()
 {
     if (!mSkyDomeComp) return;
-    mSkyDomeComp->Draw(mSkyShader_Clear.get());
+    mSkyDomeComp->Draw(mSkyDomeShader.get());
 
 }
 
@@ -388,10 +387,10 @@ bool Renderer::LoadShaders()
     }
     
     // スカイドームシェーダー
-    mSkyShader_Clear = std::make_unique<Shader>();
+    mSkyDomeShader = std::make_unique<Shader>();
     vShaderName = mShaderPath + "WeatherDome.vert";
     fShaderName = mShaderPath + "WeatherDome.frag";
-    if (!mSkyShader_Clear->Load(vShaderName.c_str(), fShaderName.c_str()))
+    if (!mSkyDomeShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
@@ -413,10 +412,10 @@ bool Renderer::LoadShaders()
     }
     
     // 天気シェーダー（統合版）
-    mSkyShader_Clear = std::make_unique<Shader>();
+    mWeatherScreenShader = std::make_unique<Shader>();
     vShaderName = mShaderPath + "WeatherScreen.vert";
     fShaderName = mShaderPath + "WeatherScreen.frag";
-    if (!mSkyShader_Clear->Load(vShaderName.c_str(), fShaderName.c_str()))
+    if (!mWeatherScreenShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
