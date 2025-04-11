@@ -853,14 +853,14 @@ void Renderer::CreateFullScreenQuad()
 
     // 雨エフェクト用シェーダー生成
     mRainShader = std::make_unique<Shader>();
-    std::string vShaderName = mShaderPath + "RainScreen.vert";
+    std::string vShaderName = mShaderPath + "WeatherScreen.vert";
     std::string fShaderName = mShaderPath + "RainFront.frag";
     if (!mRainShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return;
     }
     mFogShader = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "RainScreen.vert";
+    vShaderName = mShaderPath + "WeatherScreen.vert";
     fShaderName = mShaderPath + "FogFront.frag";
     if (!mFogShader->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
