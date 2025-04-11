@@ -47,7 +47,7 @@ Renderer::Renderer()
 , mShaderPath("ToyLibCore/Shaders/")
 , mRainAmount(0.f)
 , mFogAmount(0.f)
-, mSnowAmount(0.f)
+, mSnowAmount(0.5f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -153,8 +153,9 @@ void Renderer::Draw()
     DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
     
-    DrawRainOverlay();
-    DrawFogOverlay();
+    //DrawRainOverlay();
+    //DrawFogOverlay();
+    DrawWatherOverlay();
     
     DrawVisualLayer(VisualLayer::UI);
 
@@ -925,5 +926,31 @@ void Renderer::DrawFogOverlay()
 
 void Renderer::DrawWatherOverlay()
 {
-    
+    if (!mWeatherScreenShader || !mFullScreenQuad)
+        return;
+
+    // フルスクリーン用設定
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // シェーダーをアクティブ化
+    mWeatherScreenShader->SetActive();
+
+    // ユニフォーム設定
+    mWeatherScreenShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f); // 経過時間（秒）
+    mWeatherScreenShader->SetFloatUniform("uRainAmount", 0.5f); // 0〜1で設定
+    mWeatherScreenShader->SetFloatUniform("uFogAmount", 0.4f); // 0〜1で設定
+    mWeatherScreenShader->SetFloatUniform("uSnowAmount", 1.0f); // 0〜1で設定
+    mWeatherScreenShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
+
+    // フルスクリーンポリゴンを描画
+    mFullScreenQuad->SetActive();
+    glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+
+    // 状態戻す
+    glDisable(GL_BLEND);
+    glDepthMask(GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
 }
