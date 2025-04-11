@@ -11,11 +11,13 @@ public:
 
     // コンストラクタ（フォーマットごとに３種類）
     
-    // 主にスプライト用
-    VertexArray(const float* verts, unsigned int num_verts,
-                 const unsigned int* indices, unsigned int num_indices);
+    // 主にスプライト用(4)
+    VertexArray(const float* verts,
+                unsigned int num_verts,
+                const unsigned int* indices,
+                unsigned int num_indices);
 
-    // メッシュ用
+    // メッシュ用(6)
     VertexArray(unsigned int num_verts,
                 const float* verts,
                 const float* norms,
@@ -24,7 +26,7 @@ public:
                 const unsigned int* indices);
 
 
-    // アニメーションメッシュ用
+    // アニメーションメッシュ用(8)
     VertexArray(unsigned int num_verts,
                 const float* verts,
                 const float* norms,
@@ -34,7 +36,7 @@ public:
                 unsigned int num_indices,
                 const unsigned int* indices);
     
-    // 雨やフルスクリーンエフェクト用
+    // 雨やフルスクリーンエフェクト用(5)
     VertexArray(const float* verts,
                 unsigned int numVerts,
                 const unsigned int* indices,
@@ -42,7 +44,7 @@ public:
                 bool isVec2Only);
     
     // デストラクタ
-    ~VertexArray();
+    virtual ~VertexArray();
     
     // 描画用にBind
     void SetActive();

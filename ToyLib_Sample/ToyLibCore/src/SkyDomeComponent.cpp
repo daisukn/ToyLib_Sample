@@ -33,7 +33,7 @@ void SkyDomeComponent::Draw(Shader* shader)
 
     Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
     
-    Vector3 camPos = invView.GetTranslation() + Vector3(0, -20, 0);
+    Vector3 camPos = invView.GetTranslation() + Vector3(0, -30, 0);
     Matrix4 model = Matrix4::CreateScale(100.0f) * Matrix4::CreateTranslation(camPos);
     Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
     Matrix4 proj = mOwnerActor->GetApp()->GetRenderer()->GetProjectionMatrix();
@@ -61,21 +61,18 @@ void SkyDomeComponent::Draw(Shader* shader)
     glEnable(GL_CULL_FACE);
 }
 
+float SkyDomeComponent::SmoothStep(float edge0, float edge1, float x)
+{
+    // Clamp x between edge0 and edge1
+    float t = std::clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
+    return t * t * (3.0f - 2.0f * t);
+}
+
+
 void SkyDomeComponent::Update(float deltaTime)
 {
     mTime += mTimeSpeed;
     
-    // 時間帯 (0.0〜1.0) に基づいて太陽のベクトルを算出
-    // 夜: 0.0, 朝: 0.25, 昼: 0.5, 夕: 0.75, 夜: 1.0
-    /*float angle = Math::TwoPi * mTime - Math::PiOver2; // -90° から 270° 回転
-    // 半球上の円弧に沿って太陽を動かす（Z前方、Y上下）
-    mSunDir = Vector3(0.0f, -sinf(angle), cosf(angle));
-    mSunDir.Normalize();
-    
-    mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
-
-     */
-     
      // ゲーム時間 0.0〜1.0 → 0〜180度（π）を回す
      float angle = Math::Pi * fmod(mTime, 1.0f); // 0.0〜π（180°）
 
@@ -84,42 +81,33 @@ void SkyDomeComponent::Update(float deltaTime)
     mSunDir = Vector3(
          -cosf(angle),        // +X方向から -X方向へ移動
          -sinf(angle),       // 太陽が昇って沈む（Y軸）
-         0.2f * cosf(angle)  // 南方向に傾ける（+Z成分）
+         0.5f * sin(angle)  // 南方向に傾ける（+Z成分）
      );
     mSunDir.Normalize();
 
      // セット（ディレクショナルライトとシェーダー両方に）
      mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
     
-    std::cout << "time = " << fmod(mTime, 1.0f) << std::endl;
+   // std::cout << "time = " << fmod(mTime, 1.0f) << std::endl;
     
-    float time = fmod(mTime, 1.0f); // 0.0 ~ 1.0
-
-    Vector3 color;
-
-    if (time < 0.2f) {
-        // 🌃 夜明け前
-        color = Vector3(0.1f, 0.1f, 0.15f);
-    }
-    else if (time < 0.4f) {
-        // 🌅 朝〜昼
-        float t = (time - 0.2f) / 0.2f;
-        color = Vector3::Lerp(Vector3(1.0f, 0.6f, 0.3f), Vector3(1.0f, 1.0f, 1.0f), t); // 暖→白
-    }
-    else if (time < 0.6f) {
-        // ☀ 昼
-        color = Vector3(1.0f, 1.0f, 1.0f);
-    }
-    else if (time < 0.8f) {
-        // 🌇 夕方〜夜
-        float t = (time - 0.6f) / 0.2f;
-        color = Vector3::Lerp(Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 0.5f, 0.3f), t); // 白→赤
-    }
-    else {
-        // 🌌 夜
-        color = Vector3(0.05f, 0.05f, 0.1f);
-    }
-
-    mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightColor(color);
     
+    // ライティングを時間で変化
+    float timeOfDay = fmod(mTime, 1.0f);
+
+    float dayStrength = SmoothStep(0.15f, 0.25f, timeOfDay) *
+                        (1.0f - SmoothStep(0.75f, 0.85f, timeOfDay));
+    float nightStrength = 1.0f - dayStrength;
+
+    // 太陽と月の Diffuse カラー補間
+    Vector3 sunColor = Vector3(1.0f, 0.95f, 0.8f);
+    Vector3 moonColor = Vector3(0.3f, 0.4f, 0.6f);
+    Vector3 finalLightColor = sunColor * dayStrength + moonColor * nightStrength;
+    mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightColor(finalLightColor);
+
+    // Ambient（空気の明るさ）も同様に補間
+    Vector3 dayAmbient = Vector3(0.7f, 0.7f, 0.7f);
+    Vector3 nightAmbient = Vector3(0.1f, 0.15f, 0.2f);
+    Vector3 finalAmbient = dayAmbient * dayStrength + nightAmbient * nightStrength;
+    mOwnerActor->GetApp()->GetRenderer()->SetAmbientLightColor(finalAmbient);
 }
+

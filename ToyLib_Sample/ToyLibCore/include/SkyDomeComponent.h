@@ -15,20 +15,21 @@ enum class WeatherType
 
 class SkyDomeComponent : public Component {
 public:
-    SkyDomeComponent(Actor* a);
+    SkyDomeComponent(class Actor* a);
 
     void SetTime(float t);
     void SetSunDirection(const Vector3& dir);
     void Draw(class Shader* shader);
-    void Update(float deltaTime);
+    void Update(float deltaTime) override;
     
     WeatherType GetWeatherType() const { return mWeatherType; }
     void SetWeatherType(WeatherType weather) { mWeatherType = weather; }
-
-private:
+    
+protected:
     std::unique_ptr<class VertexArray> mSkyVAO;
     float mTime;
     float mTimeSpeed;
     Vector3 mSunDir;
     WeatherType mWeatherType;
+    float SmoothStep(float edge0, float edge1, float x);
 };

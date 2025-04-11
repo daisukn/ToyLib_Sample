@@ -112,6 +112,10 @@ public:
     void SetDirectionalLightPosition(const Vector3& pos, const Vector3& target);
     const DirectionalLight GetDirLight() const { return mDirLight; }
     void SetDirectionalLightColor(const Vector3& col);
+    
+    // アンビエントライト設定
+    void SetAmbientLightColor(const Vector3& col) { mAmbientColor = col; }
+    
     // フォグ情報設定
     void SetFogInfo(const float max, const float min, Vector3 color);
     
