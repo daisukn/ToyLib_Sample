@@ -9,9 +9,11 @@
 SkyDomeComponent::SkyDomeComponent(Actor* a)
 : Component(a)
 , mTime(0.0f)
-, mTimeSpeed(0.0005f)
+, mTimeSpeed(0.002f)
+, mPastDay(0)
 , mSunDir(Vector3::UnitY)
 , mWeatherType(WeatherType::CLEAR)
+, mIsAutoTimeTick(true)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
     mOwnerActor->GetApp()->GetRenderer()->SetSkyDome(this);
@@ -73,54 +75,101 @@ float SkyDomeComponent::SmoothStep(float edge0, float edge1, float x)
 
 void SkyDomeComponent::Update(float deltaTime)
 {
-    mTime += mTimeSpeed;
-
-     // ゲーム時間 0.0〜1.0 → 0〜180度（π）を回す
-     float angle = Math::Pi * fmod(mTime, 1.0f); // 0.0〜π（180°）
-
-     // 軌道の定義：XZ平面で +X からスタート、+Z に向かって傾く円弧
-     // 例えば、XY平面ではなく XZ平面に投影しながら、Yも上下に
-    mSunDir = Vector3(
-         -cosf(angle),        // +X方向から -X方向へ移動
-         -sinf(angle),       // 太陽が昇って沈む（Y軸）
-         0.5f * sin(angle)  // 南方向に傾ける（+Z成分）
-     );
-    mSunDir.Normalize();
-
-     // セット（ディレクショナルライトとシェーダー両方に）
-     mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
-    
-   // std::cout << "time = " << fmod(mTime, 1.0f) << std::endl;
-    
-    
-    float timeOfDay = fmod(mTime, 1.0f);
-
-    // 昼と夜の割合（昼：0.0〜1.0、夜：1.0〜0.0）
-    float dayStrength = SmoothStep(0.15f, 0.25f, timeOfDay) *
-                        (1.0f - SmoothStep(0.75f, 0.85f, timeOfDay));
-    float nightStrength = 1.0f - dayStrength;
-
-    // 天気による減衰（晴れ：1.0 → 嵐：0.3）
-    float weatherDim = 1.0f;
-    switch (mWeatherType)
+    if (mIsAutoTimeTick)
     {
-        case WeatherType::CLEAR:  weatherDim = 1.0f; break;
-        case WeatherType::CLOUDY: weatherDim = 0.7f; break;
-        case WeatherType::RAIN:   weatherDim = 0.5f; break;
-        case WeatherType::STORM:  weatherDim = 0.3f; break;
-        case WeatherType::SNOW:   weatherDim = 0.6f; break;
+        mTime += mTimeSpeed;
     }
-
-    // ライトの色（太陽または月）を補間し、天気で減衰
-    Vector3 sunColor  = Vector3(1.0f, 0.95f, 0.8f);
-    Vector3 moonColor = Vector3(0.3f, 0.4f, 0.6f);
-    Vector3 finalLightColor = (sunColor * dayStrength + moonColor * nightStrength) * weatherDim;
-    mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightColor(finalLightColor);
-
-    // Ambientカラーも補間しつつ、天気で減衰
-    Vector3 dayAmbient   = Vector3(0.7f, 0.7f, 0.7f);
-    Vector3 nightAmbient = Vector3(0.1f, 0.15f, 0.2f);
-    Vector3 finalAmbient = (dayAmbient * dayStrength + nightAmbient * nightStrength) * weatherDim;
-    mOwnerActor->GetApp()->GetRenderer()->SetAmbientLightColor(finalAmbient);
+    if (mPastDay != static_cast<int>(mTime))
+    {
+        mPastDay = static_cast<int>(mTime);
+        RandomizeWeather();
+    }
+    
+    ApplyTime();
 }
 
+void SkyDomeComponent::RandomizeWeather()
+{
+    int randVal = rand() % 100;
+    if (randVal < 50)
+    {
+        mWeatherType = WeatherType::CLEAR;
+        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
+        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.f);
+    }
+    else if (randVal < 70)
+    {
+        mWeatherType = WeatherType::CLOUDY;
+        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
+        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.1f);
+    }
+    else if (randVal < 85)
+    {
+        mWeatherType = WeatherType::RAIN;
+        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.4f);
+        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.3f);
+    }
+    else if (randVal < 95)
+    {
+        mWeatherType = WeatherType::STORM;
+        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.7f);
+        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.4f);
+    }
+    else
+    {
+        mWeatherType = WeatherType::SNOW;
+        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.0f);
+        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.7f);
+    }
+}
+
+void SkyDomeComponent::ApplyTime()
+{
+    // ゲーム時間 0.0〜1.0 → 0〜180度（π）を回す
+    float angle = Math::Pi * fmod(mTime, 1.0f); // 0.0〜π（180°）
+
+    // 軌道の定義：XZ平面で +X からスタート、+Z に向かって傾く円弧
+    // 例えば、XY平面ではなく XZ平面に投影しながら、Yも上下に
+   mSunDir = Vector3(
+        -cosf(angle),        // +X方向から -X方向へ移動
+        -sinf(angle),       // 太陽が昇って沈む（Y軸）
+        0.5f * sin(angle)  // 南方向に傾ける（+Z成分）
+    );
+   mSunDir.Normalize();
+
+    // セット（ディレクショナルライトとシェーダー両方に）
+    mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
+   
+  // std::cout << "time = " << fmod(mTime, 1.0f) << std::endl;
+   
+   
+   float timeOfDay = fmod(mTime, 1.0f);
+
+   // 昼と夜の割合（昼：0.0〜1.0、夜：1.0〜0.0）
+   float dayStrength = SmoothStep(0.15f, 0.25f, timeOfDay) *
+                       (1.0f - SmoothStep(0.75f, 0.85f, timeOfDay));
+   float nightStrength = 1.0f - dayStrength;
+
+   // 天気による減衰（晴れ：1.0 → 嵐：0.3）
+   float weatherDim = 1.0f;
+   switch (mWeatherType)
+   {
+       case WeatherType::CLEAR:  weatherDim = 1.0f; break;
+       case WeatherType::CLOUDY: weatherDim = 0.7f; break;
+       case WeatherType::RAIN:   weatherDim = 0.5f; break;
+       case WeatherType::STORM:  weatherDim = 0.3f; break;
+       case WeatherType::SNOW:   weatherDim = 0.6f; break;
+   }
+
+   // ライトの色（太陽または月）を補間し、天気で減衰
+   Vector3 sunColor  = Vector3(1.0f, 0.95f, 0.8f);
+   Vector3 moonColor = Vector3(0.3f, 0.4f, 0.6f);
+   Vector3 finalLightColor = (sunColor * dayStrength + moonColor * nightStrength) * weatherDim;
+   mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightColor(finalLightColor);
+
+   // Ambientカラーも補間しつつ、天気で減衰
+   Vector3 dayAmbient   = Vector3(0.7f, 0.7f, 0.7f);
+   Vector3 nightAmbient = Vector3(0.1f, 0.15f, 0.2f);
+   Vector3 finalAmbient = (dayAmbient * dayStrength + nightAmbient * nightStrength) * weatherDim;
+   mOwnerActor->GetApp()->GetRenderer()->SetAmbientLightColor(finalAmbient);
+}

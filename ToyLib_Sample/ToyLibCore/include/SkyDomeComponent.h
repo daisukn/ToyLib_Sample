@@ -25,11 +25,17 @@ public:
     WeatherType GetWeatherType() const { return mWeatherType; }
     void SetWeatherType(WeatherType weather) { mWeatherType = weather; }
     
-protected:
+    void SetAutoTimeTick(const bool b) { mIsAutoTimeTick = b; }
+    
+private:
     std::unique_ptr<class VertexArray> mSkyVAO;
     float mTime;
     float mTimeSpeed;
+    int mPastDay;
     Vector3 mSunDir;
     WeatherType mWeatherType;
     float SmoothStep(float edge0, float edge1, float x);
+    void RandomizeWeather();
+    void ApplyTime();
+    bool mIsAutoTimeTick;
 };

@@ -887,7 +887,8 @@ void Renderer::DrawRainOverlay()
 }
 void Renderer::DrawFogOverlay()
 {
-    if (!mFogShader || !mFullScreenQuad) return;
+    if (mFogAmount <= 0.0f || !mFogShader || !mFullScreenQuad)
+        return;
 
     // フルスクリーン用設定
     glDisable(GL_DEPTH_TEST);

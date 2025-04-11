@@ -127,7 +127,7 @@ public:
     void SetRainAmount(const float amt) { mRainAmount = amt; };
     void DrawRainOverlay();
     // 霧エフェクト
-    void SetFogAmount(const float amt) { mRainAmount = amt; };
+    void SetFogAmount(const float amt) { mFogAmount = amt; };
     void DrawFogOverlay();
     
 private:
