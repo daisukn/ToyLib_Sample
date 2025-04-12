@@ -1,6 +1,7 @@
 #include "BillboardComponent.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "LightingManager.h"
 #include "Application.h"
 #include "Actor.h"
 #include "Renderer.h"
@@ -11,9 +12,9 @@ BillboardComponent::BillboardComponent(class Actor* a, int drawOrder)
 : VisualComponent(a, drawOrder, VisualLayer::Object3D)
 , mScale(1.0f)
 {
-    mDrawOrder = drawOrder;
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::Billboard;
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Billboard");
 }
 
 BillboardComponent::~BillboardComponent()
@@ -21,7 +22,7 @@ BillboardComponent::~BillboardComponent()
     mOwnerActor->GetApp()->GetRenderer()->RemoveVisualComp(this);
 }
 
-void BillboardComponent::Draw(Shader* shader)
+void BillboardComponent::Draw()
 {
     if (!mIsVisible || !mTexture) return;
 
@@ -30,11 +31,14 @@ void BillboardComponent::Draw(Shader* shader)
         glBlendFunc(GL_ONE, GL_ONE);
     }
     
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    Matrix4 view = renderer->GetViewMatrix();
+    Matrix4 proj = renderer->GetProjectionMatrix();
+    
+    
     // カメラと位置取得
     Vector3 pos = mOwnerActor->GetPosition();
-    Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
-    Matrix4 invView = view;
-    invView.Invert();
+    Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
     Vector3 cameraPos = invView.GetTranslation();
 
     // 回転角（Y軸）
@@ -51,12 +55,15 @@ void BillboardComponent::Draw(Shader* shader)
                                             mTexture->GetHeight() * scale, 1.0f);
     Matrix4 translate = Matrix4::CreateTranslation(pos);
 
+    mShader->SetActive();
+    mLightingManager->ApplyToShader(mShader.get(), view);
+
     // 最終行列
     Matrix4 world = scaleMat * rotY * translate;
-    shader->SetMatrixUniform("uWorldTransform", world);
-
+    mShader->SetMatrixUniform("uWorldTransform", world);
+    mShader->SetMatrixUniform("uViewProj", view * proj);
     mTexture->SetActive(2);
-    shader->SetTextureUniform("uTexture", 2);
+    mShader->SetTextureUniform("uTexture", 2);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 

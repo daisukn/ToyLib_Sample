@@ -8,7 +8,7 @@ public:
     BillboardComponent(class Actor* a, int drawOrder);
     ~BillboardComponent();
 
-    void Draw(class Shader* shader) override;
+    void Draw() override;
     
 private:
     float mScale;

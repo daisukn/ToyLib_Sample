@@ -82,8 +82,6 @@ public:
 
     // データ解放
     void UnloadData();
-    // 単色シェーダー取得
-    class Shader* GetSolidShader() { return mShaders["Solid"].get(); }
     
     // スカイドーム登録
     void RegisterSkyDome(class SkyDomeComponent* sky);
@@ -99,6 +97,9 @@ public:
     // ライトマネージャー
     void SetLightingManager(std::shared_ptr<class LightingManager> manager) { mLightingManager = manager; }
     std::shared_ptr<class LightingManager> GetLightingManager() const { return mLightingManager; }
+    
+    
+    std::shared_ptr<class Shader> GetShader(const std::string& name) { return mShaders[name]; }
 
 private:
     // セッティング読み込み

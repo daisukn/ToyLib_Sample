@@ -46,7 +46,6 @@ Renderer::~Renderer()
 {
 }
 
-
 // ウィンドウ生成とGL初期化
 bool Renderer::Initialize()
 {
@@ -395,56 +394,18 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
     }
     
     
-    
     mSpriteVerts->SetActive();       // VAO
 
     for (auto comp : mVisualComps)
     {
         if (comp->IsVisible() && comp->GetLayer() == layer)
         {
-            auto s = GetVisualShader(comp);
-            mLightingManager->ApplyToShader(s, mViewMatrix);
-            comp->Draw(s);
+            comp->Draw();
         }
     }
 
     glEnable(GL_DEPTH_TEST); // 念のため戻す
     glDepthMask(GL_TRUE);
-}
-
-class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
-{
-    Shader* s = nullptr;
-    switch (visual->GetVisualType())
-    {
-        case VisualType::NoAssigned:
-            break;
-        case VisualType::Sprite:
-            mShaders["Sprite"]->SetActive();
-            mShaders["Sprite"]->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
-            s = mShaders["Sprite"].get();
-            break;
-        case VisualType::Billboard:
-            mShaders["Billboard"]->SetActive();
-            mShaders["Billboard"]->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            s = mShaders["Billboard"].get();
-            break;
-        case VisualType::Particle:
-            mShaders["Particle"]->SetActive();
-            mShaders["Particle"]->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            s = mShaders["Particle"].get();
-            break;
-        case VisualType::ShadowSprite:
-            mShaders["Sprite"]->SetActive();
-            mShaders["Sprite"]->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            s = mShaders["Sprite"].get();
-            break;
-
-        default:
-            break;
-    }
-    
-    return s;
 }
 
 

@@ -16,6 +16,7 @@ ShadowSpriteComponent::ShadowSpriteComponent(Actor* owner, int drawOrder)
     mLayer = VisualLayer::Object3D; // 足元に描く
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::ShadowSprite;
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Sprite");
 }
 
 ShadowSpriteComponent::~ShadowSpriteComponent()
@@ -28,7 +29,7 @@ void ShadowSpriteComponent::SetTexture(Texture* tex)
     mTexture = tex;
 }
 
-void ShadowSpriteComponent::Draw(Shader* shader)
+void ShadowSpriteComponent::Draw()
 {
     if (!mIsVisible || mTexture == nullptr) return;
 
@@ -40,7 +41,6 @@ void ShadowSpriteComponent::Draw(Shader* shader)
 
     // 光の方向から回転角を計算（XZ平面）
     Vector3 lightDir = mOwnerActor->GetApp()->GetRenderer()->GetLightingManager()->GetLightDirection();
-    //mOwnerActor->GetApp()->GetRenderer()->GetDirLight().Direction;
     lightDir.y = 0.0f;
     if (lightDir.LengthSq() < 0.0001f) lightDir = Vector3(0, 0, 1);
     lightDir.Normalize();
@@ -51,9 +51,14 @@ void ShadowSpriteComponent::Draw(Shader* shader)
     Matrix4 trans = Matrix4::CreateTranslation(mOwnerActor->GetPosition() + mOffsetPosition);
     Matrix4 world = scale * rotX * rotY * trans;
 
-    shader->SetMatrixUniform("uWorldTransform", world);
+    mShader->SetActive();
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    Matrix4 view = renderer->GetViewMatrix();
+    Matrix4 proj = renderer->GetProjectionMatrix();
+    mShader->SetMatrixUniform("uViewProj", view * proj);
+    mShader->SetMatrixUniform("uWorldTransform", world);
     mTexture->SetActive(2); // ShadowSprite用ユニット
-    shader->SetTextureUniform("uTexture", 2);
+    mShader->SetTextureUniform("uTexture", 2);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }

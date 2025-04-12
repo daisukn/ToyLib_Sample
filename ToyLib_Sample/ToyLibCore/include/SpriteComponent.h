@@ -8,14 +8,18 @@ public:
     SpriteComponent(class Actor* a, int drawOrder, VisualLayer layer = VisualLayer::UI);
     ~SpriteComponent();
 
-    void Draw(class Shader* shader) override;
+    void Draw() override;
 
     void SetScale(float w, float h) { mScaleWidth = w; mScaleHeight = h; }
     void SetTexture(class Texture* tex) override;
 
 private:
-    float mScaleWidth, mScaleHeight;
-    int mTexWidth, mTexHeight;
+    float mScaleWidth;
+    float mScaleHeight;
+    int mTexWidth;
+    float mTexHeight;
+    int mScreenWidth;
+    int mScreenHeight;
 };
 
 /*

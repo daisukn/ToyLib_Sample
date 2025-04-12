@@ -8,7 +8,7 @@ public:
     ShadowSpriteComponent(class Actor* owner, int drawOrder = 10);
     ~ShadowSpriteComponent();
 
-    void Draw(class Shader* shader) override;
+    void Draw() override;
 
     void SetTexture(class Texture* tex) override;
     void SetScale(float width, float height) { mScaleWidth = width; mScaleHeight = height; }

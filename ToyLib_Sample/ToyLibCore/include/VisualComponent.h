@@ -18,7 +18,7 @@ public:
     VisualComponent(class Actor* owner, int drawOrder, VisualLayer layer = VisualLayer::Effect3D);
     virtual ~VisualComponent() {}
 
-    virtual void Draw(class Shader* shader) = 0;
+    virtual void Draw() = 0;
 
     virtual void SetTexture(class Texture* tex) { mTexture = tex; }
     class Texture* GetTexture() const { return mTexture; }
@@ -37,11 +37,13 @@ public:
     int GetDrawOrder() const { return mDrawOrder; }
     void SetDrawOrder(int order) { mDrawOrder = order; }
     
-    void SetShader(std::shared_ptr<class Shader>& shader) { mShader = shader; }
+    void SetShader(std::shared_ptr<class Shader> shader) { mShader = shader; }
+    void SetLightingManager(std::shared_ptr<LightingManager> light) { mLightingManager = light; }
 
 protected:
     class Texture* mTexture;
     std::shared_ptr<class Shader> mShader;
+    std::shared_ptr<class LightingManager> mLightingManager;
     bool mIsVisible;
     bool mIsBlendAdd;
     VisualLayer mLayer;

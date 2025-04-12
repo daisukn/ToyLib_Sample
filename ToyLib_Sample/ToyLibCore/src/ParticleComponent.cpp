@@ -25,6 +25,7 @@ ParticleComponent::ParticleComponent(Actor* owner, int drawOrder)
     mLayer = VisualLayer::Effect3D;
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::Particle;
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Particle");
 }
 
 ParticleComponent::~ParticleComponent()
@@ -111,7 +112,7 @@ void ParticleComponent::Update(float deltaTime)
     }
 }
 
-void ParticleComponent::Draw(Shader* shader)
+void ParticleComponent::Draw()
 {
     if (!mIsVisible || mTexture == nullptr) return;
 
@@ -129,17 +130,22 @@ void ParticleComponent::Draw(Shader* shader)
     Matrix4 scaleMat = Matrix4::CreateScale(mPartSize, mPartSize, 1);
     Matrix4 world = scaleMat * Matrix4::CreateScale(mOwnerActor->GetScale()) * invView;
 
-    shader->SetMatrixUniform("uWorldTransform", world);
-    //shader->SetMatrixUniform("uViewProj", //mOwnerActor->GetApp()->GetRenderer()->GetViewProjMatrix());
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    Matrix4 view = renderer->GetViewMatrix();
+    Matrix4 proj = renderer->GetProjectionMatrix();
+    
+    mShader->SetActive();
+    mShader->SetMatrixUniform("uViewProj", view * proj);
+    mShader->SetMatrixUniform("uWorldTransform", world);
 
     mTexture->SetActive(2);
-    shader->SetTextureUniform("uTexture", 2);
+    mShader->SetTextureUniform("uTexture", 2);
 
     for (int i = 0; i < mNumParts; ++i)
     {
         if (mParts[i].isVisible)
         {
-            shader->SetVectorUniform("uPosition", mParts[i].pos);
+            mShader->SetVectorUniform("uPosition", mParts[i].pos);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         }
     }

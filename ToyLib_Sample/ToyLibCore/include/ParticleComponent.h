@@ -26,7 +26,7 @@ public:
     ~ParticleComponent();
 
     void Update(float deltaTime) override;
-    void Draw(class Shader* shader) override;
+    void Draw() override;
 
     void SetTexture(class Texture* tex) override;
     void CreateParticles(Vector3 pos, unsigned int num, float life, float partLife, float size, ParticleMode mode);
