@@ -45,7 +45,7 @@ public:
     
     // FOV取得（度）
     float GetPerspectiveFov() const { return mPerspectiveFOV; }
-    void SetPoerspectiveFov(float f) { mPerspectiveFOV = f; }
+    void SetPerspectiveFov(float f) { mPerspectiveFOV = f; }
     
     // スクリーンサイズのGtter
     float GetScreenWidth() const { return mScreenWidth; }
@@ -86,7 +86,7 @@ public:
     class Shader* GetSolidShader() { return mShaders["Solid"].get(); }
     
     // スカイドーム登録
-    void SetSkyDome(class SkyDomeComponent* sky);
+    void RegisterSkyDome(class SkyDomeComponent* sky);
     class SkyDomeComponent* GetSkyDome() const { return mSkyDomeComp; }
     
     // 雨エフェクトのセット
@@ -151,7 +151,7 @@ private:
     void CreateFullScreenQuad();
     
     // 天気エフェクトのオーバーレイ
-    void DrawWatherOverlay();
+    void DrawWeatherOverlay();
    
     // シェーダー格納
     std::unordered_map<std::string, std::shared_ptr<class Shader>> mShaders;

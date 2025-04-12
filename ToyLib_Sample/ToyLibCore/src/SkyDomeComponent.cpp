@@ -18,7 +18,7 @@ SkyDomeComponent::SkyDomeComponent(Actor* a)
 , mIsAutoTimeTick(true)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
-    mOwnerActor->GetApp()->GetRenderer()->SetSkyDome(this);
+    mOwnerActor->GetApp()->GetRenderer()->RegisterSkyDome(this);
 }
 
 void SkyDomeComponent::SetTime(float t) {

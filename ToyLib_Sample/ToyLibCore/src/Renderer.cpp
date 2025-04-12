@@ -11,13 +11,10 @@
 #include "BillboardComponent.h"
 #include "VisualComponent.h"
 #include "SkyDomeComponent.h"
-
 #include "WireframeComponent.h"
-
 #include <GL/glew.h>
 #include <algorithm>
 #include <string>
-
 
 // コンストラクタ
 Renderer::Renderer()
@@ -82,8 +79,6 @@ bool Renderer::Initialize()
         std::cout << "Unable to create window" << std::endl;
         return false;
     }
-    
-    
     // OpenGL コンテキスト生成
     mGLContext = SDL_GL_CreateContext(mWindow);
     
@@ -97,15 +92,12 @@ bool Renderer::Initialize()
    
     // ライティングマネージャ生成
     mLightingManager = std::make_shared<LightingManager>();
-    
     // シェーダー のロードなどはここでやる
     LoadShaders();
+    // スプライト用頂点バッファ
     CreateSpriteVerts();
-    
-    // レインエフェクト用の初期化
+    // オーバーレイエフェクト用頂点バッファ
     CreateFullScreenQuad();
-
-    
     // シャドウマッピング初期化
     InitializeShadowMapping();
     // クリアカラーのデフォルト値
@@ -148,7 +140,7 @@ void Renderer::Draw()
     DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
     
-    DrawWatherOverlay();
+    DrawWeatherOverlay();
     
     DrawVisualLayer(VisualLayer::UI);
 
@@ -285,8 +277,6 @@ bool Renderer::LoadShaders()
     {
         return false;
     }
-    
-////////////////
     // メッシュ用シェーダー
     vShaderName = mShaderPath + "Phong.vert";
     fShaderName = mShaderPath + "Toon.frag";
@@ -761,7 +751,7 @@ void Renderer::CreateFullScreenQuad()
 
 }
 
-void Renderer::DrawWatherOverlay()
+void Renderer::DrawWeatherOverlay()
 {
     auto shader = mShaders["WeatherOverlay"];
     if (!shader || !mFullScreenQuad) return;
@@ -793,7 +783,7 @@ void Renderer::DrawWatherOverlay()
     glEnable(GL_DEPTH_TEST);
 }
 
-void Renderer::SetSkyDome(SkyDomeComponent *sky)
+void Renderer::RegisterSkyDome(SkyDomeComponent* sky)
 {
     mSkyDomeComp = sky;
     if (mSkyDomeComp)
