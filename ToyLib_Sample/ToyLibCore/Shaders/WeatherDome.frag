@@ -112,8 +112,8 @@ void main()
         }
         else if (uWeatherType == 4) {
             cloudAlpha = smoothstep(0.3, 0.6, density);  // SNOW：ふわっと
-            skyColor = vec3(0.85);
-            cloudColor = vec3(1.0);
+            skyColor = vec3(0.30);
+            cloudColor = vec3(0.9);
         }
 
         if (uWeatherType >= 2) {

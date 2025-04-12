@@ -10,10 +10,10 @@
 SkyDomeComponent::SkyDomeComponent(Actor* a)
 : Component(a)
 , mTime(0.0f)
-, mTimeSpeed(0.002f)
+, mTimeSpeed(0.0002f)
 , mPastDay(0)
 , mSunDir(Vector3::UnitY)
-, mWeatherType(WeatherType::CLEAR)
+, mWeatherType(WeatherType::SNOW)
 , mIsAutoTimeTick(true)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
@@ -83,7 +83,7 @@ void SkyDomeComponent::Update(float deltaTime)
     if (mPastDay != static_cast<int>(mTime))
     {
         mPastDay = static_cast<int>(mTime);
-        RandomizeWeather();
+        //RandomizeWeather();
     }
     
     ApplyTime();

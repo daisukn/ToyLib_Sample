@@ -45,9 +45,9 @@ Renderer::Renderer()
 , mWindow(nullptr)
 , mGLContext(nullptr)
 , mShaderPath("ToyLibCore/Shaders/")
-, mRainAmount(0.f)
-, mFogAmount(0.f)
-, mSnowAmount(0.5f)
+, mRainAmount(0.2f)
+, mFogAmount(1.f)
+, mSnowAmount(1.f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -940,9 +940,9 @@ void Renderer::DrawWatherOverlay()
 
     // ユニフォーム設定
     mWeatherScreenShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f); // 経過時間（秒）
-    mWeatherScreenShader->SetFloatUniform("uRainAmount", 0.5f); // 0〜1で設定
-    mWeatherScreenShader->SetFloatUniform("uFogAmount", 0.4f); // 0〜1で設定
-    mWeatherScreenShader->SetFloatUniform("uSnowAmount", 1.0f); // 0〜1で設定
+    mWeatherScreenShader->SetFloatUniform("uRainAmount", mRainAmount); // 0〜1で設定
+    mWeatherScreenShader->SetFloatUniform("uFogAmount", mFogAmount); // 0〜1で設定
+    mWeatherScreenShader->SetFloatUniform("uSnowAmount", mSnowAmount); // 0〜1で設定
     mWeatherScreenShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
 
     // フルスクリーンポリゴンを描画
