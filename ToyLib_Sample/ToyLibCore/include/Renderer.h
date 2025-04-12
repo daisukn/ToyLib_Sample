@@ -10,14 +10,6 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 
-// ディレクショナルライト
-struct DirectionalLight
-{
-    Vector3 Direction;      // 向き
-    Vector3 DiffuseColor;   // 色
-    Vector3 SpecColor;      // 反射色
-};
-
 enum class VisualLayer
 {
     Background2D,
@@ -34,20 +26,15 @@ public:
     Renderer();
     // デストラクタ
     virtual ~Renderer();
-      
     // 初期化
     bool Initialize();
     SDL_Window* GetSDLWindow() const { return mWindow; }
-    
     // 描画（Applicationから呼ばれる）
     void Draw();
-
     // 終了
     void Shutdown();
-
     // クリア色を設定
     void SetClearColor(const Vector3 color);
-
 
     // ビューマトリックスを設定する
     void SetViewMatrix(const Matrix4& view) { mInvView = mViewMatrix = view; mInvView.Invert();}
@@ -60,11 +47,6 @@ public:
     float GetPerspectiveFov() const { return mPerspectiveFOV; }
     void SetPoerspectiveFov(float f) { mPerspectiveFOV = f; }
     
-    // カメラポジション
-    Vector3 GetCameraPosition() const { return mCameraPosition; }
-    void SetCameraPosition(Vector3 v) { mCameraPosition = v; }
-    
-
     // スクリーンサイズのGtter
     float GetScreenWidth() const { return mScreenWidth; }
     float GetScreenHeight() const { return mScreenHeight; }
@@ -100,27 +82,11 @@ public:
 
     // データ解放
     void UnloadData();
-    
-    // アンビエントライト設定
-    void SetAmbientColor(const Vector3& ambient) { mAmbientColor = ambient; }
-    DirectionalLight& GetDirectionalLight() { return mDirLight; }
-    
     // 単色シェーダー取得
     class Shader* GetSolidShader() { return mSolidShader.get(); }
     
-    // ディレクショナルライト設定
-    void SetDirectionalLightPosition(const Vector3& pos, const Vector3& target);
-    const DirectionalLight GetDirLight() const { return mDirLight; }
-    void SetDirectionalLightColor(const Vector3& col);
-    
-    // アンビエントライト設定
-    void SetAmbientLightColor(const Vector3& col) { mAmbientColor = col; }
-    
-    // フォグ情報設定
-    void SetFogInfo(const float max, const float min, Vector3 color);
-    
     // スカイドーム登録
-    void SetSkyDome(class SkyDomeComponent* sky) { mSkyDomeComp = sky; }
+    void SetSkyDome(class SkyDomeComponent* sky);
     class SkyDomeComponent* GetSkyDome() const { return mSkyDomeComp; }
     
     // 雨エフェクトのセット
@@ -129,10 +95,16 @@ public:
     void SetFogAmount(const float amt) { mFogAmount = amt; }
     // 雪エフェクトのセット
     void SetSnowAmout(const float amt) { mSnowAmount = amt; }
+    
+    // ライトマネージャー
+    void SetLightingManager(std::shared_ptr<class LightingManager> manager) { mLightingManager = manager; }
+    std::shared_ptr<class LightingManager> GetLightingManager() const { return mLightingManager; }
 
 private:
     // セッティング読み込み
     bool LoadSettings(const std::string& filePath);
+    // ライティング管理
+    std::shared_ptr<class LightingManager> mLightingManager;
     
     // レンダラーパラメーター //
     std::string mShaderPath;
@@ -144,22 +116,11 @@ private:
     bool mIsFullScreen;
     // 視野角(度)
     float mPerspectiveFOV;
-    // カメラポジション
-    Vector3 mCameraPosition;
     // デバッグモード
     bool mIsDebugMode;
     // クリア色
     Vector3 mClearColor;
-    // ライト
-    Vector3 mAmbientColor;
-    Vector3 mDiffuseColor;
-    Vector3 mSpecColor;
-    Vector3 mDirLightPosition;
-    Vector3 mDirLightTarget;
-    // フォグ
-    float mFogMaxDist;
-    float mFogMinDist;
-    Vector3 mFogColor;
+
     // シャドウマップ
     float mShadowNear;
     float mShadowFar;
@@ -175,10 +136,6 @@ private:
     // プロジェクションマトリックス
     Matrix4 mProjectionMatrix;
 
-    // DirectionalLight管理
-    DirectionalLight mDirLight;
-
-    
     // Windowハンドラ
     SDL_Window* mWindow;
     // GLコンテキスト
@@ -231,10 +188,6 @@ private:
     std::unique_ptr<class VertexArray> mSpriteVerts;
     // スプライト用ポリゴンの生成
     void CreateSpriteVerts();
-    
-    // Lightsingをシェーダーに送る
-    void SetLightUniforms(class Shader* shader);
-    
     
     // シャドウマッピング関連処理とパラメータ
     GLuint mShadowFBO;

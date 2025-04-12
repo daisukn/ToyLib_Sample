@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Shader.h"
+#include "LightingManager.h"
 #include "SpriteComponent.h"
 #include "Texture.h"
 #include "VertexArray.h"
@@ -25,17 +26,8 @@ Renderer::Renderer()
 , mScreenHeight(0.f)
 , mIsFullScreen(false)
 , mPerspectiveFOV(45.f)
-, mCameraPosition(Vector3(0.f, 0.f, 0.f))
 , mIsDebugMode(false)
 , mClearColor(Vector3(0.2f, 0.5f, 0.8f))
-, mAmbientColor(Vector3(0.7f, 0.7f, 0.7f))
-, mDirLightPosition(Vector3(20, 20, -5))
-, mDirLightTarget(Vector3(0, 0, 0))
-, mDiffuseColor(Vector3(0.5f, 0.5f, 0.5f))
-, mSpecColor(Vector3(0.1f, 0.1f, 0.1f))
-, mFogMaxDist(100.f)
-, mFogMinDist(0.001f)
-, mFogColor(Vector3(0.2f, 0.5f, 0.8f))
 , mShadowNear(10.f)
 , mShadowFar(100)
 , mShadowOrthoWidth(100.f)
@@ -45,9 +37,9 @@ Renderer::Renderer()
 , mWindow(nullptr)
 , mGLContext(nullptr)
 , mShaderPath("ToyLibCore/Shaders/")
-, mRainAmount(0.2f)
+, mRainAmount(0.f)
 , mFogAmount(1.f)
-, mSnowAmount(1.f)
+, mSnowAmount(0.f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -103,6 +95,9 @@ bool Renderer::Initialize()
         return false;
     }
    
+    // ライティングマネージャ生成
+    mLightingManager = std::make_shared<LightingManager>();
+    
     // シェーダー のロードなどはここでやる
     LoadShaders();
     CreateSpriteVerts();
@@ -155,7 +150,7 @@ void Renderer::Draw()
     
     //DrawRainOverlay();
     //DrawFogOverlay();
-    DrawWatherOverlay();
+    //DrawWatherOverlay();
     
     DrawVisualLayer(VisualLayer::UI);
 
@@ -172,8 +167,7 @@ void Renderer::DrawBackGround()
     Shader* shader = mMeshShader.get();
     
     shader->SetActive();
-
-    SetLightUniforms(shader);
+    mLightingManager->ApplyToShader(shader, mViewMatrix);
 
     for (auto bg : mBgMesh)
     {
@@ -210,6 +204,7 @@ void Renderer::DrawMesh()
         if (!mc->GetVisible()) continue;
 
         mMeshShader->SetActive();
+        mLightingManager->ApplyToShader(mMeshShader.get(), mViewMatrix);
 
         // ユニフォーム設定
         mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
@@ -217,9 +212,6 @@ void Renderer::DrawMesh()
         mMeshShader->SetTextureUniform("uShadowMap", 1);
         mMeshShader->SetFloatUniform("uShadowBias", 0.005);
         mMeshShader->SetBooleanUniform("uUseToon", mc->GetToon()); // トゥーンON/OFF
-
-        SetLightUniforms(mMeshShader.get());
-
         mc->Draw(mMeshShader.get());
     }
     
@@ -229,7 +221,7 @@ void Renderer::DrawMesh()
         if (!sk->GetVisible()) continue;
 
         mSkinnedShader->SetActive();
-        mSkinnedShader->SetActive();
+        mLightingManager->ApplyToShader(mSkinnedShader.get(), mViewMatrix);
 
         // ユニフォーム設定
         mSkinnedShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
@@ -237,7 +229,6 @@ void Renderer::DrawMesh()
         mSkinnedShader->SetTextureUniform("uShadowMap", 1);
         mSkinnedShader->SetFloatUniform("uShadowBias", 0.005);
         mSkinnedShader->SetBooleanUniform("uUseToon", sk->GetToon()); // トゥーンON/OFF
-        SetLightUniforms(mSkinnedShader.get());
 
         sk->Draw(mSkinnedShader.get());
     }
@@ -252,10 +243,10 @@ void Renderer::DrawDebugger()
     
     // デバッガー用の描画
     mSolidShader->SetActive();
+    mLightingManager->ApplyToShader(mSolidShader.get(), mViewMatrix);
     mSolidShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
     mSolidShader->SetVectorUniform("uSolColor", Vector3(1.f, 1.f, 1.f));
     // Update lighting uniforms
-    SetLightUniforms(mSolidShader.get());
     for (auto wireframe : mWireframeComps)
     {
         wireframe->Draw(mSolidShader.get());
@@ -266,8 +257,8 @@ void Renderer::DrawEffect()
 {
     // エフェクトメッシュ描画
     mMeshShader->SetActive();
+    mLightingManager->ApplyToShader(mMeshShader.get(), mViewMatrix);
     mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    SetLightUniforms(mMeshShader.get());
     for (auto mesh : mEffectMesh)
     {
         if (mesh->GetVisible())
@@ -369,7 +360,7 @@ bool Renderer::LoadShaders()
         return false;
     }
     
-    // シャドウマッピング透けるタルメッシュ用
+    // シャドウマッピングスケルタルメッシュ用
     mShadowSkinnedShader = std::make_unique<Shader>();
     vShaderName = mShaderPath + "ShadowMapping_Skinned.vert";
     fShaderName = mShaderPath + "ShadowMapping.frag";
@@ -429,29 +420,6 @@ bool Renderer::LoadShaders()
     return true;
 }
 
-// ライト設定
-void Renderer::SetLightUniforms(Shader* shader)
-{
-    // カメラポジション（ビュー行列の逆行列から取得）
-    Matrix4 invView = mViewMatrix;
-    invView.Invert();
-    shader->SetVectorUniform("uCameraPos", invView.GetTranslation());
-
-    // アンビエントライト
-    shader->SetVectorUniform("uAmbientLight", mAmbientColor);
-
-    // ディレクショナルライト（方向・色）
-    mDirLight.Direction = Vector3::Normalize(mDirLightTarget - mDirLightPosition);
-    shader->SetVectorUniform("uDirLight.mDirection", mDirLight.Direction);
-    shader->SetVectorUniform("uDirLight.mDiffuseColor", mDiffuseColor);
-    shader->SetVectorUniform("uDirLight.mSpecColor", mSpecColor);
-
-    // フォグ情報
-    shader->SetFloatUniform("uFoginfo.maxDist", mFogMaxDist);
-    shader->SetFloatUniform("uFoginfo.minDist", mFogMinDist);
-    shader->SetVectorUniform("uFoginfo.color", mFogColor);
-}
-
 void Renderer::AddVisualComp(VisualComponent* comp)
 {
     auto iter = mVisualComps.begin();
@@ -497,7 +465,7 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
         if (comp->IsVisible() && comp->GetLayer() == layer)
         {
             auto s = GetVisualShader(comp);
-            SetLightUniforms(s);
+            mLightingManager->ApplyToShader(s, mViewMatrix);
             comp->Draw(s);
         }
     }
@@ -790,7 +758,8 @@ void Renderer::RenderShadowMap()
     // ビュー・プロジェクション行列
     // カメラ追従
     Vector3 camCenter = mInvView.GetTranslation() + mInvView.GetZAxis() * 30.0f;
-    Vector3 lightDir = Vector3::Normalize(mDirLight.Direction);
+    //Vector3 lightDir = Vector3::Normalize(mDirLight.Direction);
+    Vector3 lightDir = mLightingManager->GetLightDirection();
     Vector3 lightPos = camCenter - lightDir * 50.0f;
     
     Matrix4 lightViewMatrix = Matrix4::CreateLookAt(lightPos, camCenter, Vector3::UnitY);
@@ -840,24 +809,6 @@ void Renderer::RenderShadowMap()
     // ビューポートを戻す（スクリーンサイズ）
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
-}
-
-void Renderer::SetDirectionalLightPosition(const Vector3 &pos, const Vector3 &target)
-{
-    mDirLightPosition = pos;
-    mDirLightTarget = target;
-}
-
-void Renderer::SetFogInfo(const float max, const float min, Vector3 color)
-{
-    mFogMaxDist = max;
-    mFogMinDist = min;
-    mFogColor = color;
-}
-
-void Renderer::SetDirectionalLightColor(const Vector3 &col)
-{
-    mDiffuseColor = col;
 }
 
 // 雨エフェクトの初期化
@@ -954,3 +905,13 @@ void Renderer::DrawWatherOverlay()
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
 }
+
+void Renderer::SetSkyDome(SkyDomeComponent *sky)
+{
+    mSkyDomeComp = sky;
+    if (mSkyDomeComp)
+    {
+        mSkyDomeComp->SetLightingManager(mLightingManager);
+    }
+}
+

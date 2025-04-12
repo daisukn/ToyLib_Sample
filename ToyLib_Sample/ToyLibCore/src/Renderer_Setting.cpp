@@ -5,6 +5,7 @@
 
 bool Renderer::LoadSettings(const std::string& filePath)
 {
+    
     std::ifstream file(filePath);
     if (!file.is_open())
     {
@@ -41,7 +42,7 @@ bool Renderer::LoadSettings(const std::string& filePath)
     JsonHelper::GetFloat(data, "perspectiveFOV", mPerspectiveFOV);
 
     // カメラ位置
-    JsonHelper::GetVector3(data["camera"], "position", mCameraPosition);
+    //JsonHelper::GetVector3(data["camera"], "position", mCameraPosition);
 
     // デバッグモード
     if (data.contains("debug"))
@@ -53,10 +54,10 @@ bool Renderer::LoadSettings(const std::string& filePath)
     JsonHelper::GetVector3(data, "clearColor", mClearColor);
 
     // ライト設定
-    JsonHelper::GetVector3(data, "ambient", mAmbientColor);
-    JsonHelper::GetVector3(data, "specular", mSpecColor);
+    //JsonHelper::GetVector3(data, "ambient", mAmbientColor);
+    //JsonHelper::GetVector3(data, "specular", mSpecColor);
 
-    
+    /*
     if (data.contains("directionalLight"))
     {
         JsonHelper::GetVector3(data["directionalLight"], "diffuse", mDiffuseColor);
@@ -71,7 +72,7 @@ bool Renderer::LoadSettings(const std::string& filePath)
         JsonHelper::GetFloat(data["fog"], "minDist", mFogMinDist);
         JsonHelper::GetVector3(data["fog"], "color", mFogColor);
     }
-    
+    */
     // シャドウ設定
     if (data.contains("shadow"))
     {
