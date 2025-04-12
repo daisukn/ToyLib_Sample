@@ -5,6 +5,7 @@
 #include "Texture.h"
 #include "Application.h"
 #include "Renderer.h"
+#include "LightingManager.h"
 
 ShadowSpriteComponent::ShadowSpriteComponent(Actor* owner, int drawOrder)
     : VisualComponent(owner, drawOrder)
@@ -38,7 +39,8 @@ void ShadowSpriteComponent::Draw(Shader* shader)
     Matrix4 scale = Matrix4::CreateScale(width * mOffsetScale/2, height * mOffsetScale*2, 1.0f);
 
     // 光の方向から回転角を計算（XZ平面）
-    Vector3 lightDir = mOwnerActor->GetApp()->GetRenderer()->GetDirLight().Direction;
+    Vector3 lightDir = mOwnerActor->GetApp()->GetRenderer()->GetLightingManager()->GetLightDirection();
+    //mOwnerActor->GetApp()->GetRenderer()->GetDirLight().Direction;
     lightDir.y = 0.0f;
     if (lightDir.LengthSq() < 0.0001f) lightDir = Vector3(0, 0, 1);
     lightDir.Normalize();

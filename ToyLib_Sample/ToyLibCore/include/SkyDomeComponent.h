@@ -27,8 +27,12 @@ public:
     
     void SetAutoTimeTick(const bool b) { mIsAutoTimeTick = b; }
     
+    void SetLightingManager(std::shared_ptr<class LightingManager> manager) { mLightingManager = std::move(manager); }
+
+    
 private:
     std::unique_ptr<class VertexArray> mSkyVAO;
+    std::shared_ptr<class LightingManager> mLightingManager;
     float mTime;
     float mTimeSpeed;
     int mPastDay;
