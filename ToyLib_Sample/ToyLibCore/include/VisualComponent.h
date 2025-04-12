@@ -3,16 +3,13 @@
 #include "Component.h"
 #include "Renderer.h"
 
-
-
 enum class VisualType
 {
     NoAssigned,
     Sprite,
     Billboard,
     Particle,
-    ShadowSprite,
-    SkyDome
+    ShadowSprite
 };
 
 class VisualComponent : public Component
@@ -39,9 +36,12 @@ public:
 
     int GetDrawOrder() const { return mDrawOrder; }
     void SetDrawOrder(int order) { mDrawOrder = order; }
+    
+    void SetShader(std::shared_ptr<class Shader>& shader) { mShader = shader; }
 
 protected:
     class Texture* mTexture;
+    std::shared_ptr<class Shader> mShader;
     bool mIsVisible;
     bool mIsBlendAdd;
     VisualLayer mLayer;

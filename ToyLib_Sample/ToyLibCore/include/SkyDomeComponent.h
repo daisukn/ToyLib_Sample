@@ -27,7 +27,7 @@ public:
     
     void SetAutoTimeTick(const bool b) { mIsAutoTimeTick = b; }
     
-    void SetLightingManager(std::shared_ptr<class LightingManager> manager) { mLightingManager = std::move(manager); }
+    void SetLightingManager(std::shared_ptr<class LightingManager> manager) { mLightingManager = manager; }
 
     
 private:

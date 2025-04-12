@@ -83,7 +83,7 @@ public:
     // データ解放
     void UnloadData();
     // 単色シェーダー取得
-    class Shader* GetSolidShader() { return mSolidShader.get(); }
+    class Shader* GetSolidShader() { return mShaders["Solid"].get(); }
     
     // スカイドーム登録
     void SetSkyDome(class SkyDomeComponent* sky);
@@ -147,40 +147,14 @@ private:
     float mFogAmount;
     // 雪の強さ
     float mSnowAmount;
-    std::unique_ptr<class Shader> mRainShader;
-    std::unique_ptr<class Shader> mFogShader;
-    std::unique_ptr<class Shader> mWeatherScreenShader;
     std::unique_ptr<class VertexArray> mFullScreenQuad;
     void CreateFullScreenQuad();
     
     // 天気エフェクトのオーバーレイ
     void DrawWatherOverlay();
-    void DrawFogOverlay();
-    void DrawRainOverlay();
-    
-
-    // メッシュ用シェーダー
-    std::unique_ptr<class Shader> mMeshShader;
-    std::unique_ptr<class Shader> mMeshShaderToon;
-    std::unique_ptr<class Shader> mBackGroundShader;
-    // スキンメッシュ用シェーダー
-    std::unique_ptr<class Shader> mSkinnedShader;
-    std::unique_ptr<class Shader> mSkinnedShaderToon;
-    // スプライト用シェーダー
-    std::unique_ptr<class Shader> mSpriteShader;
-    // ビルボード用シェーダー
-    std::unique_ptr<class Shader> mBillboardShader;
-    // パーティクル用シェーダー
-    std::unique_ptr<class Shader> mParticleShader;
-    // ワイヤーフレーム用　単色シェーダー
-    std::unique_ptr<class Shader> mSolidShader;
-    // シャドウマップ用シェーダー
-    std::unique_ptr<class Shader> mShadowSkinnedShader;
-    // シャドウマップ用シェーダー
-    std::unique_ptr<class Shader> mShadowMeshShader;
-    // 晴れ用シェーダー
-    std::unique_ptr<class Shader> mSkyDomeShader;
-
+   
+    // シェーダー格納
+    std::unordered_map<std::string, std::shared_ptr<class Shader>> mShaders;
     // シェーダー一括ロード
     bool LoadShaders();
 
