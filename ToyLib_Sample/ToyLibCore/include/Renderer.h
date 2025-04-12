@@ -255,6 +255,8 @@ private:
     std::vector<class MeshComponent*> mEffectMesh;
     std::vector<class SkeletalMeshComponent*> mSkeletalMeshes;
     std::vector<class WireframeComponent*> mWireframeComps;
+    
+    
     class SkyDomeComponent* mSkyDomeComp; // Gameアプリ側で生成、生ポインタを保持
     
     void DrawSky();
