@@ -112,7 +112,7 @@ void ParticleComponent::Update(float deltaTime)
 
 void ParticleComponent::Draw()
 {
-    //if (!mIsVisible || mTexture == nullptr) return;
+    if (!mIsVisible || mTexture == nullptr) return;
 
     //if (mIsBlendAdd)
         glBlendFunc(GL_ONE, GL_ONE);
