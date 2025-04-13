@@ -91,19 +91,23 @@ void SkeletalMeshComponent::Draw()
     }
 }
 
-void SkeletalMeshComponent::DrawShadow(Shader* shader, const Matrix4& lightSpaceMatrix)
+void SkeletalMeshComponent::DrawShadow()
 {
     if (!mMesh) return;
     
     
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    Matrix4 light = renderer->GetLightSpaceMatrix();
+    mShadowShader->SetActive();
+    
     // ワールドマトリックスを送る
-    shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
+    mShadowShader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
     std::vector<Matrix4> transform;
     mMesh->BoneTransform(0, transform);
 
-    shader->SetMatrixUniforms("uMatrixPalette", transform.data(), (unsigned int)transform.size());
-    shader->SetMatrixUniform("uLightSpaceMatrix", lightSpaceMatrix);
+    mShadowShader->SetMatrixUniforms("uMatrixPalette", transform.data(), (unsigned int)transform.size());
+    mShadowShader->SetMatrixUniform("uLightSpaceMatrix", light);
 
     // Vertex Arrayを描画
     std::vector<VertexArray*> va = mMesh->GetVertexArray();

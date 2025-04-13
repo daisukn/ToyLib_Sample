@@ -192,40 +192,15 @@ void Renderer::DrawMesh()
     for (auto mc : mMeshComps)
     {
         if (!mc->GetVisible()) continue;
-        
-/*        auto shader = mShaders["Mesh"];
-        shader->SetActive();
-        mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
-
-        // ユニフォーム設定
-        shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-        shader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-        shader->SetTextureUniform("uShadowMap", 1);
-        shader->SetFloatUniform("uShadowBias", 0.005);
-        shader->SetBooleanUniform("uUseToon", mc->GetToon()); // トゥーンON/OFF
-*/        mc->Draw();
+        mc->Draw();
     }
     
     // スキンメッシュ描画
     for (auto sk : mSkeletalMeshes)
     {
         if (!sk->GetVisible()) continue;
-/*
-        auto shader = mShaders["Skinned"];
-        shader->SetActive();
-        mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
-
-        // ユニフォーム設定
-        shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-        shader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-        shader->SetTextureUniform("uShadowMap", 1);
-        shader->SetFloatUniform("uShadowBias", 0.005);
-        shader->SetBooleanUniform("uUseToon", sk->GetToon()); // トゥーンON/OFF
-*/
         sk->Draw();
     }
-    
-    //glActiveTexture(GL_TEXTURE0);
 }
 
 void Renderer::DrawDebugger()
@@ -247,20 +222,6 @@ void Renderer::DrawDebugger()
 
 void Renderer::DrawEffect()
 {
-    /*
-    // エフェクトメッシュ描画
-    auto shader = mShaders["Mesh"];
-    shader->SetActive();
-    mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
-    shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    for (auto mesh : mEffectMesh)
-    {
-        if (mesh->GetVisible())
-        {
-            mesh->Draw(shader.get());
-        }
-    }
-     */
     
 }
 
@@ -668,27 +629,22 @@ void Renderer::RenderShadowMap()
     Matrix4 lightProjMatrix = Matrix4::CreateOrtho(mShadowOrthoWidth, mShadowOrthoHeight, mShadowNear, mShadowFar);
     mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
 
-    // スキンメッシュのシャドウ描画
-    mShaders["ShadowSkinned"] ->SetActive();
-    mShaders["ShadowSkinned"] ->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-
+    
     for (auto& mesh : mSkeletalMeshes)
     {
         if (mesh->GetVisible())
         {
-            mesh->DrawShadow(mShaders["ShadowSkinned"] .get(), mLightSpaceMatrix);
+            mesh->DrawShadow();
         }
     }
     
     // 通常メッシュのシャドウ描画
-    mShaders["ShadowMesh"]->SetActive();
-    mShaders["ShadowMesh"]->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
     
     for (auto& mesh : mMeshComps)
     {
         if (mesh->GetVisible())
         {
-            mesh->DrawShadow(mShaders["ShadowMesh"].get(), mLightSpaceMatrix);
+            mesh->DrawShadow();
         }
     }
 

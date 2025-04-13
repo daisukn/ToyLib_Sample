@@ -22,7 +22,7 @@ public:
         
     // 描画 override
     virtual void Draw();
-    void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
+    virtual void DrawShadow();
     
     virtual void SetMesh(class Mesh* m) { mMesh = m; }              // メッシュセット
     void SetTextureIndex(unsigned int index) { mTextureIndex = index; }    // テクスチャGetter

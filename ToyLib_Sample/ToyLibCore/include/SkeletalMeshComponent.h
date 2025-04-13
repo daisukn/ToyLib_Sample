@@ -17,7 +17,7 @@ public:
     
     // 描画のOverride
     void Draw() override;
-    void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
+    void DrawShadow() override;
     // UpdateのOverride
     void Update(float deltaTime) override;
     

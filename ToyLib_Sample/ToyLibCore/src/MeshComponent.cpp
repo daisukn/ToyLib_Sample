@@ -136,23 +136,23 @@ VertexArray* MeshComponent::GetVertexArray(int id) const
 }
 
 
-void MeshComponent::DrawShadow(Shader* shader, const Matrix4& lightSpaceMatrix)
+void MeshComponent::DrawShadow()
 {
     if (!mMesh) return;
     
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    Matrix4 light = renderer->GetLightSpaceMatrix();
+    mShadowShader->SetActive();
+    
     
     // ワールドマトリックスを送る
-    shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
-    
-
-    //shader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
-    shader->SetMatrixUniform("uLightSpaceMatrix", lightSpaceMatrix);
+    mShadowShader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
+    mShadowShader->SetMatrixUniform("uLightSpaceMatrix", light);
     
     // Vertex Arrayを描画
     std::vector<VertexArray*> va = mMesh->GetVertexArray();
     for (auto v : va)
     {
-
         v->SetActive();
         glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
     }
