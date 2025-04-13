@@ -39,7 +39,7 @@ void ParticleComponent::SetTexture(Texture* tex)
 
 void ParticleComponent::CreateParticles(Vector3 pos, unsigned int num, float life, float partLife, float size, ParticleMode mode)
 {
-    if (!mIsVisible)
+ //   if (!mIsVisible)
     {
         mPosition = pos;
         mIsVisible = true;
@@ -92,9 +92,9 @@ void ParticleComponent::Update(float deltaTime)
         if (mParts[i].isVisible)
         {
             if (mParticleMode == P_WATER)
-                mParts[i].dir.y -= 0.05f;
+                mParts[i].dir.y -= 0.04f;
             else if (mParticleMode == P_SMOKE)
-                mParts[i].dir.y += 0.05f;
+                mParts[i].dir.y += 0.04f;
 
             mParts[i].lifeTime += deltaTime;
             mParts[i].pos += mParts[i].dir * deltaTime;
@@ -139,6 +139,8 @@ void ParticleComponent::Draw()
     mTexture->SetActive(2);
     mShader->SetTextureUniform("uTexture", 2);
 
+    // VAO有効有効化
+    mSpriteVerts->SetActive();
     for (int i = 0; i < mNumParts; ++i)
     {
         if (mParts[i].isVisible)

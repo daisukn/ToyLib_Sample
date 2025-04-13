@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "LightingManager.h"
+#include "VertexArray.h"
 #include "Application.h"
 #include "Renderer.h"
 #include "Actor.h"
@@ -37,9 +38,7 @@ void SpriteComponent::Draw()
 
     // 表示可能かチェック
     if (!mIsVisible || mTexture == nullptr) return;
-    //SDL_Log("SpriteComponent TextureID: %u", mTexture->GetTextureID());
-    //SDL_Log("Texture Size: %d x %d", mTexture->GetWidth(), mTexture->GetHeight());
-    
+   
     
     glDisable(GL_DEPTH_TEST);           // UIなどZ不要な場合
     glDepthMask(GL_FALSE);              // Zバッファ書き込みOFF
@@ -68,6 +67,7 @@ void SpriteComponent::Draw()
     mShader->SetMatrixUniform("uWorldTransform", world);
     mLightingManager->ApplyToShader(mShader, view);
 
+    mSpriteVerts->SetActive();
     // 描画
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     

@@ -16,6 +16,7 @@ VisualComponent::VisualComponent(Actor* owner, int drawOrder, VisualLayer layer)
 {
     mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mLightingManager = mOwnerActor->GetApp()->GetRenderer()->GetLightingManager();
+    mSpriteVerts = mOwnerActor->GetApp()->GetRenderer()->GetSpriteVerts();
     
 }
 

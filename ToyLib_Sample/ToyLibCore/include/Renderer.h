@@ -95,6 +95,9 @@ public:
     
     // 光源マトリックス
     Matrix4 GetLightSpaceMatrix() const { return mLightSpaceMatrix; }
+    
+    // スプライト用VAO取得
+    std::shared_ptr<class VertexArray> GetSpriteVerts() { return mSpriteVerts; }
 
 private:
     // セッティング読み込み
@@ -155,7 +158,7 @@ private:
     bool LoadShaders();
 
     // スプライト用ポリゴン（Billboardでも使う）
-    std::unique_ptr<class VertexArray> mSpriteVerts;
+    std::shared_ptr<class VertexArray> mSpriteVerts;
     // スプライト用ポリゴンの生成
     void CreateSpriteVerts();
     
@@ -181,6 +184,5 @@ private:
     void DrawSky();
     void DrawDebugger();
     void DrawVisualLayer(VisualLayer layer);
-    class Shader* GetVisualShader(const class VisualComponent* visual);
 };
 

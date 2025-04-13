@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "VertexArray.h"
 #include "Application.h"
 #include "Renderer.h"
 #include "LightingManager.h"
@@ -59,5 +60,6 @@ void ShadowSpriteComponent::Draw()
     mTexture->SetActive(2); // ShadowSprite用ユニット
     mShader->SetTextureUniform("uTexture", 2);
 
+    mSpriteVerts->SetActive();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
