@@ -147,7 +147,7 @@ void Renderer::Draw()
 void Renderer::DrawSky()
 {
     if (!mSkyDomeComp) return;
-    mSkyDomeComp->Draw(mShaders["SkyDome"].get());
+    mSkyDomeComp->Draw();
 
 }
 

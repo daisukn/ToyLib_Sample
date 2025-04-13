@@ -11,7 +11,7 @@
 SkyDomeComponent::SkyDomeComponent(Actor* a)
 : Component(a)
 , mTime(0.5f)
-, mTimeSpeed(0.005f)
+, mTimeSpeed(0.0001f)
 , mPastDay(0)
 , mSunDir(Vector3::UnitY)
 , mWeatherType(WeatherType::CLEAR)
@@ -19,6 +19,7 @@ SkyDomeComponent::SkyDomeComponent(Actor* a)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
     mOwnerActor->GetApp()->GetRenderer()->RegisterSkyDome(this);
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("SkyDome");
 }
 
 void SkyDomeComponent::SetTime(float t) {
@@ -29,12 +30,11 @@ void SkyDomeComponent::SetSunDirection(const Vector3& dir) {
     mSunDir = dir;
 }
 
-//float gTimeOfDay = 0.f;
 
-void SkyDomeComponent::Draw(Shader* shader)
+void SkyDomeComponent::Draw()
 {
 
-    if (!mSkyVAO || !shader) return;
+    if (!mSkyVAO || !mShader) return;
     
 
     Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
@@ -46,16 +46,16 @@ void SkyDomeComponent::Draw(Shader* shader)
     Matrix4 mvp = model * view * proj;
 
 
-    shader->SetActive();
-    shader->SetMatrixUniform("uMVP", mvp);
+    mShader->SetActive();
+    mShader->SetMatrixUniform("uMVP", mvp);
     
     float t = fmod(SDL_GetTicks() / 1000.0f, 60.0f) / 60.0f; // 0〜1で60秒周期
-    shader->SetFloatUniform("uTime", t);
-    shader->SetIntUniform("uWeatherType", static_cast<int>(mWeatherType));
-    shader->SetFloatUniform("uTimeOfDay", fmod(mTime, 1.0f)); // 0.0〜1.0
+    mShader->SetFloatUniform("uTime", t);
+    mShader->SetIntUniform("uWeatherType", static_cast<int>(mWeatherType));
+    mShader->SetFloatUniform("uTimeOfDay", fmod(mTime, 1.0f)); // 0.0〜1.0
     
 
-    shader->SetVectorUniform("uSunDir", mSunDir);
+    mShader->SetVectorUniform("uSunDir", mSunDir);
    
     
     glDisable(GL_CULL_FACE);
