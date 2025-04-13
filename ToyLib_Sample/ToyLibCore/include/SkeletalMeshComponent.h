@@ -16,7 +16,7 @@ public:
     SkeletalMeshComponent(class Actor* owner);
     
     // 描画のOverride
-    void Draw(class Shader* shader) override;
+    void Draw() override;
     void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
     // UpdateのOverride
     void Update(float deltaTime) override;

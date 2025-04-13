@@ -150,7 +150,7 @@ void Renderer::Draw()
 void Renderer::DrawBackGround()
 {
    
-    
+    /*
     // 背景用メッシュ描画
     
     auto shader = mShaders["Mesh"];
@@ -168,9 +168,10 @@ void Renderer::DrawBackGround()
             shader->SetFloatUniform("uShadowBias", 0.005);
             shader->SetBooleanUniform("uUseToon", bg->GetToon()); // トゥーンON/OFF
 
-            bg->Draw(shader.get());
+            bg->Draw();
         }
     }
+     */
 }
 
 void Renderer::DrawSky()
@@ -192,7 +193,7 @@ void Renderer::DrawMesh()
     {
         if (!mc->GetVisible()) continue;
         
-        auto shader = mShaders["Mesh"];
+/*        auto shader = mShaders["Mesh"];
         shader->SetActive();
         mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
 
@@ -202,14 +203,14 @@ void Renderer::DrawMesh()
         shader->SetTextureUniform("uShadowMap", 1);
         shader->SetFloatUniform("uShadowBias", 0.005);
         shader->SetBooleanUniform("uUseToon", mc->GetToon()); // トゥーンON/OFF
-        mc->Draw(shader.get());
+*/        mc->Draw();
     }
     
     // スキンメッシュ描画
     for (auto sk : mSkeletalMeshes)
     {
         if (!sk->GetVisible()) continue;
-
+/*
         auto shader = mShaders["Skinned"];
         shader->SetActive();
         mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
@@ -220,11 +221,11 @@ void Renderer::DrawMesh()
         shader->SetTextureUniform("uShadowMap", 1);
         shader->SetFloatUniform("uShadowBias", 0.005);
         shader->SetBooleanUniform("uUseToon", sk->GetToon()); // トゥーンON/OFF
-
-        sk->Draw(shader.get());
+*/
+        sk->Draw();
     }
     
-    glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE0);
 }
 
 void Renderer::DrawDebugger()
@@ -246,6 +247,7 @@ void Renderer::DrawDebugger()
 
 void Renderer::DrawEffect()
 {
+    /*
     // エフェクトメッシュ描画
     auto shader = mShaders["Mesh"];
     shader->SetActive();
@@ -258,6 +260,7 @@ void Renderer::DrawEffect()
             mesh->Draw(shader.get());
         }
     }
+     */
     
 }
 

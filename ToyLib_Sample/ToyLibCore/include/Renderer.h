@@ -100,6 +100,9 @@ public:
     
     
     std::shared_ptr<class Shader> GetShader(const std::string& name) { return mShaders[name]; }
+    
+    // 光源マトリックス
+    Matrix4 GetLightSpaceMatrix() const { return mLightSpaceMatrix; }
 
 private:
     // セッティング読み込み

@@ -1,6 +1,7 @@
 
 #include "MeshComponent.h"
 #include "Shader.h"
+#include "LightingManager.h"
 #include "Mesh.h"
 #include "Actor.h"
 #include "Application.h"
@@ -37,6 +38,10 @@ MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
             mOwnerActor->GetApp()->GetRenderer()->AddMeshComp(this);
             break;
     }
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    mShader = renderer->GetShader("Mesh");
+    mShadowShader = renderer->GetShader("ShadowMesh");
+    mLightingManger = renderer->GetLightingManager();
 }
 
 // デストラクタ
@@ -60,59 +65,68 @@ MeshComponent::~MeshComponent()
 }
 
 // 描画
-void MeshComponent::Draw(Shader* shader)
+void MeshComponent::Draw()
 {
-	if (mMesh)
-	{
-        if (mIsBlendAdd)
-        {
-            glBlendFunc(GL_ONE, GL_ONE);
-        }
-        
-        // WorldマトリックスをShaderに送る
-        shader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
+    if (!mMesh) return;
+    if (mIsBlendAdd)
+    {
+        glBlendFunc(GL_ONE, GL_ONE);
+    }
+    
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    Matrix4 view = renderer->GetViewMatrix();
+    Matrix4 proj = renderer->GetProjectionMatrix();
+    Matrix4 light = renderer->GetLightSpaceMatrix();
+ 
+    mShader->SetActive();
+    mLightingManger->ApplyToShader(mShader.get(), view);
+    mShader->SetMatrixUniform("uViewProj", view * proj);
+    mShader->SetMatrixUniform("uLightSpaceMatrix", light);
+    mShader->SetTextureUniform("uShadowMap", 1);
+    mShader->SetFloatUniform("uShadowBias", 0.005);
+    mShader->SetBooleanUniform("uUseToon", mIsToon);
+    
+    // WorldマトリックスをShaderに送る
+    mShader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
-		// Vertex Array
-        std::vector<VertexArray*> va = mMesh->GetVertexArray();
+    // Vertex Array
+    std::vector<VertexArray*> va = mMesh->GetVertexArray();
+    for (auto v : va)
+    {
+        auto mat = mMesh->GetMaterial(v->GetTextureID());
+        if (mat)
+        {
+            mat->BindToShader(mShader.get(), 0);
+        }
+        v->SetActive();
+        glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+    }
+        
+    // 輪郭強調用
+    if (mIsToon)
+    {
+        glFrontFace(GL_CW);
+        Matrix4 m = Matrix4::CreateScale(mContourFactor);
+        mShader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
         for (auto v : va)
         {
             auto mat = mMesh->GetMaterial(v->GetTextureID());
             if (mat)
             {
-                mat->BindToShader(shader, 0);
+                mat->SetOverrideColor(true, Vector3(0.f, 0.f, 0.f));
+                mat->BindToShader(mShader.get(), 0);
             }
             v->SetActive();
             glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+            mat->SetOverrideColor(false, Vector3(0.f, 0.f, 0.f));
         }
+        glFrontFace(GL_CCW);
+    }
         
-        // 輪郭強調用
-        if (mIsToon)
-        {
-            glFrontFace(GL_CW);
-            Matrix4 m = Matrix4::CreateScale(mContourFactor);
-            shader->SetMatrixUniform("uWorldTransform", m * mOwnerActor->GetWorldTransform());
-            for (auto v : va)
-            {
-                auto mat = mMesh->GetMaterial(v->GetTextureID());
-                if (mat)
-                {
-                    mat->SetOverrideColor(true, Vector3(0.f, 0.f, 0.f));
-                    mat->BindToShader(shader, 0);
-                }
-                v->SetActive();
-                glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
-                mat->SetOverrideColor(false, Vector3(0.f, 0.f, 0.f));
-            }
-            glFrontFace(GL_CCW);
-        }
-        
-        
-        if (mIsBlendAdd)
-        {
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-        
-	}
+    if (mIsBlendAdd)
+    {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 }
 
 

@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "Animation.h"
 #include "MathUtils.h"
+#include <memory>
 //#include <cstddef>
 
 enum MeshType
@@ -20,7 +21,9 @@ public:
     virtual ~MeshComponent();
         
     // 描画 override
-    virtual void Draw(class Shader* s);
+    virtual void Draw();
+    void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
+    
     virtual void SetMesh(class Mesh* m) { mMesh = m; }              // メッシュセット
     void SetTextureIndex(unsigned int index) { mTextureIndex = index; }    // テクスチャGetter
 
@@ -40,9 +43,7 @@ public:
     
     
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
-    virtual void SetAnimID(const unsigned int animID, const PlayMode mode){}
-    
-    void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
+    virtual void SetAnimID(const unsigned int animID, const PlayMode mode) {}
     
 protected:
     class Mesh* mMesh;      // メッシュ
@@ -53,6 +54,10 @@ protected:
     bool mIsSkeletal;
     
     MeshType mMeshType;
+    
+    std::shared_ptr<class LightingManager> mLightingManger;
+    std::shared_ptr<class Shader> mShader;
+    std::shared_ptr<class Shader> mShadowShader;
     
     
     // 輪郭強調
