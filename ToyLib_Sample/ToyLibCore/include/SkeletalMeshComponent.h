@@ -13,7 +13,7 @@ class SkeletalMeshComponent : public MeshComponent
 {
 public:
     // コンストラクタ
-    SkeletalMeshComponent(class Actor* owner);
+    SkeletalMeshComponent(class Actor* a, int drawOrder = 100, VisualLayer layer = VisualLayer::Effect3D);
     
     // 描画のOverride
     void Draw() override;

@@ -6,18 +6,11 @@
 #include <memory>
 //#include <cstddef>
 
-enum MeshType
-{
-    MESH_NORMAL,
-    MESH_BG,
-    MESH_EFFECT
-};
-
 // Meshを管理するComponent
 class MeshComponent : public VisualComponent
 {
 public:
-    MeshComponent(class Actor* a, bool isSkeletal = false, MeshType type = MESH_NORMAL);
+    MeshComponent(class Actor* a, int drawOrder = 100, VisualLayer layer = VisualLayer::Effect3D, bool isSkeletal = false);
     virtual ~MeshComponent();
         
     // 描画 override
@@ -38,10 +31,6 @@ public:
     
     bool GetToon() const { return mIsToon; }
     
-    //void SetBlendAdd(bool b) { mIsBlendAdd = b; }
-    //bool GetBlendAdd() const { return mIsBlendAdd; }
-    
-    
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
     virtual void SetAnimID(const unsigned int animID, const PlayMode mode) {}
     
@@ -52,8 +41,8 @@ protected:
 
     //bool mIsVisible;
     bool mIsSkeletal;
-    
-    MeshType mMeshType;
+
+    std::shared_ptr<class Texture> mShadowMapTexture;
     
     std::shared_ptr<class LightingManager> mLightingManger;
     std::shared_ptr<class Shader> mShader;
@@ -63,8 +52,5 @@ protected:
     // 輪郭強調
     bool mIsToon;
     float mContourFactor;
-    
-    // 加算合成するか
-    //bool mIsBlendAdd;
 };
 

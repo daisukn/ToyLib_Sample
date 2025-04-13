@@ -10,8 +10,8 @@
 #include "Material.h"
 
 
-SkeletalMeshComponent::SkeletalMeshComponent(Actor* owner)
-: MeshComponent(owner, true)
+SkeletalMeshComponent::SkeletalMeshComponent(Actor* a, int drawOrder, VisualLayer layer)
+: MeshComponent(a, drawOrder, layer,  true)
 , mAnimTime(0.0f)
 {
     auto renderer = mOwnerActor->GetApp()->GetRenderer();
@@ -32,7 +32,13 @@ bool SkeletalMeshComponent::GetIsPlaing() const
 void SkeletalMeshComponent::Draw()
 {
     if (!mMesh) return;
-
+    if (mIsBlendAdd)
+    {
+        glBlendFunc(GL_ONE, GL_ONE);
+    }
+    
+    // シャドウマップテクスチャ有効化
+    mShadowMapTexture->SetActive(1);
     auto renderer = mOwnerActor->GetApp()->GetRenderer();
     Matrix4 view = renderer->GetViewMatrix();
     Matrix4 proj = renderer->GetProjectionMatrix();

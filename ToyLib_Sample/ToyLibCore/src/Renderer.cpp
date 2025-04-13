@@ -132,13 +132,9 @@ void Renderer::Draw()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     DrawSky();
-    //DrawBackGround();
     DrawDebugger();
     DrawVisualLayer(VisualLayer::Background2D);
-    //DrawMesh();
-    mShadowMapTexture->SetActive(1); // 共通シャドウマップ用テクスチャ
     DrawVisualLayer(VisualLayer::Object3D);
-    glActiveTexture(GL_TEXTURE0);
     DrawVisualLayer(VisualLayer::Effect3D);
     
     DrawWeatherOverlay();
@@ -432,7 +428,7 @@ bool Renderer::InitializeShadowMapping()
     glBindFramebuffer(GL_FRAMEBUFFER, mShadowFBO);
 
     // シャドウ用テクスチャ生成
-    mShadowMapTexture = std::make_unique<Texture>();
+    mShadowMapTexture = std::make_shared<Texture>();
     mShadowMapTexture->CreateShadowMap(mShadowFBOWidth, mShadowFBOHeight);
 
     // FBOにアタッチ

@@ -14,8 +14,8 @@
 #include <vector>
 
 // コンストラクタ
-MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
-: VisualComponent(a, 100, VisualLayer::Object3D)
+MeshComponent::MeshComponent(Actor* a, int drawOrder, VisualLayer layer, bool isSkeletal)
+: VisualComponent(a, drawOrder, layer)
 , mMesh(nullptr)
 , mTextureIndex(0)
 //, mIsVisible(true)
@@ -23,12 +23,12 @@ MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
 , mIsToon(false)
 , mContourFactor(1.1014f)
 //, mIsBlendAdd(false)
-, mMeshType(type)
 {
     auto renderer = mOwnerActor->GetApp()->GetRenderer();
     mShader = renderer->GetShader("Mesh");
     mShadowShader = renderer->GetShader("ShadowMesh");
     mLightingManger = renderer->GetLightingManager();
+    mShadowMapTexture = renderer->GetShadowMapTexture();
     mIsVisible = true;
     mLayer = VisualLayer::Object3D;
     mEnableShadow = true;
@@ -48,6 +48,9 @@ void MeshComponent::Draw()
     {
         glBlendFunc(GL_ONE, GL_ONE);
     }
+    
+    // シャドウマップテクスチャ有効化
+    mShadowMapTexture->SetActive(1);
     
     auto renderer = mOwnerActor->GetApp()->GetRenderer();
     Matrix4 view = renderer->GetViewMatrix();

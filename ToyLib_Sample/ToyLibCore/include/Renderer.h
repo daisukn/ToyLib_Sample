@@ -97,7 +97,9 @@ public:
     Matrix4 GetLightSpaceMatrix() const { return mLightSpaceMatrix; }
     
     // スプライト用VAO取得
-    std::shared_ptr<class VertexArray> GetSpriteVerts() { return mSpriteVerts; }
+    std::shared_ptr<class VertexArray> GetSpriteVerts() const { return mSpriteVerts; }
+    
+    std::shared_ptr<class Texture> GetShadowMapTexture() const { return mShadowMapTexture; }
 
 private:
     // セッティング読み込み
@@ -167,7 +169,7 @@ private:
     bool InitializeShadowMapping();
     void RenderShadowMap();
     Matrix4 mLightSpaceMatrix;
-    std::unique_ptr<class Texture> mShadowMapTexture;
+    std::shared_ptr<class Texture> mShadowMapTexture;
 
     
     // アセット
