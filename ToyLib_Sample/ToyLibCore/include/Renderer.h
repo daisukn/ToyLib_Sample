@@ -96,6 +96,7 @@ public:
     // 光源マトリックス
     Matrix4 GetLightSpaceMatrix() const { return mLightSpaceMatrix; }
     
+    // スプライト用VAO取得
     std::shared_ptr<class VertexArray> GetSpriteVerts() { return mSpriteVerts; }
 
 private:
@@ -183,6 +184,5 @@ private:
     void DrawSky();
     void DrawDebugger();
     void DrawVisualLayer(VisualLayer layer);
-    class Shader* GetVisualShader(const class VisualComponent* visual);
 };
 
