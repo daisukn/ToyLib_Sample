@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Component.h"
+#include "VisualComponent.h"
 #include "Animation.h"
 #include "MathUtils.h"
+#include <memory>
 //#include <cstddef>
 
 enum MeshType
@@ -12,20 +13,22 @@ enum MeshType
     MESH_EFFECT
 };
 
-// Meshを管理するComponent（Rendererから呼ばれる）
-class MeshComponent : public Component
+// Meshを管理するComponent
+class MeshComponent : public VisualComponent
 {
 public:
     MeshComponent(class Actor* a, bool isSkeletal = false, MeshType type = MESH_NORMAL);
     virtual ~MeshComponent();
         
     // 描画 override
-    virtual void Draw(class Shader* s);
+    virtual void Draw();
+    virtual void DrawShadow();
+    
     virtual void SetMesh(class Mesh* m) { mMesh = m; }              // メッシュセット
     void SetTextureIndex(unsigned int index) { mTextureIndex = index; }    // テクスチャGetter
 
-    void SetVisible(bool visible) { mIsVisible = visible; }
-    bool GetVisible() const { return mIsVisible; }
+    //void SetVisible(bool visible) { mIsVisible = visible; }
+    //bool GetVisible() const { return mIsVisible; }
     
     bool GetIsSkeletal() const { return mIsSkeletal; }
     class VertexArray* GetVertexArray(int id) const;
@@ -35,24 +38,26 @@ public:
     
     bool GetToon() const { return mIsToon; }
     
-    void SetBlendAdd(bool b) { mIsBlendAdd = b; }
-    bool GetBlendAdd() const { return mIsBlendAdd; }
+    //void SetBlendAdd(bool b) { mIsBlendAdd = b; }
+    //bool GetBlendAdd() const { return mIsBlendAdd; }
     
     
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
-    virtual void SetAnimID(const unsigned int animID, const PlayMode mode){}
-    
-    void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
+    virtual void SetAnimID(const unsigned int animID, const PlayMode mode) {}
     
 protected:
     class Mesh* mMesh;      // メッシュ
     unsigned int mTextureIndex;    // TextureID
     
 
-    bool mIsVisible;
+    //bool mIsVisible;
     bool mIsSkeletal;
     
     MeshType mMeshType;
+    
+    std::shared_ptr<class LightingManager> mLightingManger;
+    std::shared_ptr<class Shader> mShader;
+    std::shared_ptr<class Shader> mShadowShader;
     
     
     // 輪郭強調
@@ -60,6 +65,6 @@ protected:
     float mContourFactor;
     
     // 加算合成するか
-    bool mIsBlendAdd;
+    //bool mIsBlendAdd;
 };
 

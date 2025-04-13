@@ -23,14 +23,12 @@ ParticleComponent::ParticleComponent(Actor* owner, int drawOrder)
     , mParticleMode(P_SPARK)
 {
     mLayer = VisualLayer::Effect3D;
-    mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::Particle;
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Particle");
 }
 
 ParticleComponent::~ParticleComponent()
 {
-    mOwnerActor->GetApp()->GetRenderer()->RemoveVisualComp(this);
     mParts.clear();
 }
 
@@ -114,7 +112,7 @@ void ParticleComponent::Update(float deltaTime)
 
 void ParticleComponent::Draw()
 {
-    if (!mIsVisible || mTexture == nullptr) return;
+    //if (!mIsVisible || mTexture == nullptr) return;
 
     //if (mIsBlendAdd)
         glBlendFunc(GL_ONE, GL_ONE);

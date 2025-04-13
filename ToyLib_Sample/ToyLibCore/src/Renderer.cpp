@@ -135,8 +135,10 @@ void Renderer::Draw()
     //DrawBackGround();
     DrawDebugger();
     DrawVisualLayer(VisualLayer::Background2D);
-    DrawMesh();
+    //DrawMesh();
+    mShadowMapTexture->SetActive(1); // 共通シャドウマップ用テクスチャ
     DrawVisualLayer(VisualLayer::Object3D);
+    glActiveTexture(GL_TEXTURE0);
     DrawVisualLayer(VisualLayer::Effect3D);
     
     DrawWeatherOverlay();
@@ -146,85 +148,11 @@ void Renderer::Draw()
     SDL_GL_SwapWindow(mWindow);
 }
 
-// 背景オブジェクトの描画
-void Renderer::DrawBackGround()
-{
-   
-    
-    // 背景用メッシュ描画
-    
-    auto shader = mShaders["Mesh"];
-    
-    shader->SetActive();
-    mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
-
-    for (auto bg : mBgMesh)
-    {
-        if (bg->GetVisible())
-        {
-            shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            shader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-            shader->SetTextureUniform("uShadowMap", 1);
-            shader->SetFloatUniform("uShadowBias", 0.005);
-            shader->SetBooleanUniform("uUseToon", bg->GetToon()); // トゥーンON/OFF
-
-            bg->Draw(shader.get());
-        }
-    }
-}
-
 void Renderer::DrawSky()
 {
     if (!mSkyDomeComp) return;
     mSkyDomeComp->Draw(mShaders["SkyDome"].get());
 
-}
-
-// メッシュの描画
-void Renderer::DrawMesh()
-{
-
-    mShadowMapTexture->SetActive(1); // 共通シャドウマップ用テクスチャ
-
-
-    // 通常メッシュ描画（スキンなし）
-    for (auto mc : mMeshComps)
-    {
-        if (!mc->GetVisible()) continue;
-        
-        auto shader = mShaders["Mesh"];
-        shader->SetActive();
-        mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
-
-        // ユニフォーム設定
-        shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-        shader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-        shader->SetTextureUniform("uShadowMap", 1);
-        shader->SetFloatUniform("uShadowBias", 0.005);
-        shader->SetBooleanUniform("uUseToon", mc->GetToon()); // トゥーンON/OFF
-        mc->Draw(shader.get());
-    }
-    
-    // スキンメッシュ描画
-    for (auto sk : mSkeletalMeshes)
-    {
-        if (!sk->GetVisible()) continue;
-
-        auto shader = mShaders["Skinned"];
-        shader->SetActive();
-        mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
-
-        // ユニフォーム設定
-        shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-        shader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-        shader->SetTextureUniform("uShadowMap", 1);
-        shader->SetFloatUniform("uShadowBias", 0.005);
-        shader->SetBooleanUniform("uUseToon", sk->GetToon()); // トゥーンON/OFF
-
-        sk->Draw(shader.get());
-    }
-    
-    glActiveTexture(GL_TEXTURE0);
 }
 
 void Renderer::DrawDebugger()
@@ -242,23 +170,6 @@ void Renderer::DrawDebugger()
     {
         wireframe->Draw(mShaders["Solid"].get());
     }
-}
-
-void Renderer::DrawEffect()
-{
-    // エフェクトメッシュ描画
-    auto shader = mShaders["Mesh"];
-    shader->SetActive();
-    mLightingManager->ApplyToShader(shader.get(), mViewMatrix);
-    shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    for (auto mesh : mEffectMesh)
-    {
-        if (mesh->GetVisible())
-        {
-            mesh->Draw(shader.get());
-        }
-    }
-    
 }
 
 // シェーダー 読み込み
@@ -509,77 +420,6 @@ Mesh* Renderer::GetMesh(const std::string& fileName, bool isRightHanded)
     return m;
 }
 
-// メッシュコンポーネント登録
-void Renderer::AddMeshComp(MeshComponent* mesh)
-{
-    if (mesh->GetIsSkeletal())
-    {
-        SkeletalMeshComponent* sk = static_cast<SkeletalMeshComponent*>(mesh);
-        mSkeletalMeshes.emplace_back(sk);
-    }
-    else
-    {
-
-        mMeshComps.emplace_back(mesh);
-    }
- }
-
-
-// メッシュコンポーネント削除
-void Renderer::RemoveMeshComp(MeshComponent* mesh)
-{
-    if (mesh->GetIsSkeletal())
-    {
-        SkeletalMeshComponent* sk = static_cast<SkeletalMeshComponent*>(mesh);
-        auto iter = std::find(mSkeletalMeshes.begin(), mSkeletalMeshes.end(), sk);
-        if (iter != mSkeletalMeshes.end())
-        { // 要素が見つかった場合のみ削除
-            mSkeletalMeshes.erase(iter);
-        }
-    }
-    else
-    {
-        auto iter = std::find(mMeshComps.begin(), mMeshComps.end(), mesh);
-        if (iter != mMeshComps.end())
-        { // 要素が見つかった場合のみ削除
-            mMeshComps.erase(iter);
-        }
-    }
-}
-
-// BGメッシュコンポーネント登録
-void Renderer::AddBackGroudMeshComp(MeshComponent* mesh)
-{
-    mBgMesh.emplace_back(mesh);
-}
-
-
-// BGメッシュコンポーネント削除
-void Renderer::RemoveBackGroudMeshComp(MeshComponent* mesh)
-{
-    auto iter = std::find(mBgMesh.begin(), mBgMesh.end(), mesh);
-    if (iter != mBgMesh.end())
-    { // 要素が見つかった場合のみ削除
-        mBgMesh.erase(iter);
-    }
- 
-}
-
-// エフェクトメッシュコンポーネント登録
-void Renderer::AddEffectMeshComp(MeshComponent* mesh)
-{
-    mEffectMesh.emplace_back(mesh);
-}
-
-// エフェクトメッシュコンポーネント削除
-void Renderer::RemoveEffectMeshComp(MeshComponent* mesh)
-{
-    auto iter = std::find(mEffectMesh.begin(), mEffectMesh.end(), mesh);
-    if (iter != mEffectMesh.end())
-    { // 要素が見つかった場合のみ削除
-        mEffectMesh.erase(iter);
-    }
-}
 
 // デバッガーコンポーネント登録
 void Renderer::AddWireframeComp(WireframeComponent* wf)
@@ -604,7 +444,7 @@ void Renderer::UnloadData()
     mTextures.clear();
     // メッシュ削除
     mMeshes.clear();
-    mSkeletalMeshes.clear();
+    mVisualComps.clear();
 }
 
 // シャドウマッピング
@@ -621,13 +461,13 @@ bool Renderer::InitializeShadowMapping()
 
     // FBOにアタッチ
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mShadowMapTexture->GetTextureID(), 0);
-
+/*
     // 確認用
     GLint compareMode;
     glBindTexture(GL_TEXTURE_2D, mShadowMapTexture->GetTextureID());
     glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, &compareMode);
     SDL_Log("Compare mode: %d", compareMode); // GL_COMPARE_REF_TO_TEXTUREでなければNG（値は 34894）
-    
+  */
     // カラーバッファなし（深度のみ）
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
@@ -665,27 +505,11 @@ void Renderer::RenderShadowMap()
     Matrix4 lightProjMatrix = Matrix4::CreateOrtho(mShadowOrthoWidth, mShadowOrthoHeight, mShadowNear, mShadowFar);
     mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
 
-    // スキンメッシュのシャドウ描画
-    mShaders["ShadowSkinned"] ->SetActive();
-    mShaders["ShadowSkinned"] ->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-
-    for (auto& mesh : mSkeletalMeshes)
+    for (auto& visual : mVisualComps)
     {
-        if (mesh->GetVisible())
+        if (visual->IsEnableShadow() && visual->IsVisible())
         {
-            mesh->DrawShadow(mShaders["ShadowSkinned"] .get(), mLightSpaceMatrix);
-        }
-    }
-    
-    // 通常メッシュのシャドウ描画
-    mShaders["ShadowMesh"]->SetActive();
-    mShaders["ShadowMesh"]->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-    
-    for (auto& mesh : mMeshComps)
-    {
-        if (mesh->GetVisible())
-        {
-            mesh->DrawShadow(mShaders["ShadowMesh"].get(), mLightSpaceMatrix);
+            visual->DrawShadow();
         }
     }
 

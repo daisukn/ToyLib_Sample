@@ -100,6 +100,9 @@ public:
     
     
     std::shared_ptr<class Shader> GetShader(const std::string& name) { return mShaders[name]; }
+    
+    // 光源マトリックス
+    Matrix4 GetLightSpaceMatrix() const { return mLightSpaceMatrix; }
 
 private:
     // セッティング読み込み
@@ -178,20 +181,13 @@ private:
 
     // コンポーネント
     std::vector<class VisualComponent*> mVisualComps;
-    std::vector<class MeshComponent*> mMeshComps;
-    std::vector<class MeshComponent*> mBgMesh;
-    std::vector<class MeshComponent*> mEffectMesh;
-    std::vector<class SkeletalMeshComponent*> mSkeletalMeshes;
     std::vector<class WireframeComponent*> mWireframeComps;
     
     
     class SkyDomeComponent* mSkyDomeComp; // Gameアプリ側で生成、生ポインタを保持
     
     void DrawSky();
-    void DrawBackGround();
-    void DrawMesh();
     void DrawDebugger();
-    void DrawEffect();
     void DrawVisualLayer(VisualLayer layer);
     class Shader* GetVisualShader(const class VisualComponent* visual);
 };
