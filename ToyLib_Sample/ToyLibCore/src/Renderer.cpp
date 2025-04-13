@@ -320,58 +320,43 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
 
 
 // テクスチャ取り出し
-Texture* Renderer::GetTexture(const std::string &fileName)
+std::shared_ptr<Texture> Renderer::GetTexture(const std::string &fileName)
 {
- 
-    Texture* tex = nullptr;
     auto iter = mTextures.find(fileName);
     if (iter != mTextures.end())
     {
-        tex = iter->second.get();
+        return iter->second; // すでにあるのでそれを返す
     }
     else
     {
-        std::unique_ptr<Texture> t = std::make_unique<Texture>();
-        if(t->Load(fileName))
+        auto tex = std::make_shared<Texture>();
+        if (tex->Load(fileName))
         {
-            tex = t.get();
-            mTextures.emplace(fileName, std::move(t));
-        }
-        else
-        {
-            tex = nullptr;
+            mTextures[fileName] = tex;
+            return tex;
         }
     }
-    return tex;
+    return nullptr; // 失敗したら null
 }
 
 // 埋め込みテクスチャ
-Texture* Renderer::GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize)
+std::shared_ptr<Texture> Renderer::GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize)
 {
-    Texture* tex = nullptr;
-
     auto iter = mTextures.find(nameKey);
     if (iter != mTextures.end())
     {
-        tex = iter->second.get();
+        return iter->second;
     }
-    else
+
+    auto tex = std::make_shared<Texture>();
+    if (tex->LoadFromMemory(data, static_cast<unsigned int>(dataSize)))
     {
-        std::unique_ptr<Texture> t = std::make_unique<Texture>();
-        if (t->LoadFromMemory(data, static_cast<unsigned int>(dataSize)))
-        {
-            tex = t.get();
-            mTextures.emplace(nameKey, std::move(t));
-        }
-        else
-        {
-            tex = nullptr;
-        }
+        mTextures[nameKey] = tex;
+        return tex;
     }
 
-    return tex;
+    return nullptr;
 }
-
 //スプライト用ポリゴン
 void Renderer::CreateSpriteVerts()
 {
@@ -393,29 +378,22 @@ void Renderer::CreateSpriteVerts()
 }
 
 // メッシュ取り出し
-Mesh* Renderer::GetMesh(const std::string& fileName, bool isRightHanded)
+std::shared_ptr<Mesh> Renderer::GetMesh(const std::string& fileName, bool isRightHanded)
 {
-    Mesh* m = nullptr;
     auto iter = mMeshes.find(fileName);
     if (iter != mMeshes.end())
     {
-        m = iter->second.get();
+        return iter->second;
     }
-    else
+
+    auto mesh = std::make_shared<Mesh>();
+    if (mesh->Load(fileName, this, isRightHanded))
     {
-        std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>();
-        
-        if (mesh->Load(fileName, this, isRightHanded))
-        {
-            m = mesh.get();
-            mMeshes.emplace(fileName, std::move(mesh));
-        }
-        else
-        {
-            m = nullptr;
-        }
+        mMeshes[fileName] = mesh;
+        return mesh;
     }
-    return m;
+
+    return nullptr;
 }
 
 

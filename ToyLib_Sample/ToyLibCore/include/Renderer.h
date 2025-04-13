@@ -67,10 +67,10 @@ public:
     
     
     // メッシュ登録
-    class Mesh* GetMesh(const std::string& fileName, bool isRightHanded = false);
+    std::shared_ptr<class Mesh> GetMesh(const std::string& fileName, bool isRightHanded = false);
     // テクスチャ登録
-    class Texture* GetTexture(const std::string& fileName);
-    class Texture* GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize);
+    std::shared_ptr<class Texture> GetTexture(const std::string& fileName);
+    std::shared_ptr<class Texture> GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize);
 
     // データ解放
     void UnloadData();
@@ -171,8 +171,8 @@ private:
 
     
     // アセット
-    std::unordered_map<std::string, std::unique_ptr<class Texture>> mTextures;
-    std::unordered_map<std::string, std::unique_ptr<class Mesh>> mMeshes;
+    std::unordered_map<std::string, std::shared_ptr<class Texture>> mTextures;
+    std::unordered_map<std::string, std::shared_ptr<class Mesh>> mMeshes;
 
     // コンポーネント
     std::vector<class VisualComponent*> mVisualComps;

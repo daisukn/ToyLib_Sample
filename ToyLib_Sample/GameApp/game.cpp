@@ -182,8 +182,8 @@ void Game::LoadData()
     
     auto groundMesh = GetRenderer()->GetMesh("Assets/ground2.x");
     auto va = groundMesh->GetVertexArray();
-    auto& vaList = groundMesh->GetVertexArray();
-    for (auto* va : vaList)
+    auto vaList = groundMesh->GetVertexArray();
+    for (auto va : vaList)
     {
         b->ComputeWorldTransform();
         const auto& polys = va->GetWorldPolygons(b->GetWorldTransform());

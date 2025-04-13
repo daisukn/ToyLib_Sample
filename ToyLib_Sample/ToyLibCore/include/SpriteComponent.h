@@ -11,7 +11,7 @@ public:
     void Draw() override;
 
     void SetScale(float w, float h) { mScaleWidth = w; mScaleHeight = h; }
-    void SetTexture(class Texture* tex) override;
+    void SetTexture(std::shared_ptr<class Texture> tex) override;
 
 private:
     float mScaleWidth;

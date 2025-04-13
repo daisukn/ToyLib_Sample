@@ -26,7 +26,7 @@ SpriteComponent::~SpriteComponent()
 {
 }
 
-void SpriteComponent::SetTexture(Texture* tex)
+void SpriteComponent::SetTexture(std::shared_ptr<Texture> tex)
 {
     VisualComponent::SetTexture(tex);
     mTexWidth = tex->GetWidth();

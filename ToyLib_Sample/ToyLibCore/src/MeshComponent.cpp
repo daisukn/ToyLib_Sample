@@ -66,7 +66,7 @@ void MeshComponent::Draw()
     mShader->SetMatrixUniform("uWorldTransform", mOwnerActor->GetWorldTransform());
 
     // Vertex Array
-    std::vector<VertexArray*> va = mMesh->GetVertexArray();
+    auto va = mMesh->GetVertexArray();
     for (auto v : va)
     {
         auto mat = mMesh->GetMaterial(v->GetTextureID());
@@ -106,7 +106,7 @@ void MeshComponent::Draw()
 }
 
 
-VertexArray* MeshComponent::GetVertexArray(int id) const
+std::shared_ptr<VertexArray> MeshComponent::GetVertexArray(int id) const
 {
     return mMesh->GetVertexArray()[id];
 }
@@ -126,7 +126,7 @@ void MeshComponent::DrawShadow()
     mShadowShader->SetMatrixUniform("uLightSpaceMatrix", light);
     
     // Vertex Arrayを描画
-    std::vector<VertexArray*> va = mMesh->GetVertexArray();
+    auto va = mMesh->GetVertexArray();
     for (auto v : va)
     {
         v->SetActive();

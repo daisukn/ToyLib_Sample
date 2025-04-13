@@ -28,7 +28,7 @@ public:
     void Update(float deltaTime) override;
     void Draw() override;
 
-    void SetTexture(class Texture* tex) override;
+    void SetTexture(std::shared_ptr<class Texture> tex) override;
     void CreateParticles(Vector3 pos, unsigned int num, float life, float partLife, float size, ParticleMode mode);
 
     void SetAddBlend(bool b) { mIsBlendAdd = b; }
@@ -39,7 +39,7 @@ public:
 private:
     void GenerateParts();
 
-    Texture* mTexture;
+    std::shared_ptr<class Texture> mTexture;
     Vector3 mPosition;
     std::vector<Particle> mParts;
 
