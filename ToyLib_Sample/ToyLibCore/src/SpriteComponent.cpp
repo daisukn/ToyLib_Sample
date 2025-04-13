@@ -1,43 +1,44 @@
 #include "SpriteComponent.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "LightingManager.h"
+#include "VertexArray.h"
 #include "Application.h"
 #include "Renderer.h"
 #include "Actor.h"
 #include <GL/glew.h>
 
 SpriteComponent::SpriteComponent(Actor* a, int drawOrder, VisualLayer layer)
-    : VisualComponent(a, drawOrder, layer)
-    , mScaleWidth(1.0f)
-    , mScaleHeight(1.0f)
-    , mTexWidth(0)
-    , mTexHeight(0)
+: VisualComponent(a, drawOrder, layer)
+, mScaleWidth(1.0f)
+, mScaleHeight(1.0f)
+, mTexWidth(0)
+, mTexHeight(0)
 {
     mDrawOrder = drawOrder;
-    mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::Sprite;
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Sprite");
+    mScreenWidth = mOwnerActor->GetApp()->GetRenderer()->GetScreenWidth();
+    mScreenHeight = mOwnerActor->GetApp()->GetRenderer()->GetScreenHeight();
 }
 
 SpriteComponent::~SpriteComponent()
 {
-    mOwnerActor->GetApp()->GetRenderer()->RemoveVisualComp(this);
 }
 
-void SpriteComponent::SetTexture(Texture* tex)
+void SpriteComponent::SetTexture(std::shared_ptr<Texture> tex)
 {
     VisualComponent::SetTexture(tex);
     mTexWidth = tex->GetWidth();
     mTexHeight = tex->GetHeight();
 }
 
-void SpriteComponent::Draw(Shader* shader)
+void SpriteComponent::Draw()
 {
 
     // 表示可能かチェック
     if (!mIsVisible || mTexture == nullptr) return;
-    //SDL_Log("SpriteComponent TextureID: %u", mTexture->GetTextureID());
-    //SDL_Log("Texture Size: %d x %d", mTexture->GetWidth(), mTexture->GetHeight());
-    
+   
     
     glDisable(GL_DEPTH_TEST);           // UIなどZ不要な場合
     glDepthMask(GL_FALSE);              // Zバッファ書き込みOFF
@@ -55,9 +56,18 @@ void SpriteComponent::Draw(Shader* shader)
 
     // シェーダー、テクスチャを設定
     mTexture->SetActive(2);
-    shader->SetTextureUniform("uTexture", 2);
-    shader->SetMatrixUniform("uWorldTransform", world);
+    
+    //shader->SetTextureUniform("uTexture", 2);
+    //shader->SetMatrixUniform("uWorldTransform", world);
 
+    mShader->SetActive();
+    Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
+    mShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
+    mShader->SetTextureUniform("uTexture", 2);
+    mShader->SetMatrixUniform("uWorldTransform", world);
+    mLightingManager->ApplyToShader(mShader, view);
+
+    mSpriteVerts->SetActive();
     // 描画
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     

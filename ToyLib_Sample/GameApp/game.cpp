@@ -71,11 +71,11 @@ void Game::InitGame()
     particleActor->SetPosition(Vector3(-15, 0, 15));
     auto particleComp = particleActor->CreateComponent<ParticleComponent>();
     particleComp->SetTexture(GetRenderer()->GetTexture("Assets/fire.png"));
-    particleComp->CreateParticles(Vector3(0, 2, 0),
+    particleComp->CreateParticles(Vector3(0, 0, 0),
                                   10,
                                   1000,
-                                  0.5,
-                                  1.5,
+                                  0.3f,
+                                  5.5,
                                   ParticleComponent::P_SMOKE);
     particleComp->SetAddBlend(true);
 }
@@ -182,8 +182,8 @@ void Game::LoadData()
     
     auto groundMesh = GetRenderer()->GetMesh("Assets/ground2.x");
     auto va = groundMesh->GetVertexArray();
-    auto& vaList = groundMesh->GetVertexArray();
-    for (auto* va : vaList)
+    auto vaList = groundMesh->GetVertexArray();
+    for (auto va : vaList)
     {
         b->ComputeWorldTransform();
         const auto& polys = va->GetWorldPolygons(b->GetWorldTransform());
@@ -192,7 +192,7 @@ void Game::LoadData()
     
     // スカイドーム
     auto skyActor = CreateActor<Actor>();
-    auto skyComp = skyActor->CreateComponent<SkyDomeComponent>();
+    skyActor->CreateComponent<SkyDomeComponent>();
 
 }
 

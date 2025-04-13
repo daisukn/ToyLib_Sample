@@ -2,6 +2,7 @@
 #include "SkyDomeMeshGenerator.h"
 #include "VertexArray.h"
 #include "Renderer.h"
+#include "LightingManager.h"
 #include "Actor.h"
 #include "Application.h"
 #include "Renderer.h"
@@ -9,15 +10,16 @@
 
 SkyDomeComponent::SkyDomeComponent(Actor* a)
 : Component(a)
-, mTime(0.0f)
-, mTimeSpeed(0.002f)
+, mTime(0.5f)
+, mTimeSpeed(0.0001f)
 , mPastDay(0)
 , mSunDir(Vector3::UnitY)
 , mWeatherType(WeatherType::CLEAR)
 , mIsAutoTimeTick(true)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
-    mOwnerActor->GetApp()->GetRenderer()->SetSkyDome(this);
+    mOwnerActor->GetApp()->GetRenderer()->RegisterSkyDome(this);
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("SkyDome");
 }
 
 void SkyDomeComponent::SetTime(float t) {
@@ -28,12 +30,11 @@ void SkyDomeComponent::SetSunDirection(const Vector3& dir) {
     mSunDir = dir;
 }
 
-//float gTimeOfDay = 0.f;
 
-void SkyDomeComponent::Draw(Shader* shader)
+void SkyDomeComponent::Draw()
 {
 
-    if (!mSkyVAO || !shader) return;
+    if (!mSkyVAO || !mShader) return;
     
 
     Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
@@ -45,18 +46,17 @@ void SkyDomeComponent::Draw(Shader* shader)
     Matrix4 mvp = model * view * proj;
 
 
-    shader->SetActive();
-    shader->SetMatrixUniform("uMVP", mvp);
+    mShader->SetActive();
+    mShader->SetMatrixUniform("uMVP", mvp);
     
     float t = fmod(SDL_GetTicks() / 1000.0f, 60.0f) / 60.0f; // 0〜1で60秒周期
-    shader->SetFloatUniform("uTime", t);
-    shader->SetIntUniform("uWeatherType", static_cast<int>(mWeatherType));
-    shader->SetFloatUniform("uTimeOfDay", fmod(mTime, 1.0f)); // 0.0〜1.0
+    mShader->SetFloatUniform("uTime", t);
+    mShader->SetIntUniform("uWeatherType", static_cast<int>(mWeatherType));
+    mShader->SetFloatUniform("uTimeOfDay", fmod(mTime, 1.0f)); // 0.0〜1.0
     
 
-    shader->SetVectorUniform("uSunDir", mSunDir);
-    //shader->SetVectorUniform("uSunDir", Vector3::UnitY); // -Z方向など
-    
+    mShader->SetVectorUniform("uSunDir", mSunDir);
+   
     
     glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE); // Z書き込みを無効
@@ -83,7 +83,7 @@ void SkyDomeComponent::Update(float deltaTime)
     if (mPastDay != static_cast<int>(mTime))
     {
         mPastDay = static_cast<int>(mTime);
-        RandomizeWeather();
+        //RandomizeWeather();
     }
     
     ApplyTime();
@@ -131,46 +131,45 @@ void SkyDomeComponent::ApplyTime()
 
     // 軌道の定義：XZ平面で +X からスタート、+Z に向かって傾く円弧
     // 例えば、XY平面ではなく XZ平面に投影しながら、Yも上下に
-   mSunDir = Vector3(
+    mSunDir = Vector3(
         -cosf(angle),        // +X方向から -X方向へ移動
         -sinf(angle),       // 太陽が昇って沈む（Y軸）
         0.5f * sin(angle)  // 南方向に傾ける（+Z成分）
     );
-   mSunDir.Normalize();
+    mSunDir.Normalize();
 
     // セット（ディレクショナルライトとシェーダー両方に）
-    mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightPosition(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
-   
-  // std::cout << "time = " << fmod(mTime, 1.0f) << std::endl;
+    mLightingManager->SetLightDirection(Vector3(-mSunDir.x, -mSunDir.y, -mSunDir.z), Vector3::Zero);
    
    
-   float timeOfDay = fmod(mTime, 1.0f);
+    float timeOfDay = fmod(mTime, 1.0f);
 
-   // 昼と夜の割合（昼：0.0〜1.0、夜：1.0〜0.0）
-   float dayStrength = SmoothStep(0.15f, 0.25f, timeOfDay) *
+    // 昼と夜の割合（昼：0.0〜1.0、夜：1.0〜0.0）
+    float dayStrength = SmoothStep(0.15f, 0.25f, timeOfDay) *
                        (1.0f - SmoothStep(0.75f, 0.85f, timeOfDay));
-   float nightStrength = 1.0f - dayStrength;
+    float nightStrength = 1.0f - dayStrength;
 
-   // 天気による減衰（晴れ：1.0 → 嵐：0.3）
-   float weatherDim = 1.0f;
-   switch (mWeatherType)
-   {
-       case WeatherType::CLEAR:  weatherDim = 1.0f; break;
-       case WeatherType::CLOUDY: weatherDim = 0.7f; break;
-       case WeatherType::RAIN:   weatherDim = 0.5f; break;
-       case WeatherType::STORM:  weatherDim = 0.3f; break;
-       case WeatherType::SNOW:   weatherDim = 0.6f; break;
-   }
+    // 天気による減衰（晴れ：1.0 → 嵐：0.3）
+    float weatherDim = 1.0f;
+    switch (mWeatherType)
+    {
+        case WeatherType::CLEAR:  weatherDim = 1.0f; break;
+        case WeatherType::CLOUDY: weatherDim = 0.7f; break;
+        case WeatherType::RAIN:   weatherDim = 0.5f; break;
+        case WeatherType::STORM:  weatherDim = 0.3f; break;
+        case WeatherType::SNOW:   weatherDim = 0.6f; break;
+    }
 
-   // ライトの色（太陽または月）を補間し、天気で減衰
-   Vector3 sunColor  = Vector3(1.0f, 0.95f, 0.8f);
-   Vector3 moonColor = Vector3(0.3f, 0.4f, 0.6f);
-   Vector3 finalLightColor = (sunColor * dayStrength + moonColor * nightStrength) * weatherDim;
-   mOwnerActor->GetApp()->GetRenderer()->SetDirectionalLightColor(finalLightColor);
+    // ライトの色（太陽または月）を補間し、天気で減衰
+    Vector3 sunColor  = Vector3(1.0f, 0.95f, 0.8f);
+    Vector3 moonColor = Vector3(0.3f, 0.4f, 0.6f);
+    Vector3 finalLightColor = (sunColor * dayStrength + moonColor * nightStrength) * weatherDim;
+    mLightingManager->SetLightDiffuseColor(finalLightColor);
 
-   // Ambientカラーも補間しつつ、天気で減衰
-   Vector3 dayAmbient   = Vector3(0.7f, 0.7f, 0.7f);
-   Vector3 nightAmbient = Vector3(0.1f, 0.15f, 0.2f);
-   Vector3 finalAmbient = (dayAmbient * dayStrength + nightAmbient * nightStrength) * weatherDim;
-   mOwnerActor->GetApp()->GetRenderer()->SetAmbientLightColor(finalAmbient);
+
+    // Ambientカラーも補間しつつ、天気で減衰
+    Vector3 dayAmbient   = Vector3(0.7f, 0.7f, 0.7f);
+    Vector3 nightAmbient = Vector3(0.1f, 0.15f, 0.2f);
+    Vector3 finalAmbient = (dayAmbient * dayStrength + nightAmbient * nightStrength) * weatherDim;
+    mLightingManager->SetAmbientColor(finalAmbient);
 }

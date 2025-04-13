@@ -19,7 +19,7 @@ public:
 
     void SetTime(float t);
     void SetSunDirection(const Vector3& dir);
-    void Draw(class Shader* shader);
+    void Draw();
     void Update(float deltaTime) override;
     
     WeatherType GetWeatherType() const { return mWeatherType; }
@@ -27,8 +27,13 @@ public:
     
     void SetAutoTimeTick(const bool b) { mIsAutoTimeTick = b; }
     
+    void SetLightingManager(std::shared_ptr<class LightingManager> manager) { mLightingManager = manager; }
+
+    
 private:
     std::unique_ptr<class VertexArray> mSkyVAO;
+    std::shared_ptr<class LightingManager> mLightingManager;
+    std::shared_ptr<class Shader> mShader;
     float mTime;
     float mTimeSpeed;
     int mPastDay;

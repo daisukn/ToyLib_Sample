@@ -438,7 +438,7 @@ void Mesh::CreateMeshBone(const aiMesh* m)
     }
     
     
-    mVertexArray.push_back(std::make_unique<VertexArray>(
+    mVertexArray.push_back(std::make_shared<VertexArray>(
             static_cast<unsigned int>(vertexBuffer.size()) / 3,
             vertexBuffer.data(),
             normalBuffer.data(),
@@ -449,12 +449,7 @@ void Mesh::CreateMeshBone(const aiMesh* m)
             indexBuffer.data()) );
     
     mVertexArray[mVertexArray.size()-1]->SetTextureID(m->mMaterialIndex);
-    mVertexArrayPtr.push_back(mVertexArray[mVertexArray.size()-1].get());
-    
     LoadAnimation();
-    
-    
-
 }
 
 // メッシュをロード（Boneなし）
@@ -499,7 +494,7 @@ void Mesh::CreateMesh(const aiMesh* m)
         indexBuffer.push_back(Face.mIndices[2]);
     }
 
-    mVertexArray.push_back(std::make_unique<VertexArray>(
+    mVertexArray.push_back(std::make_shared<VertexArray>(
             static_cast<unsigned int>(vertexBuffer.size()) / 3,
             vertexBuffer.data(),
             normalBuffer.data(),
@@ -508,7 +503,6 @@ void Mesh::CreateMesh(const aiMesh* m)
             indexBuffer.data()) );
     
     mVertexArray[mVertexArray.size()-1]->SetTextureID(m->mMaterialIndex);
-    mVertexArrayPtr.push_back(mVertexArray[mVertexArray.size()-1].get());
     
     
 }
@@ -612,10 +606,10 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
                     ? aiTex->mWidth // compressed
                     : aiTex->mWidth * aiTex->mHeight * 4; // uncompressed (RGBA8888)
                     
-                    Texture* tex = r->GetEmbeddedTexture(key, imageData, imageSize);
+                    auto tex = r->GetEmbeddedTexture(key, imageData, imageSize);
                     if (tex)
                     {
-                        mat->SetDiffuseMap(std::shared_ptr<Texture>(tex, [](Texture*) {}));
+                        mat->SetDiffuseMap(tex);
                     }
                 }
             }
@@ -623,10 +617,10 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
             {
                 // 通常のファイルから読み込む
                 std::string textureFile = ASSETS_PATH + texPath;
-                Texture* tex = r->GetTexture(textureFile);
+                auto tex = r->GetTexture(textureFile);
                 if (tex)
                 {
-                    mat->SetDiffuseMap(std::shared_ptr<Texture>(tex, [](Texture*) {}));
+                    mat->SetDiffuseMap(tex);
                 }
             }
         }

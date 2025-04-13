@@ -1,65 +1,56 @@
 #pragma once
 
-#include "Component.h"
+#include "VisualComponent.h"
 #include "Animation.h"
 #include "MathUtils.h"
+#include <memory>
 //#include <cstddef>
 
-enum MeshType
-{
-    MESH_NORMAL,
-    MESH_BG,
-    MESH_EFFECT
-};
-
-// Meshを管理するComponent（Rendererから呼ばれる）
-class MeshComponent : public Component
+// Meshを管理するComponent
+class MeshComponent : public VisualComponent
 {
 public:
-    MeshComponent(class Actor* a, bool isSkeletal = false, MeshType type = MESH_NORMAL);
+    MeshComponent(class Actor* a, int drawOrder = 100, VisualLayer layer = VisualLayer::Effect3D, bool isSkeletal = false);
     virtual ~MeshComponent();
         
     // 描画 override
-    virtual void Draw(class Shader* s);
-    virtual void SetMesh(class Mesh* m) { mMesh = m; }              // メッシュセット
+    virtual void Draw();
+    virtual void DrawShadow();
+    
+    virtual void SetMesh(std::shared_ptr<class Mesh> m) { mMesh = m; }              // メッシュセット
     void SetTextureIndex(unsigned int index) { mTextureIndex = index; }    // テクスチャGetter
 
-    void SetVisible(bool visible) { mIsVisible = visible; }
-    bool GetVisible() const { return mIsVisible; }
+    //void SetVisible(bool visible) { mIsVisible = visible; }
+    //bool GetVisible() const { return mIsVisible; }
     
     bool GetIsSkeletal() const { return mIsSkeletal; }
-    class VertexArray* GetVertexArray(int id) const;
+    std::shared_ptr<VertexArray> GetVertexArray(int id) const;
     
     void SetToonRender(const bool t, const float f = 1.05f) { mIsToon = t; mContourFactor = f; }
     void SetContourFactor(const float f) { mContourFactor = f; }
     
     bool GetToon() const { return mIsToon; }
     
-    void SetBlendAdd(bool b) { mIsBlendAdd = b; }
-    bool GetBlendAdd() const { return mIsBlendAdd; }
-    
-    
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
-    virtual void SetAnimID(const unsigned int animID, const PlayMode mode){}
-    
-    void DrawShadow(class Shader* shader, const Matrix4& lightSpaceMatrix);
+    virtual void SetAnimID(const unsigned int animID, const PlayMode mode) {}
     
 protected:
-    class Mesh* mMesh;      // メッシュ
+    std::shared_ptr<class Mesh>  mMesh;      // メッシュ
     unsigned int mTextureIndex;    // TextureID
     
 
-    bool mIsVisible;
+    //bool mIsVisible;
     bool mIsSkeletal;
+
+    std::shared_ptr<class Texture> mShadowMapTexture;
     
-    MeshType mMeshType;
+    std::shared_ptr<class LightingManager> mLightingManger;
+    std::shared_ptr<class Shader> mShader;
+    std::shared_ptr<class Shader> mShadowShader;
     
     
     // 輪郭強調
     bool mIsToon;
     float mContourFactor;
-    
-    // 加算合成するか
-    bool mIsBlendAdd;
 };
 

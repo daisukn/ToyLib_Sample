@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Shader.h"
+#include "LightingManager.h"
 #include "SpriteComponent.h"
 #include "Texture.h"
 #include "VertexArray.h"
@@ -10,13 +11,10 @@
 #include "BillboardComponent.h"
 #include "VisualComponent.h"
 #include "SkyDomeComponent.h"
-
 #include "WireframeComponent.h"
-
 #include <GL/glew.h>
 #include <algorithm>
 #include <string>
-
 
 // コンストラクタ
 Renderer::Renderer()
@@ -25,17 +23,8 @@ Renderer::Renderer()
 , mScreenHeight(0.f)
 , mIsFullScreen(false)
 , mPerspectiveFOV(45.f)
-, mCameraPosition(Vector3(0.f, 0.f, 0.f))
 , mIsDebugMode(false)
 , mClearColor(Vector3(0.2f, 0.5f, 0.8f))
-, mAmbientColor(Vector3(0.7f, 0.7f, 0.7f))
-, mDirLightPosition(Vector3(20, 20, -5))
-, mDirLightTarget(Vector3(0, 0, 0))
-, mDiffuseColor(Vector3(0.5f, 0.5f, 0.5f))
-, mSpecColor(Vector3(0.1f, 0.1f, 0.1f))
-, mFogMaxDist(100.f)
-, mFogMinDist(0.001f)
-, mFogColor(Vector3(0.2f, 0.5f, 0.8f))
 , mShadowNear(10.f)
 , mShadowFar(100)
 , mShadowOrthoWidth(100.f)
@@ -45,8 +34,9 @@ Renderer::Renderer()
 , mWindow(nullptr)
 , mGLContext(nullptr)
 , mShaderPath("ToyLibCore/Shaders/")
-, mRainAmount(0.f)
+, mRainAmount(0.5f)
 , mFogAmount(0.f)
+, mSnowAmount(0.5f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -55,7 +45,6 @@ Renderer::Renderer()
 Renderer::~Renderer()
 {
 }
-
 
 // ウィンドウ生成とGL初期化
 bool Renderer::Initialize()
@@ -89,8 +78,6 @@ bool Renderer::Initialize()
         std::cout << "Unable to create window" << std::endl;
         return false;
     }
-    
-    
     // OpenGL コンテキスト生成
     mGLContext = SDL_GL_CreateContext(mWindow);
     
@@ -102,14 +89,14 @@ bool Renderer::Initialize()
         return false;
     }
    
+    // ライティングマネージャ生成
+    mLightingManager = std::make_shared<LightingManager>();
     // シェーダー のロードなどはここでやる
     LoadShaders();
+    // スプライト用頂点バッファ
     CreateSpriteVerts();
-    
-    // レインエフェクト用の初期化
+    // オーバーレイエフェクト用頂点バッファ
     CreateFullScreenQuad();
-
-    
     // シャドウマッピング初期化
     InitializeShadowMapping();
     // クリアカラーのデフォルト値
@@ -145,103 +132,23 @@ void Renderer::Draw()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     DrawSky();
-    DrawBackGround();
     DrawDebugger();
     DrawVisualLayer(VisualLayer::Background2D);
-    DrawMesh();
     DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
     
-    DrawRainOverlay();
-    DrawFogOverlay();
+    DrawWeatherOverlay();
     
     DrawVisualLayer(VisualLayer::UI);
 
     SDL_GL_SwapWindow(mWindow);
 }
 
-// 背景オブジェクトの描画
-void Renderer::DrawBackGround()
-{
-   
-    
-    // 背景用メッシュ描画
-    
-    Shader* shader = mMeshShader.get();
-    
-    shader->SetActive();
-
-    SetLightUniforms(shader);
-
-    for (auto bg : mBgMesh)
-    {
-        if (bg->GetVisible())
-        {
-            shader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            shader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-            shader->SetTextureUniform("uShadowMap", 1);
-            shader->SetFloatUniform("uShadowBias", 0.005);
-            shader->SetBooleanUniform("uUseToon", bg->GetToon()); // トゥーンON/OFF
-
-            bg->Draw(shader);
-        }
-    }
-    
-}
-
 void Renderer::DrawSky()
 {
     if (!mSkyDomeComp) return;
-    mSkyDomeComp->Draw(mSkyShader_Clear.get());
+    mSkyDomeComp->Draw();
 
-}
-
-// メッシュの描画
-void Renderer::DrawMesh()
-{
-
-    mShadowMapTexture->SetActive(1); // 共通シャドウマップ用テクスチャ
-
-
-    // 通常メッシュ描画（スキンなし）
-    for (auto mc : mMeshComps)
-    {
-        if (!mc->GetVisible()) continue;
-
-        mMeshShader->SetActive();
-
-        // ユニフォーム設定
-        mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-        mMeshShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-        mMeshShader->SetTextureUniform("uShadowMap", 1);
-        mMeshShader->SetFloatUniform("uShadowBias", 0.005);
-        mMeshShader->SetBooleanUniform("uUseToon", mc->GetToon()); // トゥーンON/OFF
-
-        SetLightUniforms(mMeshShader.get());
-
-        mc->Draw(mMeshShader.get());
-    }
-    
-    // スキンメッシュ描画
-    for (auto sk : mSkeletalMeshes)
-    {
-        if (!sk->GetVisible()) continue;
-
-        mSkinnedShader->SetActive();
-        mSkinnedShader->SetActive();
-
-        // ユニフォーム設定
-        mSkinnedShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-        mSkinnedShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-        mSkinnedShader->SetTextureUniform("uShadowMap", 1);
-        mSkinnedShader->SetFloatUniform("uShadowBias", 0.005);
-        mSkinnedShader->SetBooleanUniform("uUseToon", sk->GetToon()); // トゥーンON/OFF
-        SetLightUniforms(mSkinnedShader.get());
-
-        sk->Draw(mSkinnedShader.get());
-    }
-    
-    glActiveTexture(GL_TEXTURE0);
 }
 
 void Renderer::DrawDebugger()
@@ -250,31 +157,15 @@ void Renderer::DrawDebugger()
     if (!mIsDebugMode) return;
     
     // デバッガー用の描画
-    mSolidShader->SetActive();
-    mSolidShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    mSolidShader->SetVectorUniform("uSolColor", Vector3(1.f, 1.f, 1.f));
+    mShaders["Solid"]->SetActive();
+    mLightingManager->ApplyToShader(mShaders["Solid"], mViewMatrix);
+    mShaders["Solid"]->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
+    mShaders["Solid"]->SetVectorUniform("uSolColor", Vector3(1.f, 1.f, 1.f));
     // Update lighting uniforms
-    SetLightUniforms(mSolidShader.get());
     for (auto wireframe : mWireframeComps)
     {
-        wireframe->Draw(mSolidShader.get());
+        wireframe->Draw(mShaders["Solid"].get());
     }
-}
-
-void Renderer::DrawEffect()
-{
-    // エフェクトメッシュ描画
-    mMeshShader->SetActive();
-    mMeshShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    SetLightUniforms(mMeshShader.get());
-    for (auto mesh : mEffectMesh)
-    {
-        if (mesh->GetVisible())
-        {
-            mesh->Draw(mMeshShader.get());
-        }
-    }
-    
 }
 
 // シェーダー 読み込み
@@ -283,147 +174,94 @@ bool Renderer::LoadShaders()
     std::string vShaderName;
     std::string fShaderName;
 
-    // スプライト用シェーダー生成
-    mSpriteShader = std::make_unique<Shader>();
+    
+    // 天気シェーダー（統合版）
+    vShaderName = mShaderPath + "WeatherScreen.vert";
+    fShaderName = mShaderPath + "WeatherScreen.frag";
+    mShaders["WeatherOverlay"] = std::make_shared<Shader>();
+    if (!mShaders["WeatherOverlay"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // メッシュ用シェーダー
+    vShaderName = mShaderPath + "Phong.vert";
+    fShaderName = mShaderPath + "Toon.frag";
+    mShaders["Mesh"] = std::make_shared<Shader>();
+    if (!mShaders["Mesh"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // スキンメッシュ用シェーダー
+    vShaderName = mShaderPath + "Skinned.vert";
+    fShaderName = mShaderPath + "Toon.frag";
+    mShaders["Skinned"] = std::make_shared<Shader>();
+    if (!mShaders["Skinned"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // スプライト用シェーダー
     vShaderName = mShaderPath +"Sprite.vert";
     fShaderName = mShaderPath + "Sprite.frag";
-    if (!mSpriteShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    mShaders["Sprite"] = std::make_shared<Shader>();
+    if (!mShaders["Sprite"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
-
-    // ビューマトリックス、プロジェクションマトリックス
     Matrix4 viewProj = Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight);
-    mSpriteShader->SetMatrixUniform("uViewProj", viewProj);
-
-    // Billboard用シェーダー
-    mBillboardShader = std::make_unique<Shader>();
+    mShaders["Sprite"]->SetMatrixUniform("uViewProj", viewProj);
+    // ビルボード用シェーダー
     vShaderName = mShaderPath + "Billboard.vert";
     fShaderName = mShaderPath + "Billboard.frag";
-    if (!mBillboardShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    mShaders["Billboard"] = std::make_shared<Shader>();
+    if (!mShaders["Billboard"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
-    
-    // Particle用シェーダー
-    mParticleShader = std::make_unique<Shader>();
+    // パーティクル
     vShaderName = mShaderPath + "Billboard.vert";
     fShaderName = mShaderPath + "Particle.frag";
-    if (!mParticleShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    mShaders["Particle"] = std::make_shared<Shader>();
+    if (!mShaders["Particle"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
-    
-    // メッシュ用シェーダー生成
-    mMeshShader = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "Phong.vert";
-    fShaderName = mShaderPath + "Toon.frag";
-    if (!mMeshShader->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    
-    // メッシュ用シェーダー(Toon)生成
-    mMeshShaderToon = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "Phong.vert";
-    fShaderName = mShaderPath + "Toon.frag";
-    if (!mMeshShaderToon->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    
-    // 背景用シェーダー生成
-    mBackGroundShader = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "BasicMesh.vert";
-    fShaderName = mShaderPath + "BasicMesh.frag";
-    if (!mBackGroundShader->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    
-    // スキンメッシュ用シェーダー
-    mSkinnedShader = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "Skinned.vert";
-    fShaderName = mShaderPath + "Toon.frag";
-    if (!mSkinnedShader->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    
-    // スキンメッシュ用シェーダー(Toon)
-    mSkinnedShaderToon = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "Skinned.vert";
-    fShaderName = mShaderPath + "Toon.frag";
-    if (!mSkinnedShaderToon->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    
-    // ワイヤフレーム用　単色シェーダー生成
-    mSolidShader = std::make_unique<Shader>();
+    // ソリッドカラー
     vShaderName = mShaderPath + "BasicMesh.vert";
     fShaderName = mShaderPath + "SolidColor.frag";
-    if (!mSolidShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    mShaders["Solid"] = std::make_shared<Shader>();
+    if (!mShaders["Solid"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
-    
-    // シャドウマッピング透けるタルメッシュ用
-    mShadowSkinnedShader = std::make_unique<Shader>();
+    // シャドウマップ用（Skinned）
     vShaderName = mShaderPath + "ShadowMapping_Skinned.vert";
     fShaderName = mShaderPath + "ShadowMapping.frag";
-    if (!mShadowSkinnedShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    mShaders["ShadowSkinned"] = std::make_shared<Shader>();
+    if (!mShaders["ShadowSkinned"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
-    
-    // シャドウマップメッシュ用
-    mShadowMeshShader = std::make_unique<Shader>();
+    // シャドウマップ用（Mesh）
     vShaderName = mShaderPath + "ShadowMapping_Mesh.vert";
     fShaderName = mShaderPath + "ShadowMapping.frag";
-    if (!mShadowMeshShader->Load(vShaderName.c_str(), fShaderName.c_str()))
+    mShaders["ShadowMesh"] = std::make_shared<Shader>();
+    if (!mShaders["ShadowMesh"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
-    
-    // 天気シェーダー（晴れ）
-    mSkyShader_Clear = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "Weather_Clear.vert";
-    fShaderName = mShaderPath + "Weather_Clear.frag";
-    if (!mSkyShader_Clear->Load(vShaderName.c_str(), fShaderName.c_str()))
+    // スカイドーム
+    vShaderName = mShaderPath + "WeatherDome.vert";
+    fShaderName = mShaderPath + "WeatherDome.frag";
+    mShaders["SkyDome"] = std::make_shared<Shader>();
+    if (!mShaders["SkyDome"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
         return false;
     }
-
-    
     // ビューマトリックス、プロジェクションマトリックス（デフォルト値）
     mViewMatrix = Matrix4::CreateLookAt(Vector3(0, 0.5f, -3), Vector3(0, 0, 10), Vector3::UnitY);
     mProjectionMatrix = Matrix4::CreatePerspectiveFOV(Math::ToRadians(mPerspectiveFOV), mScreenWidth, mScreenHeight, 1.0f, 2000.0f);
 
     return true;
-}
-
-// ライト設定
-void Renderer::SetLightUniforms(Shader* shader)
-{
-    // カメラポジション（ビュー行列の逆行列から取得）
-    Matrix4 invView = mViewMatrix;
-    invView.Invert();
-    shader->SetVectorUniform("uCameraPos", invView.GetTranslation());
-
-    // アンビエントライト
-    shader->SetVectorUniform("uAmbientLight", mAmbientColor);
-
-    // ディレクショナルライト（方向・色）
-    mDirLight.Direction = Vector3::Normalize(mDirLightTarget - mDirLightPosition);
-    shader->SetVectorUniform("uDirLight.mDirection", mDirLight.Direction);
-    shader->SetVectorUniform("uDirLight.mDiffuseColor", mDiffuseColor);
-    shader->SetVectorUniform("uDirLight.mSpecColor", mSpecColor);
-
-    // フォグ情報
-    shader->SetFloatUniform("uFoginfo.maxDist", mFogMaxDist);
-    shader->SetFloatUniform("uFoginfo.minDist", mFogMinDist);
-    shader->SetVectorUniform("uFoginfo.color", mFogColor);
 }
 
 void Renderer::AddVisualComp(VisualComponent* comp)
@@ -463,16 +301,11 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
     }
     
     
-    
-    mSpriteVerts->SetActive();       // VAO
-
     for (auto comp : mVisualComps)
     {
         if (comp->IsVisible() && comp->GetLayer() == layer)
         {
-            auto s = GetVisualShader(comp);
-            SetLightUniforms(s);
-            comp->Draw(s);
+            comp->Draw();
         }
     }
 
@@ -480,96 +313,46 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
     glDepthMask(GL_TRUE);
 }
 
-class Shader* Renderer::GetVisualShader(const VisualComponent* visual)
-{
-    Shader* s = nullptr;
-    switch (visual->GetVisualType())
-    {
-        case VisualType::NoAssigned:
-            break;
-        case VisualType::Sprite:
-            mSpriteShader->SetActive();
-            mSpriteShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
-            s = mSpriteShader.get();
-            break;
-        case VisualType::Billboard:
-            mBillboardShader->SetActive();
-            mBillboardShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            s = mBillboardShader.get();
-            break;
-        case VisualType::Particle:
-            mParticleShader->SetActive();
-            mParticleShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            s = mParticleShader.get();
-            break;
-        case VisualType::ShadowSprite:
-            mSpriteShader->SetActive();
-            mSpriteShader->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-            s = mSpriteShader.get();
-            break;
-
-        default:
-            break;
-    }
-    
-    return s;
-}
-
 
 
 // テクスチャ取り出し
-Texture* Renderer::GetTexture(const std::string &fileName)
+std::shared_ptr<Texture> Renderer::GetTexture(const std::string &fileName)
 {
- 
-    Texture* tex = nullptr;
     auto iter = mTextures.find(fileName);
     if (iter != mTextures.end())
     {
-        tex = iter->second.get();
+        return iter->second; // すでにあるのでそれを返す
     }
     else
     {
-        std::unique_ptr<Texture> t = std::make_unique<Texture>();
-        if(t->Load(fileName))
+        auto tex = std::make_shared<Texture>();
+        if (tex->Load(fileName))
         {
-            tex = t.get();
-            mTextures.emplace(fileName, std::move(t));
-        }
-        else
-        {
-            tex = nullptr;
+            mTextures[fileName] = tex;
+            return tex;
         }
     }
-    return tex;
+    return nullptr; // 失敗したら null
 }
 
 // 埋め込みテクスチャ
-Texture* Renderer::GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize)
+std::shared_ptr<Texture> Renderer::GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize)
 {
-    Texture* tex = nullptr;
-
     auto iter = mTextures.find(nameKey);
     if (iter != mTextures.end())
     {
-        tex = iter->second.get();
+        return iter->second;
     }
-    else
+
+    auto tex = std::make_shared<Texture>();
+    if (tex->LoadFromMemory(data, static_cast<unsigned int>(dataSize)))
     {
-        std::unique_ptr<Texture> t = std::make_unique<Texture>();
-        if (t->LoadFromMemory(data, static_cast<unsigned int>(dataSize)))
-        {
-            tex = t.get();
-            mTextures.emplace(nameKey, std::move(t));
-        }
-        else
-        {
-            tex = nullptr;
-        }
+        mTextures[nameKey] = tex;
+        return tex;
     }
 
-    return tex;
+    return nullptr;
 }
-
 //スプライト用ポリゴン
 void Renderer::CreateSpriteVerts()
 {
@@ -587,106 +370,28 @@ void Renderer::CreateSpriteVerts()
         2, 1, 0,
         0, 3, 2
     };
-    mSpriteVerts = std::make_unique<VertexArray>((float*)vertices, (unsigned int)4, (unsigned int*)indices, (unsigned int)6);
+    mSpriteVerts = std::make_shared<VertexArray>((float*)vertices, (unsigned int)4, (unsigned int*)indices, (unsigned int)6);
 }
 
 // メッシュ取り出し
-Mesh* Renderer::GetMesh(const std::string& fileName, bool isRightHanded)
+std::shared_ptr<Mesh> Renderer::GetMesh(const std::string& fileName, bool isRightHanded)
 {
-    Mesh* m = nullptr;
     auto iter = mMeshes.find(fileName);
     if (iter != mMeshes.end())
     {
-        m = iter->second.get();
+        return iter->second;
     }
-    else
+
+    auto mesh = std::make_shared<Mesh>();
+    if (mesh->Load(fileName, this, isRightHanded))
     {
-        std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>();
-        
-        if (mesh->Load(fileName, this, isRightHanded))
-        {
-            m = mesh.get();
-            mMeshes.emplace(fileName, std::move(mesh));
-        }
-        else
-        {
-            m = nullptr;
-        }
+        mMeshes[fileName] = mesh;
+        return mesh;
     }
-    return m;
+
+    return nullptr;
 }
 
-// メッシュコンポーネント登録
-void Renderer::AddMeshComp(MeshComponent* mesh)
-{
-    if (mesh->GetIsSkeletal())
-    {
-        SkeletalMeshComponent* sk = static_cast<SkeletalMeshComponent*>(mesh);
-        mSkeletalMeshes.emplace_back(sk);
-    }
-    else
-    {
-
-        mMeshComps.emplace_back(mesh);
-    }
- }
-
-
-// メッシュコンポーネント削除
-void Renderer::RemoveMeshComp(MeshComponent* mesh)
-{
-    if (mesh->GetIsSkeletal())
-    {
-        SkeletalMeshComponent* sk = static_cast<SkeletalMeshComponent*>(mesh);
-        auto iter = std::find(mSkeletalMeshes.begin(), mSkeletalMeshes.end(), sk);
-        if (iter != mSkeletalMeshes.end())
-        { // 要素が見つかった場合のみ削除
-            mSkeletalMeshes.erase(iter);
-        }
-    }
-    else
-    {
-        auto iter = std::find(mMeshComps.begin(), mMeshComps.end(), mesh);
-        if (iter != mMeshComps.end())
-        { // 要素が見つかった場合のみ削除
-            mMeshComps.erase(iter);
-        }
-    }
-}
-
-// BGメッシュコンポーネント登録
-void Renderer::AddBackGroudMeshComp(MeshComponent* mesh)
-{
-    mBgMesh.emplace_back(mesh);
-}
-
-
-// BGメッシュコンポーネント削除
-void Renderer::RemoveBackGroudMeshComp(MeshComponent* mesh)
-{
-    auto iter = std::find(mBgMesh.begin(), mBgMesh.end(), mesh);
-    if (iter != mBgMesh.end())
-    { // 要素が見つかった場合のみ削除
-        mBgMesh.erase(iter);
-    }
- 
-}
-
-// エフェクトメッシュコンポーネント登録
-void Renderer::AddEffectMeshComp(MeshComponent* mesh)
-{
-    mEffectMesh.emplace_back(mesh);
-}
-
-// エフェクトメッシュコンポーネント削除
-void Renderer::RemoveEffectMeshComp(MeshComponent* mesh)
-{
-    auto iter = std::find(mEffectMesh.begin(), mEffectMesh.end(), mesh);
-    if (iter != mEffectMesh.end())
-    { // 要素が見つかった場合のみ削除
-        mEffectMesh.erase(iter);
-    }
-}
 
 // デバッガーコンポーネント登録
 void Renderer::AddWireframeComp(WireframeComponent* wf)
@@ -711,7 +416,7 @@ void Renderer::UnloadData()
     mTextures.clear();
     // メッシュ削除
     mMeshes.clear();
-    mSkeletalMeshes.clear();
+    mVisualComps.clear();
 }
 
 // シャドウマッピング
@@ -723,18 +428,18 @@ bool Renderer::InitializeShadowMapping()
     glBindFramebuffer(GL_FRAMEBUFFER, mShadowFBO);
 
     // シャドウ用テクスチャ生成
-    mShadowMapTexture = std::make_unique<Texture>();
+    mShadowMapTexture = std::make_shared<Texture>();
     mShadowMapTexture->CreateShadowMap(mShadowFBOWidth, mShadowFBOHeight);
 
     // FBOにアタッチ
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mShadowMapTexture->GetTextureID(), 0);
-
+/*
     // 確認用
     GLint compareMode;
     glBindTexture(GL_TEXTURE_2D, mShadowMapTexture->GetTextureID());
     glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, &compareMode);
     SDL_Log("Compare mode: %d", compareMode); // GL_COMPARE_REF_TO_TEXTUREでなければNG（値は 34894）
-    
+  */
     // カラーバッファなし（深度のみ）
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
@@ -764,74 +469,25 @@ void Renderer::RenderShadowMap()
     // ビュー・プロジェクション行列
     // カメラ追従
     Vector3 camCenter = mInvView.GetTranslation() + mInvView.GetZAxis() * 30.0f;
-    Vector3 lightDir = Vector3::Normalize(mDirLight.Direction);
+    //Vector3 lightDir = Vector3::Normalize(mDirLight.Direction);
+    Vector3 lightDir = mLightingManager->GetLightDirection();
     Vector3 lightPos = camCenter - lightDir * 50.0f;
     
     Matrix4 lightViewMatrix = Matrix4::CreateLookAt(lightPos, camCenter, Vector3::UnitY);
     Matrix4 lightProjMatrix = Matrix4::CreateOrtho(mShadowOrthoWidth, mShadowOrthoHeight, mShadowNear, mShadowFar);
     mLightSpaceMatrix =  lightViewMatrix * lightProjMatrix;
-    // スキンメッシュのシャドウ描画
-    mShadowSkinnedShader->SetActive();
-    mShadowSkinnedShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
 
-    for (auto& mesh : mSkeletalMeshes)
+    for (auto& visual : mVisualComps)
     {
-        if (mesh->GetVisible())
+        if (visual->IsEnableShadow() && visual->IsVisible())
         {
-            mesh->DrawShadow(mShadowSkinnedShader.get(), mLightSpaceMatrix);
+            visual->DrawShadow();
         }
     }
-    
-    // 通常メッシュのシャドウ描画
-    mShadowMeshShader->SetActive();
-    mShadowMeshShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-    
-    for (auto& mesh : mMeshComps)
-    {
-        if (mesh->GetVisible())
-        {
-            mesh->DrawShadow(mShadowMeshShader.get(), mLightSpaceMatrix);
-        }
-    }
-    
-    /*
-    mShadowMeshShader->SetActive();
-    mShadowMeshShader->SetMatrixUniform("uLightSpaceMatrix", mLightSpaceMatrix);
-    for (auto& comp : mVisualComps)
-    {
-        if (comp->GetVisualType() == VisualType::Billboard)
-        {
-            BillboardComponent* b = static_cast<BillboardComponent*>(comp);
-            if (b->GetEnableShadow())
-            {
-                b->DrawShadow(mShadowMeshShader.get());
-            }
-        }
-    }
-    */
-    
 
     // ビューポートを戻す（スクリーンサイズ）
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
-}
-
-void Renderer::SetDirectionalLightPosition(const Vector3 &pos, const Vector3 &target)
-{
-    mDirLightPosition = pos;
-    mDirLightTarget = target;
-}
-
-void Renderer::SetFogInfo(const float max, const float min, Vector3 color)
-{
-    mFogMaxDist = max;
-    mFogMinDist = min;
-    mFogColor = color;
-}
-
-void Renderer::SetDirectionalLightColor(const Vector3 &col)
-{
-    mDiffuseColor = col;
 }
 
 // 雨エフェクトの初期化
@@ -850,46 +506,14 @@ void Renderer::CreateFullScreenQuad()
     };
     mFullScreenQuad = std::make_unique<VertexArray>(quadVerts, 4, quadIndices, 6, true);
 
-
-    // 雨エフェクト用シェーダー生成
-    mRainShader = std::make_unique<Shader>();
-    std::string vShaderName = mShaderPath + "RainScreen.vert";
-    std::string fShaderName = mShaderPath + "RainFront.frag";
-    if (!mRainShader->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return;
-    }
-    mFogShader = std::make_unique<Shader>();
-    vShaderName = mShaderPath + "RainScreen.vert";
-    fShaderName = mShaderPath + "FogFront.frag";
-    if (!mFogShader->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return;
-    }
 }
-void Renderer::DrawRainOverlay()
+
+void Renderer::DrawWeatherOverlay()
 {
-    if (mRainAmount <= 0.0f || !mRainShader || !mFullScreenQuad)
-        return;
+    auto shader = mShaders["WeatherOverlay"];
+    if (!shader || !mFullScreenQuad) return;
 
-    mRainShader->SetActive();
-    mRainShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f);
-    mRainShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
-    mRainShader->SetFloatUniform("uRainAmount", mRainAmount);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    mFullScreenQuad->SetActive();
-    glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
-
-    glDisable(GL_BLEND);
-}
-void Renderer::DrawFogOverlay()
-{
-    if (mFogAmount <= 0.0f || !mFogShader || !mFullScreenQuad)
-        return;
-
+ 
     // フルスクリーン用設定
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
@@ -897,12 +521,14 @@ void Renderer::DrawFogOverlay()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // シェーダーをアクティブ化
-    mFogShader->SetActive();
+    shader->SetActive();
 
     // ユニフォーム設定
-    mFogShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f); // 経過時間（秒）
-    mFogShader->SetFloatUniform("uFogAmount", mFogAmount); // 0〜1で設定
-    mRainShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
+    shader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f); // 経過時間（秒）
+    shader->SetFloatUniform("uRainAmount", mRainAmount); // 0〜1で設定
+    shader->SetFloatUniform("uFogAmount", mFogAmount); // 0〜1で設定
+    shader->SetFloatUniform("uSnowAmount", mSnowAmount); // 0〜1で設定
+    shader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
 
     // フルスクリーンポリゴンを描画
     mFullScreenQuad->SetActive();
@@ -913,3 +539,13 @@ void Renderer::DrawFogOverlay()
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
 }
+
+void Renderer::RegisterSkyDome(SkyDomeComponent* sky)
+{
+    mSkyDomeComp = sky;
+    if (mSkyDomeComp)
+    {
+        mSkyDomeComp->SetLightingManager(mLightingManager);
+    }
+}
+

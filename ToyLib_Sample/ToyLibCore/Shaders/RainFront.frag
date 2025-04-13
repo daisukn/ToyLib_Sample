@@ -32,10 +32,3 @@ void main()
     float alpha = rain * uRainAmount * 0.25; // 弱めにする
     FragColor = vec4(vec3(1.0), alpha);
 }
-/*
-// RainFront.frag の main()
-void main()
-{
-    FragColor = vec4(1.0, 1.0, 1.0, 1.0); // ← 真っ白を強制表示！
-}
-*/

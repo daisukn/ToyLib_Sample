@@ -23,24 +23,23 @@ ParticleComponent::ParticleComponent(Actor* owner, int drawOrder)
     , mParticleMode(P_SPARK)
 {
     mLayer = VisualLayer::Effect3D;
-    mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::Particle;
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Particle");
 }
 
 ParticleComponent::~ParticleComponent()
 {
-    mOwnerActor->GetApp()->GetRenderer()->RemoveVisualComp(this);
     mParts.clear();
 }
 
-void ParticleComponent::SetTexture(Texture* tex)
+void ParticleComponent::SetTexture(std::shared_ptr<Texture> tex)
 {
     mTexture = tex;
 }
 
 void ParticleComponent::CreateParticles(Vector3 pos, unsigned int num, float life, float partLife, float size, ParticleMode mode)
 {
-    if (!mIsVisible)
+ //   if (!mIsVisible)
     {
         mPosition = pos;
         mIsVisible = true;
@@ -93,9 +92,9 @@ void ParticleComponent::Update(float deltaTime)
         if (mParts[i].isVisible)
         {
             if (mParticleMode == P_WATER)
-                mParts[i].dir.y -= 0.05f;
+                mParts[i].dir.y -= 0.04f;
             else if (mParticleMode == P_SMOKE)
-                mParts[i].dir.y += 0.05f;
+                mParts[i].dir.y += 0.04f;
 
             mParts[i].lifeTime += deltaTime;
             mParts[i].pos += mParts[i].dir * deltaTime;
@@ -111,7 +110,7 @@ void ParticleComponent::Update(float deltaTime)
     }
 }
 
-void ParticleComponent::Draw(Shader* shader)
+void ParticleComponent::Draw()
 {
     if (!mIsVisible || mTexture == nullptr) return;
 
@@ -129,17 +128,24 @@ void ParticleComponent::Draw(Shader* shader)
     Matrix4 scaleMat = Matrix4::CreateScale(mPartSize, mPartSize, 1);
     Matrix4 world = scaleMat * Matrix4::CreateScale(mOwnerActor->GetScale()) * invView;
 
-    shader->SetMatrixUniform("uWorldTransform", world);
-    //shader->SetMatrixUniform("uViewProj", //mOwnerActor->GetApp()->GetRenderer()->GetViewProjMatrix());
+    auto renderer = mOwnerActor->GetApp()->GetRenderer();
+    Matrix4 view = renderer->GetViewMatrix();
+    Matrix4 proj = renderer->GetProjectionMatrix();
+    
+    mShader->SetActive();
+    mShader->SetMatrixUniform("uViewProj", view * proj);
+    mShader->SetMatrixUniform("uWorldTransform", world);
 
     mTexture->SetActive(2);
-    shader->SetTextureUniform("uTexture", 2);
+    mShader->SetTextureUniform("uTexture", 2);
 
+    // VAO有効有効化
+    mSpriteVerts->SetActive();
     for (int i = 0; i < mNumParts; ++i)
     {
         if (mParts[i].isVisible)
         {
-            shader->SetVectorUniform("uPosition", mParts[i].pos);
+            mShader->SetVectorUniform("uPosition", mParts[i].pos);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         }
     }

@@ -13,7 +13,7 @@ Material::Material()
 {
 }
 
-void Material::BindToShader(Shader* shader, int textureUnit) const
+void Material::BindToShader(std::shared_ptr<Shader> shader, int textureUnit) const
 {
     shader->SetBooleanUniform("uOverrideColor", mOverrideColor);
     shader->SetVectorUniform("uUniformColor", mUniformColor);
