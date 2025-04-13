@@ -15,53 +15,29 @@
 
 // コンストラクタ
 MeshComponent::MeshComponent(Actor* a, bool isSkeletal, MeshType type)
-: Component(a)
+: VisualComponent(a, 100, VisualLayer::Object3D)
 , mMesh(nullptr)
 , mTextureIndex(0)
-, mIsVisible(true)
+//, mIsVisible(true)
 , mIsSkeletal(isSkeletal)
 , mIsToon(false)
 , mContourFactor(1.1014f)
-, mIsBlendAdd(false)
+//, mIsBlendAdd(false)
 , mMeshType(type)
 {
-
-    switch(mMeshType)
-    {
-        case MESH_EFFECT:
-            mOwnerActor->GetApp()->GetRenderer()->AddEffectMeshComp(this);
-            break;
-        case MESH_BG:
-            mOwnerActor->GetApp()->GetRenderer()->AddBackGroudMeshComp(this);
-            break;
-        case MESH_NORMAL:
-            mOwnerActor->GetApp()->GetRenderer()->AddMeshComp(this);
-            break;
-    }
     auto renderer = mOwnerActor->GetApp()->GetRenderer();
     mShader = renderer->GetShader("Mesh");
     mShadowShader = renderer->GetShader("ShadowMesh");
     mLightingManger = renderer->GetLightingManager();
+    mIsVisible = true;
+    mLayer = VisualLayer::Object3D;
+    mEnableShadow = true;
 }
 
 // デストラクタ
 MeshComponent::~MeshComponent()
 {
-    if (mOwnerActor && mOwnerActor->GetApp() && mOwnerActor->GetApp()->GetRenderer())
-    {
-        switch(mMeshType)
-        {
-            case MESH_EFFECT:
-                mOwnerActor->GetApp()->GetRenderer()->RemoveEffectMeshComp(this);
-                break;
-            case MESH_BG:
-                mOwnerActor->GetApp()->GetRenderer()->RemoveBackGroudMeshComp(this);
-                break;
-            case MESH_NORMAL:
-                mOwnerActor->GetApp()->GetRenderer()->RemoveMeshComp(this);
-                break;
-        }
-    }
+
 }
 
 // 描画

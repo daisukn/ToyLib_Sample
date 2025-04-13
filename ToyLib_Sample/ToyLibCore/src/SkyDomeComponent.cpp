@@ -11,7 +11,7 @@
 SkyDomeComponent::SkyDomeComponent(Actor* a)
 : Component(a)
 , mTime(0.5f)
-, mTimeSpeed(0.000f)
+, mTimeSpeed(0.005f)
 , mPastDay(0)
 , mSunDir(Vector3::UnitY)
 , mWeatherType(WeatherType::CLEAR)

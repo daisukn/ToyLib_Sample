@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Component.h"
+#include "VisualComponent.h"
 #include "Animation.h"
 #include "MathUtils.h"
 #include <memory>
@@ -13,8 +13,8 @@ enum MeshType
     MESH_EFFECT
 };
 
-// Meshを管理するComponent（Rendererから呼ばれる）
-class MeshComponent : public Component
+// Meshを管理するComponent
+class MeshComponent : public VisualComponent
 {
 public:
     MeshComponent(class Actor* a, bool isSkeletal = false, MeshType type = MESH_NORMAL);
@@ -27,8 +27,8 @@ public:
     virtual void SetMesh(class Mesh* m) { mMesh = m; }              // メッシュセット
     void SetTextureIndex(unsigned int index) { mTextureIndex = index; }    // テクスチャGetter
 
-    void SetVisible(bool visible) { mIsVisible = visible; }
-    bool GetVisible() const { return mIsVisible; }
+    //void SetVisible(bool visible) { mIsVisible = visible; }
+    //bool GetVisible() const { return mIsVisible; }
     
     bool GetIsSkeletal() const { return mIsSkeletal; }
     class VertexArray* GetVertexArray(int id) const;
@@ -38,8 +38,8 @@ public:
     
     bool GetToon() const { return mIsToon; }
     
-    void SetBlendAdd(bool b) { mIsBlendAdd = b; }
-    bool GetBlendAdd() const { return mIsBlendAdd; }
+    //void SetBlendAdd(bool b) { mIsBlendAdd = b; }
+    //bool GetBlendAdd() const { return mIsBlendAdd; }
     
     
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
@@ -50,7 +50,7 @@ protected:
     unsigned int mTextureIndex;    // TextureID
     
 
-    bool mIsVisible;
+    //bool mIsVisible;
     bool mIsSkeletal;
     
     MeshType mMeshType;
@@ -65,6 +65,6 @@ protected:
     float mContourFactor;
     
     // 加算合成するか
-    bool mIsBlendAdd;
+    //bool mIsBlendAdd;
 };
 

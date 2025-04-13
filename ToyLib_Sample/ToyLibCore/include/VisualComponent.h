@@ -7,6 +7,7 @@ enum class VisualType
 {
     NoAssigned,
     Sprite,
+    Mesh,
     Billboard,
     Particle,
     ShadowSprite
@@ -16,9 +17,10 @@ class VisualComponent : public Component
 {
 public:
     VisualComponent(class Actor* owner, int drawOrder, VisualLayer layer = VisualLayer::Effect3D);
-    virtual ~VisualComponent() {}
+    virtual ~VisualComponent();
 
     virtual void Draw() = 0;
+    virtual void DrawShadow() {}
 
     virtual void SetTexture(class Texture* tex) { mTexture = tex; }
     class Texture* GetTexture() const { return mTexture; }
@@ -40,6 +42,7 @@ public:
     void SetShader(std::shared_ptr<class Shader> shader) { mShader = shader; }
     void SetLightingManager(std::shared_ptr<LightingManager> light) { mLightingManager = light; }
 
+    bool IsEnableShadow() const { return mEnableShadow; }
 protected:
     class Texture* mTexture;
     std::shared_ptr<class Shader> mShader;
@@ -49,4 +52,5 @@ protected:
     VisualLayer mLayer;
     VisualType mType;
     int mDrawOrder;
+    bool mEnableShadow;
 };

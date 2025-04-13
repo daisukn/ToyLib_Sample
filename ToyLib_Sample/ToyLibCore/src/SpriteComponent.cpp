@@ -8,14 +8,13 @@
 #include <GL/glew.h>
 
 SpriteComponent::SpriteComponent(Actor* a, int drawOrder, VisualLayer layer)
-    : VisualComponent(a, drawOrder, layer)
-    , mScaleWidth(1.0f)
-    , mScaleHeight(1.0f)
-    , mTexWidth(0)
-    , mTexHeight(0)
+: VisualComponent(a, drawOrder, layer)
+, mScaleWidth(1.0f)
+, mScaleHeight(1.0f)
+, mTexWidth(0)
+, mTexHeight(0)
 {
     mDrawOrder = drawOrder;
-    mOwnerActor->GetApp()->GetRenderer()->AddVisualComp(this);
     mType = VisualType::Sprite;
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Sprite");
     mScreenWidth = mOwnerActor->GetApp()->GetRenderer()->GetScreenWidth();
@@ -24,7 +23,6 @@ SpriteComponent::SpriteComponent(Actor* a, int drawOrder, VisualLayer layer)
 
 SpriteComponent::~SpriteComponent()
 {
-    mOwnerActor->GetApp()->GetRenderer()->RemoveVisualComp(this);
 }
 
 void SpriteComponent::SetTexture(Texture* tex)
