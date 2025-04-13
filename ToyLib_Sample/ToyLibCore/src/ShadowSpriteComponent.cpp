@@ -7,6 +7,7 @@
 #include "Application.h"
 #include "Renderer.h"
 #include "LightingManager.h"
+#include <memory>
 
 ShadowSpriteComponent::ShadowSpriteComponent(Actor* owner, int drawOrder)
     : VisualComponent(owner, drawOrder)
@@ -24,7 +25,7 @@ ShadowSpriteComponent::~ShadowSpriteComponent()
    
 }
 
-void ShadowSpriteComponent::SetTexture(Texture* tex)
+void ShadowSpriteComponent::SetTexture(std::shared_ptr<Texture> tex)
 {
     mTexture = tex;
 }

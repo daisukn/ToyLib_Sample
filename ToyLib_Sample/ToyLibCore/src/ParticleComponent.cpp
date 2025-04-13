@@ -32,7 +32,7 @@ ParticleComponent::~ParticleComponent()
     mParts.clear();
 }
 
-void ParticleComponent::SetTexture(Texture* tex)
+void ParticleComponent::SetTexture(std::shared_ptr<Texture> tex)
 {
     mTexture = tex;
 }

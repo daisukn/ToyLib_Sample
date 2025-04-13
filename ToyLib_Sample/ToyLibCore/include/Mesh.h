@@ -27,7 +27,7 @@ public:
     void Unload();
 
     // VertexArrayを取得
-    const std::vector<class VertexArray*>& GetVertexArray() { return mVertexArrayPtr; }
+    const std::vector<std::shared_ptr<class VertexArray>>& GetVertexArray() { return mVertexArray; }
     // Textureを取得
     //class Texture* GetTexture(size_t index);
     
@@ -104,8 +104,7 @@ private:
     // TextureのVector
     //std::vector<class Texture*> mTextures;
     // VertexArrayのVector
-    std::vector<class VertexArray*> mVertexArrayPtr;
-    std::vector<std::unique_ptr<class VertexArray>> mVertexArray;
+    std::vector<std::shared_ptr<class VertexArray>> mVertexArray;
     
     // MatrialのVector
     std::vector<std::shared_ptr<class Material>> mMaterials;

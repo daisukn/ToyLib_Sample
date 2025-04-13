@@ -55,7 +55,7 @@ void SkeletalMeshComponent::Draw()
     mShader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
 
     // Vertex Arrayを描画
-    std::vector<VertexArray*> va = mMesh->GetVertexArray();
+    auto va = mMesh->GetVertexArray();
     for (auto v : va)
     {
         {
@@ -110,7 +110,7 @@ void SkeletalMeshComponent::DrawShadow()
     mShadowShader->SetMatrixUniform("uLightSpaceMatrix", light);
 
     // Vertex Arrayを描画
-    std::vector<VertexArray*> va = mMesh->GetVertexArray();
+    auto va = mMesh->GetVertexArray();
     for (auto v : va)
     {
         v->SetActive();

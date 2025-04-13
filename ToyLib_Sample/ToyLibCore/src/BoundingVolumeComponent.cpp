@@ -66,7 +66,7 @@ void BoundingVolumeComponent::OnUpdateWorldTransform()
 }
 
 // バウンディングボリュームを計算
-void BoundingVolumeComponent::ComputeBoundingVolume(const std::vector<VertexArray *> va)
+void BoundingVolumeComponent::ComputeBoundingVolume(const std::vector<std::shared_ptr<VertexArray>> va)
 {
     
     // 複数VertexArrayをまとめて計算

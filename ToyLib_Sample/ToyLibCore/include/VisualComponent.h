@@ -22,8 +22,8 @@ public:
     virtual void Draw() = 0;
     virtual void DrawShadow() {}
 
-    virtual void SetTexture(class Texture* tex) { mTexture = tex; }
-    class Texture* GetTexture() const { return mTexture; }
+    virtual void SetTexture(std::shared_ptr<class Texture> tex) { mTexture = tex; }
+    std::shared_ptr<class Texture> GetTexture() const { return mTexture; }
 
     void SetVisible(bool v) { mIsVisible = v; }
     bool IsVisible() const { return mIsVisible; }
@@ -44,7 +44,7 @@ public:
 
     bool IsEnableShadow() const { return mEnableShadow; }
 protected:
-    class Texture* mTexture;
+    std::shared_ptr<class Texture> mTexture;
     std::shared_ptr<class Shader> mShader;
     std::shared_ptr<class LightingManager> mLightingManager;
     bool mIsVisible;

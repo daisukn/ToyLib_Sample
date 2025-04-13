@@ -24,14 +24,14 @@ public:
     virtual void Draw();
     virtual void DrawShadow();
     
-    virtual void SetMesh(class Mesh* m) { mMesh = m; }              // メッシュセット
+    virtual void SetMesh(std::shared_ptr<class Mesh> m) { mMesh = m; }              // メッシュセット
     void SetTextureIndex(unsigned int index) { mTextureIndex = index; }    // テクスチャGetter
 
     //void SetVisible(bool visible) { mIsVisible = visible; }
     //bool GetVisible() const { return mIsVisible; }
     
     bool GetIsSkeletal() const { return mIsSkeletal; }
-    class VertexArray* GetVertexArray(int id) const;
+    std::shared_ptr<VertexArray> GetVertexArray(int id) const;
     
     void SetToonRender(const bool t, const float f = 1.05f) { mIsToon = t; mContourFactor = f; }
     void SetContourFactor(const float f) { mContourFactor = f; }
@@ -46,7 +46,7 @@ public:
     virtual void SetAnimID(const unsigned int animID, const PlayMode mode) {}
     
 protected:
-    class Mesh* mMesh;      // メッシュ
+    std::shared_ptr<class Mesh>  mMesh;      // メッシュ
     unsigned int mTextureIndex;    // TextureID
     
 
