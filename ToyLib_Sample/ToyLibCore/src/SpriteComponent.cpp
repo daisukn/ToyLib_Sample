@@ -66,7 +66,7 @@ void SpriteComponent::Draw()
     mShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
     mShader->SetTextureUniform("uTexture", 2);
     mShader->SetMatrixUniform("uWorldTransform", world);
-    mLightingManager->ApplyToShader(mShader.get(), view);
+    mLightingManager->ApplyToShader(mShader, view);
 
     // 描画
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

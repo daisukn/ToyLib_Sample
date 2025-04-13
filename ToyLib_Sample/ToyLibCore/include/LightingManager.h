@@ -1,5 +1,6 @@
 #pragma once
 #include "MathUtils.h"
+#include <memory>
 
 // ディレクショナルライト
 struct DirectionalLight
@@ -59,7 +60,7 @@ public:
 
 
     // シェーダーに反映
-    void ApplyToShader(class Shader* shader, const Matrix4& viewMatrix);
+    void ApplyToShader(std::shared_ptr<class Shader> shader, const Matrix4& viewMatrix);
     
 private:
     DirectionalLight mDirLight;

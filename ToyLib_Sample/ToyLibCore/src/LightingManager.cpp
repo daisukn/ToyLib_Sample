@@ -12,7 +12,7 @@ LightingManager::~LightingManager()
 }
 
 
-void LightingManager::ApplyToShader(Shader* shader, const Matrix4& viewMatrix)
+void LightingManager::ApplyToShader(std::shared_ptr<Shader> shader, const Matrix4& viewMatrix)
 {
     // カメラポジション（ビュー行列の逆行列から取得）
     Matrix4 invView = viewMatrix;

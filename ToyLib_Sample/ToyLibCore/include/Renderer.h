@@ -56,15 +56,7 @@ public:
     void AddVisualComp(class VisualComponent* comp);
     void RemoveVisualComp(class VisualComponent* comp);
 
-    // メッシュコンポーネント登録・削除
-    void AddMeshComp(class MeshComponent* mesh);
-    void RemoveMeshComp(class MeshComponent* mesh);
-    // 背景メッシュコンポーネント登録・削除
-    void AddBackGroudMeshComp(class MeshComponent* mesh);
-    void RemoveBackGroudMeshComp(class MeshComponent* mesh);
-    // エフェクトメッシュコンポーネント登録・削除
-    void AddEffectMeshComp(class MeshComponent* mesh);
-    void RemoveEffectMeshComp(class MeshComponent* mesh);
+
     // ワイヤーフレームコンポーネント登録・削除
     void AddWireframeComp(class WireframeComponent* wireframe);
     void RemoveWireframeComp(class WireframeComponent* wireframe);

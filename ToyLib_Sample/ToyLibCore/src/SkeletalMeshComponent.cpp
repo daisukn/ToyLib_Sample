@@ -39,7 +39,7 @@ void SkeletalMeshComponent::Draw()
     Matrix4 light = renderer->GetLightSpaceMatrix();
  
     mShader->SetActive();
-    mLightingManger->ApplyToShader(mShader.get(), view);
+    mLightingManger->ApplyToShader(mShader, view);
     mShader->SetMatrixUniform("uViewProj", view * proj);
     mShader->SetMatrixUniform("uLightSpaceMatrix", light);
     mShader->SetTextureUniform("uShadowMap", 1);
@@ -62,7 +62,7 @@ void SkeletalMeshComponent::Draw()
             auto mat = mMesh->GetMaterial(v->GetTextureID());
             if (mat)
             {
-                mat->BindToShader(mShader.get());
+                mat->BindToShader(mShader);
             }
             v->SetActive();
             glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
@@ -80,7 +80,7 @@ void SkeletalMeshComponent::Draw()
             if (mat)
             {
                 mat->SetOverrideColor(true, Vector3(0.f, 0.f, 0.f));
-                mat->BindToShader(mShader.get(), 0);
+                mat->BindToShader(mShader, 0);
             }
             v->SetActive();
             glDrawElements(GL_TRIANGLES, v->GetNumIndices(), GL_UNSIGNED_INT, nullptr);

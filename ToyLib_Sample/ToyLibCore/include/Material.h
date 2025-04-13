@@ -6,7 +6,7 @@ class Material
 {
 public:
     Material();
-    void BindToShader(class Shader* shader, int textureUnit = 0) const;
+    void BindToShader(std::shared_ptr<class Shader> shader, int textureUnit = 0) const;
 
     void SetDiffuseMap(std::shared_ptr<class Texture> tex) { mDiffuseMap = tex; }
 

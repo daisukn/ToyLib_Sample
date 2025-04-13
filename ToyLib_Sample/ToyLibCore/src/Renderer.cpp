@@ -162,7 +162,7 @@ void Renderer::DrawDebugger()
     
     // デバッガー用の描画
     mShaders["Solid"]->SetActive();
-    mLightingManager->ApplyToShader(mShaders["Solid"].get(), mViewMatrix);
+    mLightingManager->ApplyToShader(mShaders["Solid"], mViewMatrix);
     mShaders["Solid"]->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
     mShaders["Solid"]->SetVectorUniform("uSolColor", Vector3(1.f, 1.f, 1.f));
     // Update lighting uniforms

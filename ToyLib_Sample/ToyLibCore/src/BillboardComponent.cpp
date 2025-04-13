@@ -54,7 +54,7 @@ void BillboardComponent::Draw()
     Matrix4 translate = Matrix4::CreateTranslation(pos);
 
     mShader->SetActive();
-    mLightingManager->ApplyToShader(mShader.get(), view);
+    mLightingManager->ApplyToShader(mShader, view);
 
     // 最終行列
     Matrix4 world = scaleMat * rotY * translate;
