@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "LightingManager.h"
+#include "VertexArray.h"
 #include "Application.h"
 #include "Actor.h"
 #include "Renderer.h"
@@ -62,7 +63,9 @@ void BillboardComponent::Draw()
     mShader->SetMatrixUniform("uViewProj", view * proj);
     mTexture->SetActive(2);
     mShader->SetTextureUniform("uTexture", 2);
-
+    
+    // VAO有効化
+    mSpriteVerts->SetActive();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
     if (mIsBlendAdd)

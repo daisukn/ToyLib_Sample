@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VisualComponent.h"
+#include <memory>
 
 class BillboardComponent : public VisualComponent
 {

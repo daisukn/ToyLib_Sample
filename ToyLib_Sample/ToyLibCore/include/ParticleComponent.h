@@ -43,6 +43,7 @@ private:
     Vector3 mPosition;
     std::vector<Particle> mParts;
 
+
     int mDrawOrder;
     unsigned int mNumParts;
     float mLifeTime;

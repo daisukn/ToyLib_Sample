@@ -305,8 +305,6 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
     }
     
     
-    mSpriteVerts->SetActive();       // VAO
-
     for (auto comp : mVisualComps)
     {
         if (comp->IsVisible() && comp->GetLayer() == layer)
@@ -391,7 +389,7 @@ void Renderer::CreateSpriteVerts()
         2, 1, 0,
         0, 3, 2
     };
-    mSpriteVerts = std::make_unique<VertexArray>((float*)vertices, (unsigned int)4, (unsigned int*)indices, (unsigned int)6);
+    mSpriteVerts = std::make_shared<VertexArray>((float*)vertices, (unsigned int)4, (unsigned int*)indices, (unsigned int)6);
 }
 
 // メッシュ取り出し
