@@ -113,11 +113,6 @@ void Renderer::Shutdown()
 
 }
 
-void::Renderer::SetClearColor(const Vector3 color)
-{
-    mClearColor = color;
-    glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, 1.0f);
-}
 
 // 描画処理
 void Renderer::Draw()
@@ -166,102 +161,6 @@ void Renderer::DrawDebugger()
     {
         wireframe->Draw(mShaders["Solid"].get());
     }
-}
-
-// シェーダー 読み込み
-bool Renderer::LoadShaders()
-{
-    std::string vShaderName;
-    std::string fShaderName;
-
-    
-    // 天気シェーダー（統合版）
-    vShaderName = mShaderPath + "WeatherScreen.vert";
-    fShaderName = mShaderPath + "WeatherScreen.frag";
-    mShaders["WeatherOverlay"] = std::make_shared<Shader>();
-    if (!mShaders["WeatherOverlay"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // メッシュ用シェーダー
-    vShaderName = mShaderPath + "Phong.vert";
-    fShaderName = mShaderPath + "Phong.frag";
-    mShaders["Mesh"] = std::make_shared<Shader>();
-    if (!mShaders["Mesh"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // スキンメッシュ用シェーダー
-    vShaderName = mShaderPath + "Skinned.vert";
-    fShaderName = mShaderPath + "Phong.frag";
-    mShaders["Skinned"] = std::make_shared<Shader>();
-    if (!mShaders["Skinned"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // スプライト用シェーダー
-    vShaderName = mShaderPath +"Sprite.vert";
-    fShaderName = mShaderPath + "Sprite.frag";
-    mShaders["Sprite"] = std::make_shared<Shader>();
-    if (!mShaders["Sprite"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    Matrix4 viewProj = Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight);
-    mShaders["Sprite"]->SetMatrixUniform("uViewProj", viewProj);
-    // ビルボード用シェーダー
-    vShaderName = mShaderPath + "Billboard.vert";
-    fShaderName = mShaderPath + "Billboard.frag";
-    mShaders["Billboard"] = std::make_shared<Shader>();
-    if (!mShaders["Billboard"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // パーティクル
-    vShaderName = mShaderPath + "Billboard.vert";
-    fShaderName = mShaderPath + "Particle.frag";
-    mShaders["Particle"] = std::make_shared<Shader>();
-    if (!mShaders["Particle"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // ソリッドカラー
-    vShaderName = mShaderPath + "BasicMesh.vert";
-    fShaderName = mShaderPath + "SolidColor.frag";
-    mShaders["Solid"] = std::make_shared<Shader>();
-    if (!mShaders["Solid"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // シャドウマップ用（Skinned）
-    vShaderName = mShaderPath + "ShadowMapping_Skinned.vert";
-    fShaderName = mShaderPath + "ShadowMapping.frag";
-    mShaders["ShadowSkinned"] = std::make_shared<Shader>();
-    if (!mShaders["ShadowSkinned"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // シャドウマップ用（Mesh）
-    vShaderName = mShaderPath + "ShadowMapping_Mesh.vert";
-    fShaderName = mShaderPath + "ShadowMapping.frag";
-    mShaders["ShadowMesh"] = std::make_shared<Shader>();
-    if (!mShaders["ShadowMesh"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // スカイドーム
-    vShaderName = mShaderPath + "WeatherDome.vert";
-    fShaderName = mShaderPath + "WeatherDome.frag";
-    mShaders["SkyDome"] = std::make_shared<Shader>();
-    if (!mShaders["SkyDome"]->Load(vShaderName.c_str(), fShaderName.c_str()))
-    {
-        return false;
-    }
-    // ビューマトリックス、プロジェクションマトリックス（デフォルト値）
-    mViewMatrix = Matrix4::CreateLookAt(Vector3(0, 0.5f, -3), Vector3(0, 0, 10), Vector3::UnitY);
-    mProjectionMatrix = Matrix4::CreatePerspectiveFOV(Math::ToRadians(mPerspectiveFOV), mScreenWidth, mScreenHeight, 1.0f, 2000.0f);
-
-    return true;
 }
 
 void Renderer::AddVisualComp(VisualComponent* comp)
@@ -549,3 +448,105 @@ void Renderer::RegisterSkyDome(SkyDomeComponent* sky)
     }
 }
 
+void::Renderer::SetClearColor(const Vector3 color)
+{
+    mClearColor = color;
+    glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, 1.0f);
+}
+
+
+// シェーダー 読み込み
+bool Renderer::LoadShaders()
+{
+    std::string vShaderName;
+    std::string fShaderName;
+
+    
+    // 天気シェーダー（統合版）
+    vShaderName = mShaderPath + "WeatherScreen.vert";
+    fShaderName = mShaderPath + "WeatherScreen.frag";
+    mShaders["WeatherOverlay"] = std::make_shared<Shader>();
+    if (!mShaders["WeatherOverlay"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // メッシュ用シェーダー
+    vShaderName = mShaderPath + "Phong.vert";
+    fShaderName = mShaderPath + "Phong.frag";
+    mShaders["Mesh"] = std::make_shared<Shader>();
+    if (!mShaders["Mesh"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // スキンメッシュ用シェーダー
+    vShaderName = mShaderPath + "Skinned.vert";
+    fShaderName = mShaderPath + "Phong.frag";
+    mShaders["Skinned"] = std::make_shared<Shader>();
+    if (!mShaders["Skinned"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // スプライト用シェーダー
+    vShaderName = mShaderPath +"Sprite.vert";
+    fShaderName = mShaderPath + "Sprite.frag";
+    mShaders["Sprite"] = std::make_shared<Shader>();
+    if (!mShaders["Sprite"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    Matrix4 viewProj = Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight);
+    mShaders["Sprite"]->SetMatrixUniform("uViewProj", viewProj);
+    // ビルボード用シェーダー
+    vShaderName = mShaderPath + "Billboard.vert";
+    fShaderName = mShaderPath + "Billboard.frag";
+    mShaders["Billboard"] = std::make_shared<Shader>();
+    if (!mShaders["Billboard"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // パーティクル
+    vShaderName = mShaderPath + "Billboard.vert";
+    fShaderName = mShaderPath + "Particle.frag";
+    mShaders["Particle"] = std::make_shared<Shader>();
+    if (!mShaders["Particle"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // ソリッドカラー
+    vShaderName = mShaderPath + "BasicMesh.vert";
+    fShaderName = mShaderPath + "SolidColor.frag";
+    mShaders["Solid"] = std::make_shared<Shader>();
+    if (!mShaders["Solid"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // シャドウマップ用（Skinned）
+    vShaderName = mShaderPath + "ShadowMapping_Skinned.vert";
+    fShaderName = mShaderPath + "ShadowMapping.frag";
+    mShaders["ShadowSkinned"] = std::make_shared<Shader>();
+    if (!mShaders["ShadowSkinned"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // シャドウマップ用（Mesh）
+    vShaderName = mShaderPath + "ShadowMapping_Mesh.vert";
+    fShaderName = mShaderPath + "ShadowMapping.frag";
+    mShaders["ShadowMesh"] = std::make_shared<Shader>();
+    if (!mShaders["ShadowMesh"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // スカイドーム
+    vShaderName = mShaderPath + "WeatherDome.vert";
+    fShaderName = mShaderPath + "WeatherDome.frag";
+    mShaders["SkyDome"] = std::make_shared<Shader>();
+    if (!mShaders["SkyDome"]->Load(vShaderName.c_str(), fShaderName.c_str()))
+    {
+        return false;
+    }
+    // ビューマトリックス、プロジェクションマトリックス（デフォルト値）
+    mViewMatrix = Matrix4::CreateLookAt(Vector3(0, 0.5f, -3), Vector3(0, 0, 10), Vector3::UnitY);
+    mProjectionMatrix = Matrix4::CreatePerspectiveFOV(Math::ToRadians(mPerspectiveFOV), mScreenWidth, mScreenHeight, 1.0f, 2000.0f);
+
+    return true;
+}
