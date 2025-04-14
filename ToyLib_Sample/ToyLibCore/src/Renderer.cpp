@@ -185,7 +185,7 @@ bool Renderer::LoadShaders()
     }
     // メッシュ用シェーダー
     vShaderName = mShaderPath + "Phong.vert";
-    fShaderName = mShaderPath + "Toon.frag";
+    fShaderName = mShaderPath + "Phong.frag";
     mShaders["Mesh"] = std::make_shared<Shader>();
     if (!mShaders["Mesh"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
@@ -193,7 +193,7 @@ bool Renderer::LoadShaders()
     }
     // スキンメッシュ用シェーダー
     vShaderName = mShaderPath + "Skinned.vert";
-    fShaderName = mShaderPath + "Toon.frag";
+    fShaderName = mShaderPath + "Phong.frag";
     mShaders["Skinned"] = std::make_shared<Shader>();
     if (!mShaders["Skinned"]->Load(vShaderName.c_str(), fShaderName.c_str()))
     {
