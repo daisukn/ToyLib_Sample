@@ -21,7 +21,7 @@ BoundingVolumeComponent::BoundingVolumeComponent(Actor* a)
 , mRadius(0.0f)
 {
     mBoundingBox = std::make_shared<Cube>();
-    mObb = std::make_unique<OBB>();
+    mObb = std::make_shared<OBB>();
     mPolygons.reset(new Polygon[NUM_VERTEX]);
     
     if (mOwnerActor->GetApp()->GetRenderer()->IsDebugMode())
@@ -159,6 +159,7 @@ void BoundingVolumeComponent::AdjustBoundingBox(const Vector3 pos, const Vector3
     mBoundingBox->max.z *= sc.z;
     mBoundingBox->min.z *= sc.z;
     CreateVArray();
+    CreatePolygons();
 
 }
 

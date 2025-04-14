@@ -58,12 +58,12 @@ public:
     
     
     // バウンディングボックス取得
-    std::shared_ptr<struct Cube>  GetBoundingBox() const { return mBoundingBox; }
+    std::shared_ptr<struct Cube>  GetAABB() const { return mBoundingBox; }
     std::shared_ptr<struct OBB> GetOBB() const { return mObb; }
     // ワールド座標のAABBを返す
     struct Cube GetWorldAABB() const;
     
-    struct Polygon* GetPolygons() const { return mPolygons.get(); }
+    std::shared_ptr<struct Polygon[]> GetPolygons() const { return mPolygons; }
 
     float GetRadius() const { return mRadius; }
     void SetRadius(float f) { mRadius = f; }
@@ -71,7 +71,7 @@ public:
 private:
 
     
-    std::unique_ptr<struct Polygon[]> mPolygons;
+    std::shared_ptr<struct Polygon[]> mPolygons;
     void CreatePolygons();
 
     std::shared_ptr<struct Cube> mBoundingBox;
