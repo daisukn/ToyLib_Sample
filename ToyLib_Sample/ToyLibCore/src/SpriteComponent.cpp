@@ -54,16 +54,12 @@ void SpriteComponent::Draw()
     Matrix4 scaleMat = Matrix4::CreateScale(width, height, 1.0f);
     Matrix4 world = scaleMat * mOwnerActor->GetWorldTransform();
 
-    // シェーダー、テクスチャを設定
-    mTexture->SetActive(2);
-    
-    //shader->SetTextureUniform("uTexture", 2);
-    //shader->SetMatrixUniform("uWorldTransform", world);
 
     mShader->SetActive();
     Matrix4 view = mOwnerActor->GetApp()->GetRenderer()->GetViewMatrix();
     mShader->SetMatrixUniform("uViewProj", Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight));
-    mShader->SetTextureUniform("uTexture", 2);
+    mTexture->SetActive(0);
+    mShader->SetTextureUniform("uTexture", 0);
     mShader->SetMatrixUniform("uWorldTransform", world);
     mLightingManager->ApplyToShader(mShader, view);
 

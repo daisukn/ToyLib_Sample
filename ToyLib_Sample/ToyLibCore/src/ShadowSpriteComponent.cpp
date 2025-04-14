@@ -58,8 +58,8 @@ void ShadowSpriteComponent::Draw()
     Matrix4 proj = renderer->GetProjectionMatrix();
     mShader->SetMatrixUniform("uViewProj", view * proj);
     mShader->SetMatrixUniform("uWorldTransform", world);
-    mTexture->SetActive(2); // ShadowSprite用ユニット
-    mShader->SetTextureUniform("uTexture", 2);
+    mTexture->SetActive(0); // ShadowSprite用ユニット
+    mShader->SetTextureUniform("uTexture", 0);
 
     mSpriteVerts->SetActive();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

@@ -61,8 +61,8 @@ void BillboardComponent::Draw()
     Matrix4 world = scaleMat * rotY * translate;
     mShader->SetMatrixUniform("uWorldTransform", world);
     mShader->SetMatrixUniform("uViewProj", view * proj);
-    mTexture->SetActive(2);
-    mShader->SetTextureUniform("uTexture", 2);
+    mTexture->SetActive(0);
+    mShader->SetTextureUniform("uTexture", 0);
     
     // VAO有効化
     mSpriteVerts->SetActive();

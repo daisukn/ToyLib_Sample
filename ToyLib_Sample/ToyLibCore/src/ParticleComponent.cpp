@@ -13,7 +13,7 @@ ParticleComponent::ParticleComponent(Actor* owner, int drawOrder)
     : VisualComponent(owner, drawOrder)
     , mTexture(nullptr)
     , mDrawOrder(drawOrder)
-    , mIsBlendAdd(false)
+    , mIsBlendAdd(true)
     , mNumParts(0)
     , mLifeTime(0.0f)
     , mTotalLife(0.0f)
@@ -39,19 +39,16 @@ void ParticleComponent::SetTexture(std::shared_ptr<Texture> tex)
 
 void ParticleComponent::CreateParticles(Vector3 pos, unsigned int num, float life, float partLife, float size, ParticleMode mode)
 {
- //   if (!mIsVisible)
-    {
-        mPosition = pos;
-        mIsVisible = true;
-        mNumParts = num;
-        mLifeTime = 0.0f;
-        mTotalLife = life;
-        mPartLifecycle = partLife;
-        mPartSize = size;
-        mParticleMode = mode;
+    mPosition = pos;
+    mIsVisible = true;
+    mNumParts = num;
+    mLifeTime = 0.0f;
+    mTotalLife = life;
+    mPartLifecycle = partLife;
+    mPartSize = size;
+    mParticleMode = mode;
 
-        mParts.resize(mNumParts);
-    }
+    mParts.resize(mNumParts);
 }
 
 void ParticleComponent::GenerateParts()
@@ -60,22 +57,21 @@ void ParticleComponent::GenerateParts()
 
     for (int i = 0; i < mNumParts; ++i)
     {
-        if (!mParts[i].isVisible)
-        {
-            float x = (float)(rnd() % (int)mPartSpeed);
-            float y = (float)(rnd() % (int)mPartSpeed);
-            float z = (float)(rnd() % (int)mPartSpeed);
-            if (rand() % 2) x *= -1;
-            if (rand() % 2) y *= -1;
-            if (rand() % 2) z *= -1;
+        if (mParts[i].isVisible) continue;
+     
+        float x = (float)(rnd() % (int)mPartSpeed);
+        float y = (float)(rnd() % (int)mPartSpeed);
+        float z = (float)(rnd() % (int)mPartSpeed);
+        if (rand() % 2) x *= -1;
+        if (rand() % 2) y *= -1;
+        if (rand() % 2) z *= -1;
 
-            mParts[i].pos = mPosition;
-            mParts[i].dir = Vector3(x, y, z);
-            mParts[i].isVisible = true;
-            mParts[i].lifeTime = 0.0f;
-            mParts[i].size = mPartSize;
-            break;
-        }
+        mParts[i].pos = mPosition;
+        mParts[i].dir = Vector3(x, y, z);
+        mParts[i].isVisible = true;
+        mParts[i].lifeTime = 0.0f;
+        mParts[i].size = mPartSize;
+        break;
     }
 }
 
@@ -114,11 +110,15 @@ void ParticleComponent::Draw()
 {
     if (!mIsVisible || mTexture == nullptr) return;
 
-    //if (mIsBlendAdd)
+    if (mIsBlendAdd)
+    {
         glBlendFunc(GL_ONE, GL_ONE);
-    //else
-   //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    }
+    else
+    {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+    
     Matrix4 mat = mOwnerActor->GetWorldTransform();
     Matrix4 invView = mOwnerActor->GetApp()->GetRenderer()->GetInvViewMatrix();
     invView.mat[3][0] = mat.mat[3][0];
@@ -136,8 +136,8 @@ void ParticleComponent::Draw()
     mShader->SetMatrixUniform("uViewProj", view * proj);
     mShader->SetMatrixUniform("uWorldTransform", world);
 
-    mTexture->SetActive(2);
-    mShader->SetTextureUniform("uTexture", 2);
+    mTexture->SetActive(0);
+    mShader->SetTextureUniform("uTexture", 0);
 
     // VAO有効有効化
     mSpriteVerts->SetActive();
@@ -149,6 +149,8 @@ void ParticleComponent::Draw()
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         }
     }
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (mIsBlendAdd)
+    {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 }
