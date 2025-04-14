@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Component.h"
-#include "WireframeComponent.h"
-
 #include "MathUtils.h"
 
 #include <vector>
@@ -38,7 +36,7 @@ struct OBB
 
 
 // バウンディングボリューム管理
-class BoundingVolumeComponent : public WireframeComponent
+class BoundingVolumeComponent : public Component
 {
 public:
     // コンストラクタ
@@ -59,7 +57,7 @@ public:
     void OnUpdateWorldTransform() override;
     
     // 描画 override
-    void Draw(class Shader* shader) override;
+    //void Draw(class Shader* shader) override;
     
     // バウンディングボックス取得
     struct Cube* GetBoundingBox() const { return mBoundingBox.get(); }
@@ -70,8 +68,8 @@ public:
     
     struct Polygon* GetPolygons() const { return mPolygons.get(); }
     
-    void SetVisible(bool b) { mIsVisible = b; }
-    bool GetVisibile() const { return mIsVisible; }
+    //void SetVisible(bool b) { mIsVisible = b; }
+    //bool GetVisibile() const { return mIsVisible; }
     
     float GetRadius() const { return mRadius; }
     void SetRadius(float f) { mRadius = f; }
@@ -79,17 +77,19 @@ public:
 private:
  
     // デバッグ用に表示するかどうか
-    bool mIsVisible;
+    //bool mIsVisible;
     
     std::unique_ptr<struct Polygon[]> mPolygons;
     void CreatePolygons();
 
-    std::unique_ptr<class VertexArray> mVertexArray;
+    //std::shared_ptr<class VertexArray> mVertexArray;
 
 
     std::unique_ptr<struct Cube> mBoundingBox;
     std::unique_ptr<struct OBB> mObb;
     float mRadius;
+    
+    std::unique_ptr<class WireframeComponent> mWireframe;
     
 };
 

@@ -127,7 +127,6 @@ void Renderer::Draw()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     DrawSky();
-    DrawDebugger();
     DrawVisualLayer(VisualLayer::Background2D);
     DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
@@ -144,23 +143,6 @@ void Renderer::DrawSky()
     if (!mSkyDomeComp) return;
     mSkyDomeComp->Draw();
 
-}
-
-void Renderer::DrawDebugger()
-{
-    // デバッグモードでない場合キャンセル
-    if (!mIsDebugMode) return;
-    
-    // デバッガー用の描画
-    mShaders["Solid"]->SetActive();
-    mLightingManager->ApplyToShader(mShaders["Solid"], mViewMatrix);
-    mShaders["Solid"]->SetMatrixUniform("uViewProj", mViewMatrix * mProjectionMatrix);
-    mShaders["Solid"]->SetVectorUniform("uSolColor", Vector3(1.f, 1.f, 1.f));
-    // Update lighting uniforms
-    for (auto wireframe : mWireframeComps)
-    {
-        wireframe->Draw(mShaders["Solid"].get());
-    }
 }
 
 void Renderer::AddVisualComp(VisualComponent* comp)
@@ -289,23 +271,6 @@ std::shared_ptr<Mesh> Renderer::GetMesh(const std::string& fileName, bool isRigh
     }
 
     return nullptr;
-}
-
-
-// デバッガーコンポーネント登録
-void Renderer::AddWireframeComp(WireframeComponent* wf)
-{
-    mWireframeComps.emplace_back(wf);
-}
-
-// パーティクルコンポーネント登録
-void Renderer::RemoveWireframeComp(WireframeComponent* wf)
-{
-    auto iter = std::find(mWireframeComps.begin(), mWireframeComps.end(), wf);
-    if (iter != mWireframeComps.end())
-    { // 要素が見つかった場合のみ削除
-        mWireframeComps.erase(iter);
-    }
 }
 
 // データ解放

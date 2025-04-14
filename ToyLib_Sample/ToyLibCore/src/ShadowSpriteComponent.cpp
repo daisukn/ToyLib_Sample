@@ -61,6 +61,6 @@ void ShadowSpriteComponent::Draw()
     mTexture->SetActive(0); // ShadowSprite用ユニット
     mShader->SetTextureUniform("uTexture", 0);
 
-    mSpriteVerts->SetActive();
+    mVertexArray->SetActive();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }

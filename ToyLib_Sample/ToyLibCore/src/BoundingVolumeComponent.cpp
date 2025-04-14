@@ -1,4 +1,5 @@
 #include "BoundingVolumeComponent.h"
+#include "WireframeComponent.h"
 #include "Actor.h"
 #include "Polygon.h"
 #include "VertexArray.h"
@@ -16,14 +17,18 @@ const int NUM_VERTEX = 12;
 
 // コンストラクタ
 BoundingVolumeComponent::BoundingVolumeComponent(Actor* a)
-: WireframeComponent(a)
+: Component(a)
 , mRadius(0.0f)
-, mIsVisible(true)
 {
     mBoundingBox = std::make_unique<Cube>();
     mObb = std::make_unique<OBB>();
     mPolygons.reset(new Polygon[NUM_VERTEX]);
     
+    if (mOwnerActor->GetApp()->GetRenderer()->IsDebugMode())
+    {
+        mWireframe = std::make_unique<WireframeComponent>(mOwnerActor, 1000);
+        mWireframe->SetColor(Vector3(1,0,0.5f));
+    }
 }
 
 // デストラクタ
@@ -166,7 +171,7 @@ void BoundingVolumeComponent::AdjustBoundingBox(const Vector3 pos, const Vector3
 void BoundingVolumeComponent::CreateVArray()
 {
     // ボックス用頂点バッファ（座標、法線、UV）
-    float BBverts[] =
+    float verts[] =
     {
         mBoundingBox->min.x, mBoundingBox->min.y, mBoundingBox->min.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, // 0
         mBoundingBox->min.x, mBoundingBox->max.y, mBoundingBox->min.z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, // 1
@@ -179,7 +184,7 @@ void BoundingVolumeComponent::CreateVArray()
         
     };
     
-    unsigned int BBindex[] = {
+    unsigned int index[] = {
         0, 1, 3,
         3, 2, 0,
         
@@ -201,11 +206,15 @@ void BoundingVolumeComponent::CreateVArray()
 
     };
     
-    mVertexArray = std::make_unique<VertexArray>(BBverts, 8, (unsigned int*)BBindex, (unsigned int)36);
+    //mVertexArray = std::make_shared<VertexArray>(BBverts, 8, (unsigned int*)BBindex, (unsigned int)36);
+    if (mWireframe)
+    {
+        mWireframe->SetVertexArray(std::make_shared<VertexArray>(verts, 8, (unsigned int*)index, (unsigned int)36));
+    }
 
 }
 
-
+/*
 // バウンディングボリューム表示（ワイヤフレーム）
 void BoundingVolumeComponent::Draw(Shader* shader)
 {
@@ -258,7 +267,7 @@ void BoundingVolumeComponent::Draw(Shader* shader)
     mVertexArray->SetActive();
     glDrawElements(GL_LINE_STRIP, NUM_VERTEX * 3, GL_UNSIGNED_INT, nullptr);
 */
-}
+//}
 
 // ワールド空間でのバウンディングボックスを取得
 Cube BoundingVolumeComponent::GetWorldAABB() const

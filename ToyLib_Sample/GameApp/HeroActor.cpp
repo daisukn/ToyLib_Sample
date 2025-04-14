@@ -46,7 +46,7 @@ HeroActor::HeroActor(Application* a)
     Vector3 vScale;
     JsonHelper::GetVector3(json["collider"], "bounding_box_scale", vScale);
     mCollComp->GetBoundingVolume()->AdjustBoundingBox(vOffset, vScale);
-    mCollComp->GetBoundingVolume()->SetVisible(true);
+    //mCollComp->GetBoundingVolume()->SetVisible(true);
     mCollComp->SetFlags(C_FOOT | C_PLAYER);
     mCollComp->SetDisp(true);
 

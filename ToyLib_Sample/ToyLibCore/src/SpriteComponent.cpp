@@ -63,7 +63,7 @@ void SpriteComponent::Draw()
     mShader->SetMatrixUniform("uWorldTransform", world);
     mLightingManager->ApplyToShader(mShader, view);
 
-    mSpriteVerts->SetActive();
+    mVertexArray->SetActive();
     // 描画
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     

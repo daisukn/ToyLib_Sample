@@ -53,6 +53,6 @@ protected:
     VisualType mType;
     int mDrawOrder;
     bool mEnableShadow;
-    std::shared_ptr<class VertexArray> mSpriteVerts;
+    std::shared_ptr<class VertexArray> mVertexArray;
     
 };

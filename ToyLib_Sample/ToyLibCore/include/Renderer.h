@@ -56,11 +56,6 @@ public:
     void AddVisualComp(class VisualComponent* comp);
     void RemoveVisualComp(class VisualComponent* comp);
 
-
-    // ワイヤーフレームコンポーネント登録・削除
-    void AddWireframeComp(class WireframeComponent* wireframe);
-    void RemoveWireframeComp(class WireframeComponent* wireframe);
-
     // デバッグモード設定
     void SetDebugMode(const bool b) { mIsDebugMode = b; }
     bool GetDebugMode() const { return mIsDebugMode; }
@@ -100,6 +95,8 @@ public:
     std::shared_ptr<class VertexArray> GetSpriteVerts() const { return mSpriteVerts; }
     
     std::shared_ptr<class Texture> GetShadowMapTexture() const { return mShadowMapTexture; }
+    
+    bool IsDebugMode() const { return mIsDebugMode; }
 
 private:
     // セッティング読み込み
@@ -178,13 +175,9 @@ private:
 
     // コンポーネント
     std::vector<class VisualComponent*> mVisualComps;
-    std::vector<class WireframeComponent*> mWireframeComps;
-    
-    
     class SkyDomeComponent* mSkyDomeComp; // Gameアプリ側で生成、生ポインタを保持
     
     void DrawSky();
-    void DrawDebugger();
     void DrawVisualLayer(VisualLayer layer);
 };
 

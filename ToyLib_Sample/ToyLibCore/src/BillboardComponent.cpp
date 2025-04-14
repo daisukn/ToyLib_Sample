@@ -65,7 +65,7 @@ void BillboardComponent::Draw()
     mShader->SetTextureUniform("uTexture", 0);
     
     // VAO有効化
-    mSpriteVerts->SetActive();
+    mVertexArray->SetActive();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
     if (mIsBlendAdd)

@@ -1,14 +1,21 @@
 #pragma once
 
-#include "Component.h"
+#include "VisualComponent.h"
+#include <memory>
 
 
 // ワイヤーフレームの表示用
-class WireframeComponent : public Component
+class WireframeComponent : public VisualComponent
 {
 public:
-    WireframeComponent(class Actor* a);
-    virtual ~WireframeComponent();
+    WireframeComponent(class Actor* owner, int drawOrder, VisualLayer layer = VisualLayer::Object3D);
     
-    virtual void Draw(class Shader* s) { }
+    void Draw() override;
+    
+    void SetVertexArray(std::shared_ptr<class VertexArray> vertex) { mVertexArray = vertex; }
+    
+    void SetColor(const Vector3& color) { mColor = color; }
+private:
+    Vector3 mColor;
+    
 };

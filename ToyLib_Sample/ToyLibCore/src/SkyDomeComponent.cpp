@@ -26,7 +26,8 @@ void SkyDomeComponent::SetTime(float t) {
     mTime = Math::Clamp(t, 0.0f, 1.0f);
 }
 
-void SkyDomeComponent::SetSunDirection(const Vector3& dir) {
+void SkyDomeComponent::SetSunDirection(const Vector3& dir)
+{
     mSunDir = dir;
 }
 

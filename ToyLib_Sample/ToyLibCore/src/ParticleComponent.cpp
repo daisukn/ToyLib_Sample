@@ -140,7 +140,7 @@ void ParticleComponent::Draw()
     mShader->SetTextureUniform("uTexture", 0);
 
     // VAO有効有効化
-    mSpriteVerts->SetActive();
+    mVertexArray->SetActive();
     for (int i = 0; i < mNumParts; ++i)
     {
         if (mParts[i].isVisible)
