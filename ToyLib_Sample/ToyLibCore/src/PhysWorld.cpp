@@ -116,7 +116,7 @@ bool PhysWorld::JudgeWithOBB(ColliderComponent* col1, ColliderComponent* col2)
     
     
     // 判定する
-    return  IsCollideBoxOBB(obb1, obb2);
+    return  IsCollideBoxOBB(obb1.get(), obb2.get());
 }
 
 // 衝突しているかどうか
@@ -302,7 +302,7 @@ Vector3 PhysWorld::ComputePushBackDirection(ColliderComponent* a, ColliderCompon
     auto obb1 = a->GetBoundingVolume()->GetOBB();
     auto obb2 = b->GetBoundingVolume()->GetOBB();
 
-    if (!IsCollideBoxOBB_MTV(obb1, obb2, mtv) || !mtv.valid)
+    if (!IsCollideBoxOBB_MTV(obb1.get(), obb2.get(), mtv) || !mtv.valid)
     {
         // fallback
         Vector3 delta = a->GetPosition() - b->GetPosition();
@@ -531,10 +531,10 @@ bool PhysWorld::RayHitWall(const Vector3& start, const Vector3& end, Vector3& hi
     for (auto* col : mColliders)
     {
         if (!col->HasFlag(C_WALL)) continue;
-        const OBB* obb = col->GetBoundingVolume()->GetOBB();
+        auto obb = col->GetBoundingVolume()->GetOBB();
 
         float t;
-        if (IntersectRayOBB(ray, obb, t))
+        if (IntersectRayOBB(ray, obb.get(), t))
         {
             if (t < closestT)
             {

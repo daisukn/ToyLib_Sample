@@ -56,37 +56,26 @@ public:
     // 座標系のUpdate
     void OnUpdateWorldTransform() override;
     
-    // 描画 override
-    //void Draw(class Shader* shader) override;
     
     // バウンディングボックス取得
-    struct Cube* GetBoundingBox() const { return mBoundingBox.get(); }
-    struct OBB* GetOBB() const { return mObb.get(); }
+    std::shared_ptr<struct Cube>  GetBoundingBox() const { return mBoundingBox; }
+    std::shared_ptr<struct OBB> GetOBB() const { return mObb; }
     // ワールド座標のAABBを返す
     struct Cube GetWorldAABB() const;
-
     
     struct Polygon* GetPolygons() const { return mPolygons.get(); }
-    
-    //void SetVisible(bool b) { mIsVisible = b; }
-    //bool GetVisibile() const { return mIsVisible; }
-    
+
     float GetRadius() const { return mRadius; }
     void SetRadius(float f) { mRadius = f; }
 
 private:
- 
-    // デバッグ用に表示するかどうか
-    //bool mIsVisible;
+
     
     std::unique_ptr<struct Polygon[]> mPolygons;
     void CreatePolygons();
 
-    //std::shared_ptr<class VertexArray> mVertexArray;
-
-
-    std::unique_ptr<struct Cube> mBoundingBox;
-    std::unique_ptr<struct OBB> mObb;
+    std::shared_ptr<struct Cube> mBoundingBox;
+    std::shared_ptr<struct OBB> mObb;
     float mRadius;
     
     std::unique_ptr<class WireframeComponent> mWireframe;

@@ -113,7 +113,6 @@ void Renderer::Shutdown()
 
 }
 
-
 // 描画処理
 void Renderer::Draw()
 {
