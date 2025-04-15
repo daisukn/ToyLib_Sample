@@ -46,15 +46,25 @@ vec3 getSkyColor(float time)
 
     time = fract(time);
     if (time < 0.2)
+    {
         return mix(night, dusk, smoothstep(0.0, 0.2, time));
+    }
     else if (time < 0.4)
+    {
         return mix(dusk, day, smoothstep(0.2, 0.4, time));
+    }
     else if (time < 0.6)
+    {
         return day;
+    }
     else if (time < 0.8)
+    {
         return mix(day, dusk, smoothstep(0.6, 0.8, time));
+    }
     else
+    {
         return mix(dusk, night, smoothstep(0.8, 1.0, time));
+    }
 }
 
 // --- 雲の色（時間帯に応じて） ---
