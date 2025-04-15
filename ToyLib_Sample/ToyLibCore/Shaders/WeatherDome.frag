@@ -164,7 +164,7 @@ void main()
     if (uWeatherType <= 1)
     {
         float sunAmount = clamp(dot(normalize(vWorldDir), -normalize(uSunDir)), 0.0, 1.0);
-        vec3 sunGlow = vec3(1.2, 1.0, 0.8) * pow(sunAmount, 320.0);
+        vec3 sunGlow = vec3(1.2, 1.0, 0.8) * pow(sunAmount, 512.0);
         finalColor += sunGlow * (1.0 - cloudAlpha); // 雲が薄いほど強く見える
 
     }
