@@ -34,6 +34,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		7E2B2D9E2DB2D46A00DE027A /* Tools */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Tools;
+			sourceTree = "<group>";
+		};
 		7EE028F12D90A8200048EF67 /* ToyLib_Sample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ToyLib_Sample;
@@ -84,6 +89,7 @@
 		7EE028E62D90A8200048EF67 = {
 			isa = PBXGroup;
 			children = (
+				7E2B2D9E2DB2D46A00DE027A /* Tools */,
 				7E1675D92D911D49002987AB /* doc */,
 				7EE028F12D90A8200048EF67 /* ToyLib_Sample */,
 				7EE0295C2D90A9120048EF67 /* Frameworks */,
@@ -124,6 +130,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				7E2B2D9E2DB2D46A00DE027A /* Tools */,
 				7EE028F12D90A8200048EF67 /* ToyLib_Sample */,
 			);
 			name = ToyLib_Sample;
