@@ -19,6 +19,7 @@ public:
     void PlayOnce(int animID, int nextAnimID);
     
     bool IsFinished() const { return mIsFinished; }
+    bool IsLooping() const { return mIsLooping; }
 
 private:
     std::shared_ptr<class Mesh> mMesh;

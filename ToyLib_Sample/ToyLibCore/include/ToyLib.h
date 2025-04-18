@@ -55,3 +55,6 @@
 
 // --- Optional system-level ---
 #include "ApplicationEntry.h"
+
+// --- Animation ---
+#include "AnimationPlayer.h"

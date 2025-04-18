@@ -5,8 +5,6 @@
 #include "Bone.h"
 #include "Polygon.h"
 #include "Material.h"
-#include "Animation.h"
-
 // Assimp用
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
@@ -53,7 +51,6 @@ Mesh::Mesh()
 : mScene(nullptr)
 , mNumBones(0)
 , mSpecPower(1.0f)
-, mNumAnimations(0)
 {
     
 }
@@ -64,7 +61,7 @@ Mesh::~Mesh()
 }
 
 // 階層を辿ってノードの変換行列を得る
-void Mesh::ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform, const aiAnimation* pAnimation)
+void Mesh::ComputeBoneHierarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform, const aiAnimation* pAnimation)
 {
 
     std::string nodeName(pNode->mName.data);
@@ -107,7 +104,7 @@ void Mesh::ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Mat
 
     for (unsigned int i = 0; i < pNode->mNumChildren; i++)
     {
-        ReadNodeHeirarchy(animationTime, pNode->mChildren[i], globalTransformation, pAnimation);
+        ComputeBoneHierarchy(animationTime, pNode->mChildren[i], globalTransformation, pAnimation);
     }
 }
 
@@ -515,14 +512,36 @@ void Mesh::LoadMaterials(Renderer* r)
 
 void Mesh::LoadAnimations()
 {
-    mNumAnimations = mScene->mNumAnimations;
-    mDurations.resize(mNumAnimations);
-    for (int i = 0; i < mNumAnimations; i++) {
-        mDurations[i] = (float)mScene->mAnimations[i]->mDuration;
+    mAnimationClips.clear();
+
+    if (!mScene || mScene->mNumAnimations == 0)
+    {
+        std::cout << "[Mesh] No animations found in scene." << std::endl;
+        return;
+    }
+
+    int mNumAnimations = mScene->mNumAnimations;
+    std::cout << "[Mesh] Found " << mNumAnimations << " animation(s)." << std::endl;
+
+    for (unsigned int i = 0; i < mNumAnimations; ++i)
+    {
+        const aiAnimation* anim = mScene->mAnimations[i];
+
+        AnimationClip clip;
+        clip.mAnimation = anim;
+        clip.mName = anim->mName.C_Str(); // 名前が空の場合もある
+        clip.mDuration = static_cast<float>(anim->mDuration);
+        clip.mTicksPerSecond = (anim->mTicksPerSecond != 0.0)
+            ? static_cast<float>(anim->mTicksPerSecond)
+            : 25.0f; // デフォルトTick値（Assimp推奨）
+
+        mAnimationClips.emplace_back(clip);
+
+        std::cout << " - Clip[" << i << "]: name=\"" << clip.mName
+                  << "\", duration=" << clip.mDuration
+                  << ", tps=" << clip.mTicksPerSecond << std::endl;
     }
 }
-
-
 // データ破棄
 void Mesh::Unload()
 {
@@ -543,7 +562,7 @@ std::shared_ptr<Material> Mesh::GetMaterial(size_t index)
 void Mesh::ComputePoseAtTime(float animationTime, const aiAnimation* pAnimation, std::vector<Matrix4>& outTransforms)
 {
     Matrix4 identity = Matrix4::Identity;
-    ReadNodeHeirarchy(animationTime, mScene->mRootNode, identity, pAnimation);
+    ComputeBoneHierarchy(animationTime, mScene->mRootNode, identity, pAnimation);
 
     outTransforms.resize(mNumBones);
     for (unsigned int i = 0; i < mNumBones; i++)

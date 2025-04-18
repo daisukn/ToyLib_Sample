@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "AnimationPlayer.h"
 #include <assimp/scene.h>
+#include <iostream>
 
 AnimationPlayer::AnimationPlayer(std::shared_ptr<Mesh> mesh)
 : mMesh(mesh)
@@ -16,6 +17,10 @@ AnimationPlayer::AnimationPlayer(std::shared_ptr<Mesh> mesh)
 
 void AnimationPlayer::Play(int animID, bool loop)
 {
+    // 同じ内容なら再生しなおさない
+    if (mAnimID == animID && mIsLooping == loop && !mIsPaused)
+        return;
+
     mAnimID = animID;
     mPlayTime = 0.0f;
     mIsLooping = loop;
@@ -27,31 +32,39 @@ void AnimationPlayer::Play(int animID, bool loop)
 void AnimationPlayer::Update(float deltaTime)
 {
     if (!mMesh || mIsPaused) return;
-    
-    const aiAnimation* anim = mMesh->GetScene()->mAnimations[mAnimID];
-    float ticksPerSecond = (anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 25.0f);
+
+    // 範囲外チェック
+    const auto& clips = mMesh->GetAnimationClips();
+    if (mAnimID < 0 || mAnimID >= static_cast<int>(clips.size()))
+    {
+        std::cerr << "AnimationPlayer::Update - invalid mAnimID: " << mAnimID << std::endl;
+        mIsFinished = true;
+        return;
+    }
+
+    mIsFinished = false;
+
+    const aiAnimation* anim = clips[mAnimID].mAnimation;
+    float ticksPerSecond = clips[mAnimID].mTicksPerSecond;
+    float animDuration = clips[mAnimID].mDuration;
+
     float timeInTicks = mPlayTime * mPlayRate * ticksPerSecond;
 
-    float animTime = fmod(timeInTicks, anim->mDuration);
-
     // 再生終了チェック
-    if (!mIsLooping && mPlayTime * mPlayRate * ticksPerSecond >= anim->mDuration)
+    if (!mIsLooping && timeInTicks >= animDuration)
     {
         mIsFinished = true;
+
         if (mNextAnimID >= 0)
         {
-            Play(mNextAnimID, true); // 次にループするやつに切り替え
+            Play(mNextAnimID, true);
         }
         return;
     }
-    
-    if (anim->mDuration <= 0.0f)
-    {
-        mIsFinished = true;
-        return;
-    }
-    
+
+    float animTime = fmod(timeInTicks, animDuration);
     mMesh->ComputePoseAtTime(animTime, anim, mFinalMatrices);
+
     mPlayTime += deltaTime;
 }
 void AnimationPlayer::PlayOnce(int animID, int nextAnimID)

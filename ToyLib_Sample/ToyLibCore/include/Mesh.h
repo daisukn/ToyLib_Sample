@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MathUtils.h"
-#include "Animation.h"
+#include "AnimationClip.h"
 
 #include <vector>
 #include <string>
@@ -11,94 +11,94 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 
-
-// Mesh管理（アニメーション対応）
+// アニメーション対応のメッシュを管理するクラス
 class Mesh
 {
 public:
     Mesh();
     ~Mesh();
 
-    // メッシュファイルロード
+    // メッシュファイルを読み込む
     virtual bool Load(const std::string& fileName, class Renderer* renderer, bool isRightHanded = false);
-    // アンロード
+    // メッシュとリソースの開放
     void Unload();
 
-    // VertexArrayを取得
+    // メッシュの頂点配列（VAO）を取得
     const std::vector<std::shared_ptr<class VertexArray>>& GetVertexArray() { return mVertexArray; }
-    
-    // マテリアル取得
+
+    // マテリアルを取得
     std::shared_ptr<class Material> GetMaterial(size_t index);
-    
-    // シェーダー名取得
+
+    // 使用するシェーダー名を取得
     const std::string& GetShaderName() const { return mShaderName; }
-    // Specurer（未実装
+    // スペキュラー強度を取得
     float GetSpecPower() const { return mSpecPower; }
 
-    
+    // Assimpで読み込まれたシーンへのポインタ
     const aiScene* GetScene() const { return mScene; }
-    
+
+    // 指定時刻における姿勢行列（各ボーン）を計算する
     void ComputePoseAtTime(float animationTime, const aiAnimation* pAnimation, std::vector<Matrix4>& outTransforms);
 
+    // 読み込まれたアニメーションクリップを取得
+    const std::vector<struct AnimationClip>& GetAnimationClips() const { return mAnimationClips; }
+    // アニメーションが存在するかどうか
+    bool HasAnimation() const { return !mAnimationClips.empty(); }
+
 private:
-
-    // Assimpオブジェクト
-    const aiScene* mScene;
-    Assimp::Importer mImporter;
-    
+    // メッシュデータの読み込み（ボーンの有無を判断）
     void LoadMeshData();
+    // マテリアルの読み込み
     void LoadMaterials(class Renderer* renderer);
+    // アニメーションクリップの読み込み
     void LoadAnimations();
-    
-    // メッシュ生生(Boneなし)
-    void CreateMesh(const aiMesh* m);
-    // メッシュ生成（Boneあり)
-    void CreateMeshBone(const aiMesh* m);
-    // Bone情報読み込み
-    void LoadBones(const aiMesh* m, std::vector<struct VertexBoneData>& bones);
-    // Bone階層を辿る
-    void ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform, const aiAnimation* pAnimation);
-    // アニメーション情報を取得
-    const aiNodeAnim* FindNodeAnim (const aiAnimation* pAnimation, const std::string nodeName);
-    
-    
-    // モーションごとのフレーム数
-    unsigned int mNumAnimations;
-    std::vector<float> mDurations;
-    
 
-    // フレームごとのBone姿勢を計算
-    void CalcInterpolatedScaling (Vector3& outVec, float animationTime, const aiNodeAnim* pNodeAnim);
-    void CalcInterpolatedRotation (Quaternion& outVec, float animationTime, const aiNodeAnim* pNodeAnim);
-    void CalcInterpolatedPosition (Vector3& outV, float animationTime, const aiNodeAnim* pNodeAnim);
-    
+    // 通常メッシュの生成（ボーンなし）
+    void CreateMesh(const aiMesh* m);
+    // スキンメッシュの生成（ボーンあり）
+    void CreateMeshBone(const aiMesh* m);
+    // ボーン情報の読み込み
+    void LoadBones(const aiMesh* m, std::vector<struct VertexBoneData>& bones);
+
+    // ボーン階層を再帰的に計算
+    void ComputeBoneHierarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform, const aiAnimation* pAnimation);
+    // 指定ノード名に一致するアニメーションチャネルを検索
+    const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const std::string nodeName);
+
+    // 補間計算：スケール / 回転 / 平行移動
+    void CalcInterpolatedScaling(Vector3& outVec, float animationTime, const aiNodeAnim* pNodeAnim);
+    void CalcInterpolatedRotation(Quaternion& outVec, float animationTime, const aiNodeAnim* pNodeAnim);
+    void CalcInterpolatedPosition(Vector3& outV, float animationTime, const aiNodeAnim* pNodeAnim);
+
+    // 補間対象のキーインデックスを検索
     unsigned int FindScaling(float animationTime, const aiNodeAnim* pNodeAnim);
     unsigned int FindRotation(float animationTime, const aiNodeAnim* pNodeAnim);
     unsigned int FindPosition(float animationTime, const aiNodeAnim* pNodeAnim);
 
+private:
+    // Assimpのシーンデータ
+    const aiScene* mScene;
+    Assimp::Importer mImporter;
 
-    // Bone情報格納用
-    std::map<std::string,unsigned int> mBoneMapping;
-    // Bone数
+    // ボーン名からインデックスをマップ
+    std::map<std::string, unsigned int> mBoneMapping;
+    // ボーン数
     unsigned int mNumBones;
-    // BoneとWeightを格納
+    // 各ボーンのオフセット行列や最終変換行列など
     std::vector<struct BoneInfo> mBoneInfo;
-    // 逆行列を記憶
+    // ルートノードの逆変換行列
     Matrix4 mGlobalInverseTransform;
 
-    // VertexArrayのVector
+    // 頂点配列オブジェクト（1メッシュにつき1つ）
     std::vector<std::shared_ptr<class VertexArray>> mVertexArray;
-    
-    // MatrialのVector
+    // マテリアル
     std::vector<std::shared_ptr<class Material>> mMaterials;
 
-    // シェーダー名
+    // 読み込まれたアニメーションクリップ
+    std::vector<struct AnimationClip> mAnimationClips;
+
+    // 使用するシェーダー名
     std::string mShaderName;
-
-    // Specurer
+    // スペキュラー係数
     float mSpecPower;
-    
-
 };
-
-

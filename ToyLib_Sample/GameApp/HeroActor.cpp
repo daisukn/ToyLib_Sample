@@ -78,80 +78,68 @@ void HeroActor::UpdateActor(float deltaTime)
 void HeroActor::ActorInput(const InputState& state)
 {
     bool inputAttack = false;
-    bool inputJump = false;
 
+    auto animPlayer = mMeshComp->GetAnimPlayer();
+
+    // --- 移動可能状態 ---
     if (mMovable)
     {
-        // 攻撃・ジャンプ入力判定
-        /*if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
-            state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed)
+        // 攻撃入力（入力優先度付きで判定）
+        if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed)
         {
-            mAnimID = H_Jump;
+            animPlayer->PlayOnce(H_Slash, H_Stand);
             inputAttack = true;
         }
-        */
-        if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed ||
-                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_B) == EPressed)
+        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_C) == EPressed)
         {
-            //mAnimID = H_Slash;
+            animPlayer->PlayOnce(H_Spin, H_Stand);
             inputAttack = true;
         }
-        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_C) == EPressed ||
-                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed)
+        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_V) == EPressed)
         {
-            //mAnimID = H_Spin;
+            animPlayer->PlayOnce(H_Stab, H_Stand);
             inputAttack = true;
         }
-        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_V) == EPressed ||
-                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
-        {
-            //mAnimID = H_Stab;
-            inputAttack = true;
-        }
-        else if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
-                 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
-        {
-            //inputAttack = true;
-            mGravComp->Jump();
-            inputJump = true;
-        }
-        // 攻撃入力があれば移動ロック
+
         if (inputAttack)
         {
-            mMovable = false;
+            mMovable = false; // 攻撃中はロック
         }
         else
         {
-            // 攻撃入力なし → 通常移動状態に応じたアニメ設定
-            if (mMoveComp->GetForwardSpeed() == 0.0f &&
-                mMoveComp->GetAngularSpeed() == 0.0f &&
-                mMoveComp->GetRightSpeed() == 0.0f)
+            // ジャンプ（移動ロックしない）
+            if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed)
             {
-                //mAnimID = H_Stand;
+                mGravComp->Jump();
+                animPlayer->PlayOnce(H_Jump, H_Stand);
+            }
+
+            // --- 状態に応じた通常アニメ切り替え ---
+            if (mGravComp->GetVelocityY() != 0.0f)
+            {
+                animPlayer->Play(H_Jump); // ジャンプ中も移動OK
+            }
+            else if (mMoveComp->GetForwardSpeed() == 0.0f &&
+                     mMoveComp->GetAngularSpeed() == 0.0f &&
+                     mMoveComp->GetRightSpeed() == 0.0f)
+            {
+                animPlayer->Play(H_Stand);
             }
             else
             {
-                //mAnimID = H_Run;
-            }
-            if (mGravComp->GetVelocityY() != 0.0f)
-            {
-               // mAnimID = H_Jump;
+                animPlayer->Play(H_Run);
             }
         }
     }
     else
     {
-        // 攻撃アニメーション終了で移動再開
-        //if (!mMeshComp->GetIsPlaing())
+        // 攻撃終了したら解除（ループアニメ中も解除）
+        if (animPlayer->IsLooping() || animPlayer->IsFinished())
         {
             mMovable = true;
         }
     }
 
-    // アニメーション再生
-    /*mMeshComp->SetAnimID(mAnimID,
-                             (mAnimID == H_Run || mAnimID == H_Stand) ? PLAY_CYCLIC : PLAY_ONCE);
-     */
-    // 移動ロックをMoveComponentに伝える
+    // 最後にMoveComponentへ反映
     mMoveComp->SetIsMovable(mMovable);
 }

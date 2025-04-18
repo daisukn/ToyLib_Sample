@@ -26,7 +26,8 @@ public:
     
     void SetMesh(std::shared_ptr<class Mesh> m) override;
     
-    //bool GetIsPlaing() const;
+    class AnimationPlayer* GetAnimPlayer() { return mAnimPlayer.get(); }
+    
 
 private:
     // アニメーション時間
