@@ -12,8 +12,6 @@
 #include <assimp/Importer.hpp>
 
 
-
-
 // Mesh管理（アニメーション対応）
 class Mesh
 {
@@ -28,8 +26,6 @@ public:
 
     // VertexArrayを取得
     const std::vector<std::shared_ptr<class VertexArray>>& GetVertexArray() { return mVertexArray; }
-    // Textureを取得
-    //class Texture* GetTexture(size_t index);
     
     // マテリアル取得
     std::shared_ptr<class Material> GetMaterial(size_t index);
@@ -38,21 +34,21 @@ public:
     const std::string& GetShaderName() const { return mShaderName; }
     // Specurer（未実装
     float GetSpecPower() const { return mSpecPower; }
+
     
-    // ボーン変形を反映
-    void BoneTransform(float TimeInSeconds, std::vector<Matrix4>& Transforms);
-    // モーションIDを設定
-    void SetAnimID(int id, PlayMode m);//{ animID = id; mode = m; playTime = 0.0f; }
+    const aiScene* GetScene() const { return mScene; }
     
-    // 再生中かどうか
-    bool GetIsPlaying() const { return mIsPlaying; }
-    
+    void ComputePoseAtTime(float animationTime, const aiAnimation* pAnimation, std::vector<Matrix4>& outTransforms);
 
 private:
 
     // Assimpオブジェクト
     const aiScene* mScene;
     Assimp::Importer mImporter;
+    
+    void LoadMeshData();
+    void LoadMaterials(class Renderer* renderer);
+    void LoadAnimations();
     
     // メッシュ生生(Boneなし)
     void CreateMesh(const aiMesh* m);
@@ -61,24 +57,14 @@ private:
     // Bone情報読み込み
     void LoadBones(const aiMesh* m, std::vector<struct VertexBoneData>& bones);
     // Bone階層を辿る
-    void ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform);
+    void ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform, const aiAnimation* pAnimation);
     // アニメーション情報を取得
     const aiNodeAnim* FindNodeAnim (const aiAnimation* pAnimation, const std::string nodeName);
-
-    // モーションID
-    unsigned int mAnimID;
-    unsigned int mPrevAnimID;
     
-    // 再生中かどうか
-    bool mIsPlaying;
     
-    // 再生中の時間
-    float mPlayTime;
-    PlayMode mPlayMode;
     // モーションごとのフレーム数
     unsigned int mNumAnimations;
     std::vector<float> mDurations;
-    void LoadAnimation();
     
 
     // フレームごとのBone姿勢を計算
@@ -100,9 +86,6 @@ private:
     // 逆行列を記憶
     Matrix4 mGlobalInverseTransform;
 
-    
-    // TextureのVector
-    //std::vector<class Texture*> mTextures;
     // VertexArrayのVector
     std::vector<std::shared_ptr<class VertexArray>> mVertexArray;
     

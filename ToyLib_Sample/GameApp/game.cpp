@@ -90,7 +90,6 @@ void Game::LoadData()
     auto stanMesh = stanActor->CreateComponent<SkeletalMeshComponent>();
     auto stanCllider = stanActor->CreateComponent<ColliderComponent>();
     stanMesh->SetMesh(GetRenderer()->GetMesh("Assets/stan.gltf", true));
-    stanMesh->SetAnimID(6, PLAY_CYCLIC);
     stanMesh->SetToonRender(true, 1.015f);
     
     stanActor->SetPosition(Vector3(-3,0,10));

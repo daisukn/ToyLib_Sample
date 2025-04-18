@@ -1,7 +1,6 @@
 #pragma once
 
 #include "VisualComponent.h"
-#include "Animation.h"
 #include "MathUtils.h"
 #include <memory>
 //#include <cstddef>
@@ -19,10 +18,7 @@ public:
     
     virtual void SetMesh(std::shared_ptr<class Mesh> m) { mMesh = m; }              // メッシュセット
     void SetTextureIndex(unsigned int index) { mTextureIndex = index; }    // テクスチャGetter
-
-    //void SetVisible(bool visible) { mIsVisible = visible; }
-    //bool GetVisible() const { return mIsVisible; }
-    
+   
     bool GetIsSkeletal() const { return mIsSkeletal; }
     std::shared_ptr<VertexArray> GetVertexArray(int id) const;
     
@@ -32,7 +28,7 @@ public:
     bool GetToon() const { return mIsToon; }
     
     // 再生するモーションのID（SkerltalMeshでオーバーライドする。インターフェース確保のため）
-    virtual void SetAnimID(const unsigned int animID, const PlayMode mode) {}
+    virtual void SetAnimID(const unsigned int animID, const bool mode) {}
     
 protected:
     std::shared_ptr<class Mesh>  mMesh;      // メッシュ

@@ -5,12 +5,12 @@
 #include "Bone.h"
 #include "Polygon.h"
 #include "Material.h"
+#include "Animation.h"
 
 // Assimp用
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-
 
 #include <vector>
 #include <memory>
@@ -53,12 +53,7 @@ Mesh::Mesh()
 : mScene(nullptr)
 , mNumBones(0)
 , mSpecPower(1.0f)
-, mAnimID(0)
-, mPrevAnimID(0)
 , mNumAnimations(0)
-, mPlayTime(0.0f)
-, mPlayMode(PLAY_ONCE)
-, mIsPlaying(false)
 {
     
 }
@@ -68,67 +63,13 @@ Mesh::~Mesh()
     mVertexArray.clear();
 }
 
-
-void Mesh::SetAnimID(int id, PlayMode m)
-{
-    if(mPrevAnimID != id)
-    {
-        mPlayTime = 0.0f;
-        mIsPlaying = true;
-    }
-
-    mPrevAnimID = mAnimID % mNumAnimations;
-    mAnimID = id;
-    mPlayMode = m;
-}
-
-
-// アニメーション時間の反映
-void Mesh::BoneTransform(float deltaTime, std::vector<Matrix4>& transforms)
-{
-    
-    mPlayTime += deltaTime;
-    float ticksPerSecond = (float)(mScene->mAnimations[mAnimID]->mTicksPerSecond != 0 ? mScene->mAnimations[mAnimID]->mTicksPerSecond : 25.0f);
-    float timeInTicks = mPlayTime * ticksPerSecond;
-
-
-    if (mPlayMode == PLAY_ONCE)
-    {
-        if (timeInTicks > mDurations[mAnimID])
-        {
-            // 再生が終わっている場合は、最後のポーズに固定
-            mPlayTime = mDurations[mAnimID];
-            mIsPlaying = false;
-        }
-    }
-    
-    Matrix4 identity = Matrix4::Identity;
-    
-
-    
-    float animationTime = fmod(timeInTicks, (float)mScene->mAnimations[mAnimID]->mDuration);
-    
-    ReadNodeHeirarchy(animationTime, mScene->mRootNode, identity);
-
-    transforms.resize(mNumBones);
-
-    for (unsigned int i = 0; i < mNumBones; i++)
-    {
-         transforms[i] = mBoneInfo[i].FinalTransformation;
-    }
-}
-
 // 階層を辿ってノードの変換行列を得る
-void Mesh::ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform)
+void Mesh::ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Matrix4& parentTransform, const aiAnimation* pAnimation)
 {
+
     std::string nodeName(pNode->mName.data);
-    
-    const aiAnimation* pAnimation = mScene->mAnimations[mAnimID];
-    
-        
     Matrix4 nodeTransformation;
     MatrixAi2Gl(nodeTransformation, pNode->mTransformation);
-    
     
     const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, nodeName);
     
@@ -151,25 +92,22 @@ void Mesh::ReadNodeHeirarchy(float animationTime, const aiNode* pNode, const Mat
         
         // ローカルマトリックスを生成
         nodeTransformation = rotationM * translationM * scalingM;;
-        //nodeTransformation = translationM * rotationM * scalingM;
     }
 
     
     
     // グローバルマトリックスを生成
-    Matrix4 globalTransformation = nodeTransformation * parentTransform;// * mGlobalInverseTransform;
-    //Matrix4 globalTransformation = parentTransform * nodeTransformation;// * mGlobalInverseTransform;
+    Matrix4 globalTransformation = nodeTransformation * parentTransform;
 
     if (mBoneMapping.find(nodeName) != mBoneMapping.end())
     {
         unsigned int boneIndex = mBoneMapping[nodeName];
         mBoneInfo[boneIndex].FinalTransformation =  mBoneInfo[boneIndex].BoneOffset * globalTransformation * mGlobalInverseTransform;
-        //mBoneInfo[boneIndex].FinalTransformation = mGlobalInverseTransform * globalTransformation * mBoneInfo[boneIndex].BoneOffset;
     }
 
     for (unsigned int i = 0; i < pNode->mNumChildren; i++)
     {
-        ReadNodeHeirarchy(animationTime, pNode->mChildren[i], globalTransformation);
+        ReadNodeHeirarchy(animationTime, pNode->mChildren[i], globalTransformation, pAnimation);
     }
 }
 
@@ -205,6 +143,7 @@ void Mesh::CalcInterpolatedPosition(Vector3& outVec, float animationTime, const 
     
     float deltaTime = (float)(pNodeAnim->mPositionKeys[nextPositionIndex].mTime - pNodeAnim->mPositionKeys[positionIndex].mTime);
     float factor = (animationTime - (float)pNodeAnim->mPositionKeys[positionIndex].mTime) / deltaTime;
+    factor = std::clamp(factor, 0.0f, 1.0f);
     assert(factor >= 0.0f && factor <= 1.0f);
 
     const aiVector3D& start = pNodeAnim->mPositionKeys[positionIndex].mValue;
@@ -233,6 +172,7 @@ void Mesh::CalcInterpolatedRotation(Quaternion& outVec, float animationTime, con
     
     float deltaTime = (float)(pNodeAnim->mRotationKeys[nextRotationIndex].mTime - pNodeAnim->mRotationKeys[rotationIndex].mTime);
     float factor = (animationTime - (float)pNodeAnim->mRotationKeys[rotationIndex].mTime) / deltaTime;
+    factor = std::clamp(factor, 0.0f, 1.0f);
     assert(factor >= 0.0f && factor <= 1.0f);
 
     const aiQuaternion& startRotationQ = pNodeAnim->mRotationKeys[rotationIndex].mValue;
@@ -243,7 +183,7 @@ void Mesh::CalcInterpolatedRotation(Quaternion& outVec, float animationTime, con
     aiQuaternion::Interpolate(q, startRotationQ, endRotationQ, factor);
     q = q.Normalize();
     outVec.Set(q.x, q.y, q.z, q.w);
-//    outVec.Normalize();
+    outVec.Normalize();
 
 }
 
@@ -264,6 +204,7 @@ void Mesh::CalcInterpolatedScaling(Vector3& outVec, float animationTime, const a
     assert(nextScalingIndex < pNodeAnim->mNumScalingKeys);
     float deltaTime = (float)(pNodeAnim->mScalingKeys[nextScalingIndex].mTime - pNodeAnim->mScalingKeys[scalingIndex].mTime);
     float factor = (animationTime - (float)pNodeAnim->mScalingKeys[scalingIndex].mTime) / deltaTime;
+    factor = std::clamp(factor, 0.0f, 1.0f);
     assert(factor >= 0.0f && factor <= 1.0f);
     
     const aiVector3D& start = pNodeAnim->mScalingKeys[scalingIndex].mValue;
@@ -286,9 +227,7 @@ unsigned int Mesh::FindPosition(float animationTime, const aiNodeAnim* pNodeAnim
         }
     }
     
-    assert(0);
-
-    return 0;
+    return pNodeAnim->mNumScalingKeys - 2;
 }
 
 
@@ -303,10 +242,8 @@ unsigned int Mesh::FindRotation(float animationTime, const aiNodeAnim* pNodeAnim
             return i;
         }
     }
-    
-    assert(0);
 
-    return 0;
+    return pNodeAnim->mNumScalingKeys - 2;
 }
 
 
@@ -321,24 +258,7 @@ unsigned int Mesh::FindScaling(float animationTime, const aiNodeAnim* pNodeAnim)
             return i;
         }
     }
-    
-    assert(0);
-
-    return 0;
-}
-
-
-// アニメーションデータ読み込み
-void Mesh::LoadAnimation()
-{
-    mNumAnimations = mScene->mNumAnimations;
-    mDurations.resize(mNumAnimations);
-    for (int i = 0; i < mNumAnimations; i++)
-    {
-        mDurations[i] = (float)mScene->mAnimations[i]->mDuration;
-        
-    }
-    
+    return pNodeAnim->mNumScalingKeys - 2;
 }
 
 // ボーン読み込み
@@ -449,7 +369,6 @@ void Mesh::CreateMeshBone(const aiMesh* m)
             indexBuffer.data()) );
     
     mVertexArray[mVertexArray.size()-1]->SetTextureID(m->mMaterialIndex);
-    LoadAnimation();
 }
 
 // メッシュをロード（Boneなし）
@@ -507,127 +426,100 @@ void Mesh::CreateMesh(const aiMesh* m)
     
 }
 
-// Assimpを使ったモデルデータロード
 bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
 {
-    
-    unsigned int ASSIMP_LOAD_FLAGS = aiProcess_Triangulate  | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeMeshes;
-    
-    if (isRightHanded)
-    {
-        ASSIMP_LOAD_FLAGS = ASSIMP_LOAD_FLAGS | aiProcess_FlipWindingOrder;
+    unsigned int ASSIMP_LOAD_FLAGS = aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                     aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices |
+                                     aiProcess_OptimizeMeshes;
+
+    if (isRightHanded) {
+        ASSIMP_LOAD_FLAGS |= aiProcess_FlipWindingOrder;
+    } else {
+        ASSIMP_LOAD_FLAGS |= aiProcess_MakeLeftHanded;
     }
-    else
-    {
-        ASSIMP_LOAD_FLAGS = ASSIMP_LOAD_FLAGS | aiProcess_MakeLeftHanded;
-    }
-    
-    // 読み込み（全データはaiSceneに格納される）
-    mScene = mImporter.ReadFile(fileName.c_str(), ASSIMP_LOAD_FLAGS);
-    if(!mScene)
-    {
+
+    mScene = mImporter.ReadFile(fileName, ASSIMP_LOAD_FLAGS);
+    if (!mScene) {
+        std::cerr << "Assimp Load Error: " << mImporter.GetErrorString() << std::endl;
         return false;
     }
 
-
-    //MatrixAi2Gl(mGlobalInverseTransform, mScene->mRootNode->mTransformation);
-    //mGlobalInverseTransform.Invert();
     aiMatrix4x4 inv = mScene->mRootNode->mTransformation;
     inv = inv.Inverse();
     MatrixAi2Gl(mGlobalInverseTransform, inv);
 
-    // 全メッシュ読み込み
-    for (int cnt = 0; cnt < mScene->mNumMeshes; cnt++)
-    {
+    LoadMeshData();
+    LoadMaterials(r);
+    LoadAnimations();
+
+    return true;
+}
+
+void Mesh::LoadMeshData()
+{
+    for (int cnt = 0; cnt < mScene->mNumMeshes; cnt++) {
         aiMesh* m = mScene->mMeshes[cnt];
-        
-        // ボーン情報有無
-        if (m->HasBones())
-        {
+        if (m->HasBones()) {
             CreateMeshBone(m);
-            
-        }
-        else
-        {
+        } else {
             CreateMesh(m);
         }
-        
-        
     }
-    
+}
 
-    // マテリアル読み込み
-  
-    for (unsigned int cnt = 0; cnt < mScene->mNumMaterials; cnt++)
-    {
+void Mesh::LoadMaterials(Renderer* r)
+{
+    for (unsigned int cnt = 0; cnt < mScene->mNumMaterials; cnt++) {
         aiMaterial* pMaterial = mScene->mMaterials[cnt];
-
-        // マテリアル作成
         std::shared_ptr<Material> mat = std::make_shared<Material>();
 
-        // カラー情報
         aiColor3D color(0.f, 0.f, 0.f);
         if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_AMBIENT, color))
-        {
             mat->SetAmbientColor(Vector3(color.r, color.g, color.b));
-        }
         if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color))
-        {
             mat->SetDiffuseColor(Vector3(color.r, color.g, color.b));
-        }
         if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_SPECULAR, color))
-        {
             mat->SetSpecularColor(Vector3(color.r, color.g, color.b));
-        }
 
-        // Shininess
         float shininess = 32.0f;
         if (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, shininess))
-        {
             mat->SetSpecPower(shininess);
-        }
 
-        // Diffuse テクスチャ
         aiString path;
-        if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
-        {
+        if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS) {
             std::string texPath = path.C_Str();
-            
-            if (texPath[0] == '*') // 埋め込みテクスチャ
-            {
+            if (texPath[0] == '*') {
                 int index = std::atoi(texPath.c_str() + 1);
-                if (index >= 0 && index < (int)mScene->mNumTextures)
-                {
+                if (index >= 0 && index < (int)mScene->mNumTextures) {
                     aiTexture* aiTex = mScene->mTextures[index];
-                    std::string key = fileName + "_EMBED_" + std::to_string(index);
-                    
+                    std::string key = "_EMBED_" + std::to_string(index);
+
                     const uint8_t* imageData = reinterpret_cast<const uint8_t*>(aiTex->pcData);
                     size_t imageSize = (aiTex->mHeight == 0)
-                    ? aiTex->mWidth // compressed
-                    : aiTex->mWidth * aiTex->mHeight * 4; // uncompressed (RGBA8888)
-                    
+                        ? aiTex->mWidth
+                        : aiTex->mWidth * aiTex->mHeight * 4;
+
                     auto tex = r->GetEmbeddedTexture(key, imageData, imageSize);
-                    if (tex)
-                    {
-                        mat->SetDiffuseMap(tex);
-                    }
+                    if (tex) mat->SetDiffuseMap(tex);
                 }
-            }
-            else
-            {
-                // 通常のファイルから読み込む
+            } else {
                 std::string textureFile = ASSETS_PATH + texPath;
                 auto tex = r->GetTexture(textureFile);
-                if (tex)
-                {
-                    mat->SetDiffuseMap(tex);
-                }
+                if (tex) mat->SetDiffuseMap(tex);
             }
         }
 
         mMaterials.push_back(mat);
     }
-    return true;
+}
+
+void Mesh::LoadAnimations()
+{
+    mNumAnimations = mScene->mNumAnimations;
+    mDurations.resize(mNumAnimations);
+    for (int i = 0; i < mNumAnimations; i++) {
+        mDurations[i] = (float)mScene->mAnimations[i]->mDuration;
+    }
 }
 
 
@@ -637,20 +529,7 @@ void Mesh::Unload()
     mScene = nullptr;
     mVertexArray.clear();
 }
-/*
-// テクスチャIDからGetter
-Texture* Mesh::GetTexture(size_t index)
-{
-//    if (index < mTextures.size())
-    {
-        //return mTextures[index];
-    }
-   // else
-    {
-        return nullptr;
-    }
-}
-*/
+
 std::shared_ptr<Material> Mesh::GetMaterial(size_t index)
 {
     if (index < mMaterials.size())
@@ -661,7 +540,15 @@ std::shared_ptr<Material> Mesh::GetMaterial(size_t index)
 }
 
 
+void Mesh::ComputePoseAtTime(float animationTime, const aiAnimation* pAnimation, std::vector<Matrix4>& outTransforms)
+{
+    Matrix4 identity = Matrix4::Identity;
+    ReadNodeHeirarchy(animationTime, mScene->mRootNode, identity, pAnimation);
 
-
-
+    outTransforms.resize(mNumBones);
+    for (unsigned int i = 0; i < mNumBones; i++)
+    {
+        outTransforms[i] = mBoneInfo[i].FinalTransformation;
+    }
+}
 

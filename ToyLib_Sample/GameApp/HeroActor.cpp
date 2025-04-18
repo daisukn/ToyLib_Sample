@@ -19,7 +19,7 @@ HeroActor::HeroActor(Application* a)
         JsonHelper::GetString(json["mesh"], "file", meshPath);
     }
     mMeshComp->SetMesh(a->GetRenderer()->GetMesh(meshPath));
-    mMeshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
+    //mMeshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
 
     bool useToon = false;
     float outline = 1.00f;
@@ -93,19 +93,19 @@ void HeroActor::ActorInput(const InputState& state)
         if (state.Keyboard.GetKeyState(SDL_SCANCODE_X) == EPressed ||
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_B) == EPressed)
         {
-            mAnimID = H_Slash;
+            //mAnimID = H_Slash;
             inputAttack = true;
         }
         else if (state.Keyboard.GetKeyState(SDL_SCANCODE_C) == EPressed ||
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed)
         {
-            mAnimID = H_Spin;
+            //mAnimID = H_Spin;
             inputAttack = true;
         }
         else if (state.Keyboard.GetKeyState(SDL_SCANCODE_V) == EPressed ||
                  state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_Y) == EPressed)
         {
-            mAnimID = H_Stab;
+            //mAnimID = H_Stab;
             inputAttack = true;
         }
         else if (state.Keyboard.GetKeyState(SDL_SCANCODE_Z) == EPressed ||
@@ -127,30 +127,31 @@ void HeroActor::ActorInput(const InputState& state)
                 mMoveComp->GetAngularSpeed() == 0.0f &&
                 mMoveComp->GetRightSpeed() == 0.0f)
             {
-                mAnimID = H_Stand;
+                //mAnimID = H_Stand;
             }
             else
             {
-                mAnimID = H_Run;
+                //mAnimID = H_Run;
             }
             if (mGravComp->GetVelocityY() != 0.0f)
             {
-                mAnimID = H_Jump;
+               // mAnimID = H_Jump;
             }
         }
     }
     else
     {
         // 攻撃アニメーション終了で移動再開
-        if (!mMeshComp->GetIsPlaing())
+        //if (!mMeshComp->GetIsPlaing())
         {
             mMovable = true;
         }
     }
 
     // アニメーション再生
-    mMeshComp->SetAnimID(mAnimID,
+    /*mMeshComp->SetAnimID(mAnimID,
                              (mAnimID == H_Run || mAnimID == H_Stand) ? PLAY_CYCLIC : PLAY_ONCE);
+     */
     // 移動ロックをMoveComponentに伝える
     mMoveComp->SetIsMovable(mMovable);
 }

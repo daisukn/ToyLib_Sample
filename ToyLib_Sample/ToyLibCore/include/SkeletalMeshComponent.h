@@ -1,12 +1,12 @@
 #pragma once
-
+#include "AnimationPlayer.h"
 #include "MathUtils.h"
 #include "MeshComponent.h"
-#include "Animation.h"
-
 #include <vector>
+#include <memory>
 
 const size_t MAX_SKELETON_BONES = 96;
+
 
 // スケルタルアニメーションメッシュを管理
 class SkeletalMeshComponent : public MeshComponent
@@ -22,16 +22,16 @@ public:
     void Update(float deltaTime) override;
     
     // 再生するモーションのID
-    virtual void SetAnimID(const unsigned int animID, const PlayMode mode) override;
+    void SetAnimID(const unsigned int animID, const bool mode) override;
     
-    bool GetIsPlaing() const;
+    void SetMesh(std::shared_ptr<class Mesh> m) override;
+    
+    //bool GetIsPlaing() const;
 
 private:
-
-    
     // アニメーション時間
     float mAnimTime;
-    
+    std::unique_ptr<class AnimationPlayer> mAnimPlayer;
 
 };
 
