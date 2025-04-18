@@ -520,10 +520,9 @@ void Mesh::LoadAnimations()
         return;
     }
 
-    int mNumAnimations = mScene->mNumAnimations;
-    std::cout << "[Mesh] Found " << mNumAnimations << " animation(s)." << std::endl;
+    std::cout << "[Mesh] Found " << mScene->mNumAnimations << " animation(s)." << std::endl;
 
-    for (unsigned int i = 0; i < mNumAnimations; ++i)
+    for (unsigned int i = 0; i < mScene->mNumAnimations; i++)
     {
         const aiAnimation* anim = mScene->mAnimations[i];
 
@@ -537,9 +536,6 @@ void Mesh::LoadAnimations()
 
         mAnimationClips.emplace_back(clip);
 
-        std::cout << " - Clip[" << i << "]: name=\"" << clip.mName
-                  << "\", duration=" << clip.mDuration
-                  << ", tps=" << clip.mTicksPerSecond << std::endl;
     }
 }
 // データ破棄
