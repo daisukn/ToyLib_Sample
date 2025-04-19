@@ -13,7 +13,6 @@ BillboardComponent::BillboardComponent(class Actor* a, int drawOrder)
 : VisualComponent(a, drawOrder, VisualLayer::Effect3D)
 , mScale(1.0f)
 {
-    mType = VisualType::Billboard;
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Billboard");
 }
 

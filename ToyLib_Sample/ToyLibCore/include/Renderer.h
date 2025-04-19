@@ -15,6 +15,7 @@ enum class VisualLayer
     Background2D,
     Effect3D,
     Object3D,
+    OverlayScreen,
     UI,
 };
 
@@ -74,12 +75,6 @@ public:
     void RegisterSkyDome(class SkyDomeComponent* sky);
     class SkyDomeComponent* GetSkyDome() const { return mSkyDomeComp; }
     
-    // 雨エフェクトのセット
-    void SetRainAmount(const float amt) { mRainAmount = amt; }
-    // 霧エフェクトのセット
-    void SetFogAmount(const float amt) { mFogAmount = amt; }
-    // 雪エフェクトのセット
-    void SetSnowAmout(const float amt) { mSnowAmount = amt; }
     
     // ライトマネージャー
     void SetLightingManager(std::shared_ptr<class LightingManager> manager) { mLightingManager = manager; }
@@ -93,6 +88,8 @@ public:
     
     // スプライト用VAO取得
     std::shared_ptr<class VertexArray> GetSpriteVerts() const { return mSpriteVerts; }
+    // フルスクリーン用VAO取得
+    std::shared_ptr<class VertexArray> GetFullScreenQuad() const { return mFullScreenQuad; }
     
     std::shared_ptr<class Texture> GetShadowMapTexture() const { return mShadowMapTexture; }
     
@@ -139,17 +136,10 @@ private:
     // GLコンテキスト
     SDL_GLContext mGLContext;
     
-    // 雨の強さ
-    float mRainAmount;
-    // 霧の強さ
-    float mFogAmount;
-    // 雪の強さ
-    float mSnowAmount;
-    std::unique_ptr<class VertexArray> mFullScreenQuad;
+    // フルスクリーンVAO
+    std::shared_ptr<class VertexArray> mFullScreenQuad;
     void CreateFullScreenQuad();
     
-    // 天気エフェクトのオーバーレイ
-    void DrawWeatherOverlay();
    
     // シェーダー格納
     std::unordered_map<std::string, std::shared_ptr<class Shader>> mShaders;

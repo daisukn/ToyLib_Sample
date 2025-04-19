@@ -34,9 +34,6 @@ Renderer::Renderer()
 , mWindow(nullptr)
 , mGLContext(nullptr)
 , mShaderPath("ToyLibCore/Shaders/")
-, mRainAmount(0.5f)
-, mFogAmount(0.f)
-, mSnowAmount(0.5f)
 {
     LoadSettings("Settings/Renderer_Settings.json");
 }
@@ -129,8 +126,9 @@ void Renderer::Draw()
     DrawVisualLayer(VisualLayer::Background2D);
     DrawVisualLayer(VisualLayer::Object3D);
     DrawVisualLayer(VisualLayer::Effect3D);
-    
-    DrawWeatherOverlay();
+    DrawVisualLayer(VisualLayer::OverlayScreen);
+
+    //DrawWeatherOverlay();
     
     DrawVisualLayer(VisualLayer::UI);
 
@@ -367,40 +365,8 @@ void Renderer::CreateFullScreenQuad()
         0, 1, 2,
         2, 3, 0
     };
-    mFullScreenQuad = std::make_unique<VertexArray>(quadVerts, 4, quadIndices, 6, true);
+    mFullScreenQuad = std::make_shared<VertexArray>(quadVerts, 4, quadIndices, 6, true);
 
-}
-
-void Renderer::DrawWeatherOverlay()
-{
-    auto shader = mShaders["WeatherOverlay"];
-    if (!shader || !mFullScreenQuad) return;
-
- 
-    // フルスクリーン用設定
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // シェーダーをアクティブ化
-    shader->SetActive();
-
-    // ユニフォーム設定
-    shader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f); // 経過時間（秒）
-    shader->SetFloatUniform("uRainAmount", mRainAmount); // 0〜1で設定
-    shader->SetFloatUniform("uFogAmount", mFogAmount); // 0〜1で設定
-    shader->SetFloatUniform("uSnowAmount", mSnowAmount); // 0〜1で設定
-    shader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
-
-    // フルスクリーンポリゴンを描画
-    mFullScreenQuad->SetActive();
-    glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
-
-    // 状態戻す
-    glDisable(GL_BLEND);
-    glDepthMask(GL_TRUE);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::RegisterSkyDome(SkyDomeComponent* sky)

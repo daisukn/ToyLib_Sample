@@ -16,7 +16,6 @@ SpriteComponent::SpriteComponent(Actor* a, int drawOrder, VisualLayer layer)
 , mTexHeight(0)
 {
     mDrawOrder = drawOrder;
-    mType = VisualType::Sprite;
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Sprite");
     mScreenWidth = mOwnerActor->GetApp()->GetRenderer()->GetScreenWidth();
     mScreenHeight = mOwnerActor->GetApp()->GetRenderer()->GetScreenHeight();

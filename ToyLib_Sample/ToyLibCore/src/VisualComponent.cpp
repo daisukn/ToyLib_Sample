@@ -10,7 +10,6 @@ VisualComponent::VisualComponent(Actor* owner, int drawOrder, VisualLayer layer)
 , mIsVisible(true)
 , mIsBlendAdd(false)
 , mLayer(layer)
-, mType(VisualType::NoAssigned)
 , mDrawOrder(drawOrder)
 , mEnableShadow(false)
 {
