@@ -46,7 +46,9 @@ void Game::InitGame()
     
     // シャドウ用スプライト
     auto shadow = treeActor->CreateComponent<ShadowSpriteComponent>(10);
-    shadow->SetTexture(GetRenderer()->GetTexture("Assets/shadowcircle.png"));
+    std::shared_ptr<Texture> shadowTex = std::make_shared<Texture>();
+    shadowTex->CreateAlphaCircle(256, 0.5f, 0.4f);
+    shadow->SetTexture(shadowTex);
     shadow->SetVisible(true);
     shadow->SetOffsetPosition(Vector3(0.0f, -4.9f, 0.0f));
     shadow->SetOffsetScale(0.03f);

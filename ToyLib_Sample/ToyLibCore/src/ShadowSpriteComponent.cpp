@@ -38,7 +38,7 @@ void ShadowSpriteComponent::Draw()
 
     float width = static_cast<float>(mTexture->GetWidth()) * mScaleWidth;
     float height = static_cast<float>(mTexture->GetHeight()) * mScaleHeight;
-    Matrix4 scale = Matrix4::CreateScale(width * mOffsetScale/2, height * mOffsetScale*2, 1.0f);
+    Matrix4 scale = Matrix4::CreateScale(width * mOffsetScale, height * mOffsetScale*3, 1.0f);
 
     // 光の方向から回転角を計算（XZ平面）
     Vector3 lightDir = mOwnerActor->GetApp()->GetRenderer()->GetLightingManager()->GetLightDirection();

@@ -17,6 +17,7 @@ public:
     bool LoadFromMemory(const void* data, int width, int height);
 
     void CreateForRendering(int w, int h, unsigned int format);
+    bool CreateAlphaCircle(int size, float centerX, float centerY);
     
     // 削除
 	void Unload();

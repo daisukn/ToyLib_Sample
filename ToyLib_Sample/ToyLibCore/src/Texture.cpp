@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <GL/glew.h>
+#include <vector>
 
 
 Texture::Texture()
@@ -211,4 +212,50 @@ void Texture::CreateShadowMap(int width, int height)
     // シャドウマッピングに必須の比較設定
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+}
+
+bool Texture::CreateAlphaCircle(int size, float centerX, float centerY)
+{
+    
+    if (size <= 0) return false;
+
+    std::vector<uint8_t> pixels(size * size * 4); // RGBA
+
+    // 中心座標をピクセルに変換
+    float cx = centerX * size;
+    float cy = centerY * size;
+
+    for (int y = 0; y < size; y++)
+    {
+        for (int x = 0; x < size; x++)
+        {
+            float dx = x - cx;
+            float dy = y - cy;
+            float dist = std::sqrt(dx * dx + dy * dy) / (size / 3.0f); // 正規化
+            float alpha = 1.0f - std::pow(std::clamp(dist, 0.0f, 1.0f), 2);
+
+            int index = (y * size + x) * 4;
+            pixels[index + 0] = 60;
+            pixels[index + 1] = 60;
+            pixels[index + 2] = 60;
+            pixels[index + 3] = static_cast<uint8_t>(alpha * 255);
+        }
+    }
+
+    // OpenGL テクスチャ作成
+    glGenTextures(1, &mTextureID);
+    glBindTexture(GL_TEXTURE_2D, mTextureID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, size, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    mWidth = size;
+    mHeight = size;
+
+    return true;
 }

@@ -18,8 +18,7 @@ AnimationPlayer::AnimationPlayer(std::shared_ptr<Mesh> mesh)
 void AnimationPlayer::Play(int animID, bool loop)
 {
     // 同じ内容なら再生しなおさない
-    if (mAnimID == animID && mIsLooping == loop && !mIsPaused)
-        return;
+    if (mAnimID == animID && mIsLooping == loop && !mIsPaused) return;
 
     mAnimID = animID;
     mPlayTime = 0.0f;
