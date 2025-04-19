@@ -96,32 +96,32 @@ void WeatherDomeComponent::RandomizeWeather()
     if (randVal < 50)
     {
         mWeatherType = WeatherType::CLEAR;
-        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
-        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.f);
     }
     else if (randVal < 70)
     {
         mWeatherType = WeatherType::CLOUDY;
-        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
-        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.1f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.1f);
     }
     else if (randVal < 85)
     {
         mWeatherType = WeatherType::RAIN;
-        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.4f);
-        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.3f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.4f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.3f);
     }
     else if (randVal < 95)
     {
         mWeatherType = WeatherType::STORM;
-        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.7f);
-        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.4f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.7f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.4f);
     }
     else
     {
         mWeatherType = WeatherType::SNOW;
-        mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.0f);
-        mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.7f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.0f);
+        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.7f);
     }
 }
 

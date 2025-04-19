@@ -202,6 +202,8 @@ void Game::LoadData()
     // スカイドーム
     auto skyActor = CreateActor<Actor>();
     skyActor->CreateComponent<WeatherDomeComponent>();
+    // オーバーレイ
+    skyActor->CreateComponent<WeatherOverlayComponent>();
 
 }
 

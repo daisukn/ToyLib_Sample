@@ -23,7 +23,6 @@ ParticleComponent::ParticleComponent(Actor* owner, int drawOrder)
     , mParticleMode(P_SPARK)
 {
     mLayer = VisualLayer::Effect3D;
-    mType = VisualType::Particle;
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Particle");
 }
 

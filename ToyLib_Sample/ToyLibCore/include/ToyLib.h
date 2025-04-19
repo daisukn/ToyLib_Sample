@@ -35,6 +35,7 @@
 #include "WireframeComponent.h"
 #include "SkyDomeComponent.h"
 #include "WeatherDomeComponent.h"
+#include "WeatherOverlayComponent.h"
 
 // --- Utility ---
 #include "MathUtils.h"

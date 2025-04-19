@@ -16,7 +16,6 @@ ShadowSpriteComponent::ShadowSpriteComponent(Actor* owner, int drawOrder)
     , mScaleHeight(1.0f)
 {
     mLayer = VisualLayer::Effect3D; // 足元に描く
-    mType = VisualType::ShadowSprite;
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Sprite");
     
     mTexture = std::make_shared<Texture>();
