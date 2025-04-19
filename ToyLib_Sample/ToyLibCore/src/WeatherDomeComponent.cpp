@@ -7,23 +7,22 @@
 #include "Application.h"
 #include "Renderer.h"
 #include <algorithm>
+#include <cmath>
 
 WeatherDomeComponent::WeatherDomeComponent(Actor* a)
 : SkyDomeComponent(a)
 , mTime(0.5f)
-, mTimeSpeed(0.00001f)
-, mPastDay(0)
 , mSunDir(Vector3::UnitY)
 , mWeatherType(WeatherType::CLEAR)
-, mIsAutoTimeTick(true)
 {
     mSkyVAO = SkyDomeMeshGenerator::CreateSkyDomeVAO(32, 16, 1.0f);
     mOwnerActor->GetApp()->GetRenderer()->RegisterSkyDome(this);
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("SkyDome");
 }
 
-void WeatherDomeComponent::SetTime(float t) {
-    mTime = Math::Clamp(t, 0.0f, 1.0f);
+void WeatherDomeComponent::SetTime(float t)
+{
+    mTime = std::remainder(t, 1.0f);
 }
 
 void WeatherDomeComponent::SetSunDirection(const Vector3& dir)
@@ -77,53 +76,9 @@ float WeatherDomeComponent::SmoothStep(float edge0, float edge1, float x)
 
 void WeatherDomeComponent::Update(float deltaTime)
 {
-    if (mIsAutoTimeTick)
-    {
-        mTime += mTimeSpeed;
-    }
-    if (mPastDay != static_cast<int>(mTime))
-    {
-        mPastDay = static_cast<int>(mTime);
-        //RandomizeWeather();
-    }
-    
     ApplyTime();
 }
 
-void WeatherDomeComponent::RandomizeWeather()
-{
-    int randVal = rand() % 100;
-    if (randVal < 50)
-    {
-        mWeatherType = WeatherType::CLEAR;
-        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
-        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.f);
-    }
-    else if (randVal < 70)
-    {
-        mWeatherType = WeatherType::CLOUDY;
-        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.f);
-        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.1f);
-    }
-    else if (randVal < 85)
-    {
-        mWeatherType = WeatherType::RAIN;
-        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.4f);
-        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.3f);
-    }
-    else if (randVal < 95)
-    {
-        mWeatherType = WeatherType::STORM;
-        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.7f);
-        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.4f);
-    }
-    else
-    {
-        mWeatherType = WeatherType::SNOW;
-        //mOwnerActor->GetApp()->GetRenderer()->SetRainAmount(0.0f);
-        //mOwnerActor->GetApp()->GetRenderer()->SetFogAmount(0.7f);
-    }
-}
 
 void WeatherDomeComponent::ApplyTime()
 {

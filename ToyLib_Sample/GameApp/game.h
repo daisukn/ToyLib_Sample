@@ -1,5 +1,6 @@
 #include "ToyLib.h"
 #include <string>
+#include <memory>
 
 class Game : public Application
 {
@@ -11,4 +12,6 @@ protected:
     void LoadData();
     void UpdateGame(float deltaTime) override;
     void ShutdownGame() override;
+private:
+    std::unique_ptr<class WeatherManager> mWeather;
 };

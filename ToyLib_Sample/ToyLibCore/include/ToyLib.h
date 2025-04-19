@@ -48,6 +48,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "SkyDomeMeshGenerator.h"
+#include "WeatherManager.h"
 
 // --- Camera / View ---
 #include "CameraComponent.h"

@@ -201,14 +201,19 @@ void Game::LoadData()
     
     // スカイドーム
     auto skyActor = CreateActor<Actor>();
-    skyActor->CreateComponent<WeatherDomeComponent>();
+    auto dome = skyActor->CreateComponent<WeatherDomeComponent>();
     // オーバーレイ
-    skyActor->CreateComponent<WeatherOverlayComponent>();
-
+    auto overlay = skyActor->CreateComponent<WeatherOverlayComponent>();
+    
+    mWeather = std::make_unique<WeatherManager>();
+    mWeather->SetWeatherDome(dome);
+    mWeather->SetWeatherOverlay(overlay);
+    mWeather->SetTimeSpeed(0.001f);
 }
 
 void Game::UpdateGame(float deltaTime)
 {
+    mWeather->Update(deltaTime);
 }
 
 void Game::ShutdownGame()
