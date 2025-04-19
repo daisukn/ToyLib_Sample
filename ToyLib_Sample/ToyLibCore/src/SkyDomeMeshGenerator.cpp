@@ -4,7 +4,8 @@
 #include <vector>
 #include <cmath>
 
-namespace SkyDomeMeshGenerator {
+namespace SkyDomeMeshGenerator
+{
 
 std::unique_ptr<VertexArray> CreateSkyDomeVAO(int slices, int stacks, float radius)
 {

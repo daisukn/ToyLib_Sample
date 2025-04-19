@@ -34,6 +34,7 @@
 #include "ParticleComponent.h"
 #include "WireframeComponent.h"
 #include "SkyDomeComponent.h"
+#include "WeatherDomeComponent.h"
 
 // --- Utility ---
 #include "MathUtils.h"
