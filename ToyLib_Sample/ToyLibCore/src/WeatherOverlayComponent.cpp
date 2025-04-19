@@ -9,9 +9,9 @@
 
 WeatherOverlayComponent::WeatherOverlayComponent(Actor* a, int drawOrder, VisualLayer layer)
 : VisualComponent(a, drawOrder, layer)
-, mRainAmount(1.f)
-, mFogAmount(1.f)
-, mSnowAmount(1.f)
+, mRainAmount(0.f)
+, mFogAmount(0.f)
+, mSnowAmount(0.f)
 {
     auto renderer = mOwnerActor->GetApp()->GetRenderer();
     mShader = renderer->GetShader("WeatherOverlay");
