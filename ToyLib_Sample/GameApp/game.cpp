@@ -46,9 +46,9 @@ void Game::InitGame()
     
     // シャドウ用スプライト
     auto shadow = treeActor->CreateComponent<ShadowSpriteComponent>(10);
-    std::shared_ptr<Texture> shadowTex = std::make_shared<Texture>();
-    shadowTex->CreateAlphaCircle(256, 0.5f, 0.4f);
-    shadow->SetTexture(shadowTex);
+    //std::shared_ptr<Texture> shadowTex = std::make_shared<Texture>();
+    //shadowTex->CreateAlphaCircle(256, 0.5f, 0.4f, Vector3(0.2f, 0.2f, 0.2f), 2.0f);
+    //shadow->SetTexture(shadowTex);
     shadow->SetVisible(true);
     shadow->SetOffsetPosition(Vector3(0.0f, -4.9f, 0.0f));
     shadow->SetOffsetScale(0.03f);
@@ -80,6 +80,14 @@ void Game::InitGame()
                                   5.5,
                                   ParticleComponent::P_SMOKE);
     particleComp->SetAddBlend(true);
+    
+    
+    auto sunlightActor = CreateActor<Actor>();
+    auto sunlight = sunlightActor->CreateComponent<SpriteComponent>(100, VisualLayer::UI);
+    std::shared_ptr<Texture> lightTex(new Texture);
+    lightTex->CreateRadialRays(1024, 16, 3.f, 2.0f, 0.15f);
+    sunlight->SetTexture(lightTex);
+    
 }
 
 void Game::LoadData()

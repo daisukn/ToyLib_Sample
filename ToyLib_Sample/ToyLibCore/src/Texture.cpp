@@ -214,7 +214,7 @@ void Texture::CreateShadowMap(int width, int height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 }
 
-bool Texture::CreateAlphaCircle(int size, float centerX, float centerY)
+bool Texture::CreateAlphaCircle(int size, float centerX, float centerY, Vector3 color, float blendPow)
 {
     
     if (size <= 0) return false;
@@ -232,17 +232,68 @@ bool Texture::CreateAlphaCircle(int size, float centerX, float centerY)
             float dx = x - cx;
             float dy = y - cy;
             float dist = std::sqrt(dx * dx + dy * dy) / (size / 3.0f); // 正規化
-            float alpha = 1.0f - std::pow(std::clamp(dist, 0.0f, 1.0f), 2);
+            float alpha = 1.0f - std::pow(std::clamp(dist, 0.0f, 1.0f), blendPow);
 
             int index = (y * size + x) * 4;
-            pixels[index + 0] = 60;
-            pixels[index + 1] = 60;
-            pixels[index + 2] = 60;
+            pixels[index + 0] = static_cast<int>(255.f * color.x);
+            pixels[index + 1] = static_cast<int>(255.f * color.y);
+            pixels[index + 2] = static_cast<int>(255.f * color.z);
             pixels[index + 3] = static_cast<uint8_t>(alpha * 255);
         }
     }
 
     // OpenGL テクスチャ作成
+    glGenTextures(1, &mTextureID);
+    glBindTexture(GL_TEXTURE_2D, mTextureID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, size, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    mWidth = size;
+    mHeight = size;
+
+    return true;
+}
+
+bool Texture::CreateRadialRays(int size, int numRays, float fadePow, float rayStrength, float intensityScale)
+{
+    if (size <= 0 || numRays <= 0) return false;
+
+    std::vector<uint8_t> pixels(size * size * 4);
+
+    float cx = size * 0.5f;
+    float cy = size * 0.5f;
+    float maxDist = size * 0.5f;
+
+    for (int y = 0; y < size; ++y)
+    {
+        for (int x = 0; x < size; ++x)
+        {
+            float dx = x - cx;
+            float dy = y - cy;
+            float dist = std::sqrt(dx * dx + dy * dy) / maxDist;
+
+            float angle = std::atan2(dy, dx);
+            float ray = std::abs(std::sin(angle * numRays)); // 光条の強度
+
+            float alpha = (1.0f - std::clamp(dist, 0.0f, 1.0f));
+            alpha = std::pow(alpha, fadePow) * ray * rayStrength;
+
+            alpha = std::clamp(alpha * intensityScale, 0.0f, 1.0f); // 最終的に暗めに調整
+
+            int index = (y * size + x) * 4;
+            pixels[index + 0] = static_cast<uint8_t>(alpha * 255);
+            pixels[index + 1] = static_cast<uint8_t>(alpha * 255);
+            pixels[index + 2] = static_cast<uint8_t>(alpha * 200); // 黄味強め
+            pixels[index + 3] = static_cast<uint8_t>(alpha * 255); // Aも調整（加算なら影響しないけど）
+        }
+    }
+
     glGenTextures(1, &mTextureID);
     glBindTexture(GL_TEXTURE_2D, mTextureID);
 

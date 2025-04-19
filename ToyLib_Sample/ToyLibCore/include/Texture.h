@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "MathUtils.h"
 #include <string>
 
 // テクスチャを管理
@@ -17,7 +17,8 @@ public:
     bool LoadFromMemory(const void* data, int width, int height);
 
     void CreateForRendering(int w, int h, unsigned int format);
-    bool CreateAlphaCircle(int size, float centerX, float centerY);
+    bool CreateAlphaCircle(int size, float centerX, float centerY, Vector3 color, float blendPow = 1.0f);
+    bool CreateRadialRays(int size, int numRays, float fadePow, float rayStrength, float intensityScale);
     
     // 削除
 	void Unload();

@@ -18,6 +18,9 @@ ShadowSpriteComponent::ShadowSpriteComponent(Actor* owner, int drawOrder)
     mLayer = VisualLayer::Effect3D; // 足元に描く
     mType = VisualType::ShadowSprite;
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Sprite");
+    
+    mTexture = std::make_shared<Texture>();
+    mTexture->CreateAlphaCircle(256, 0.5f, 0.35f, Vector3(0.2f, 0.2f, 0.2f), 1.4f);
 }
 
 ShadowSpriteComponent::~ShadowSpriteComponent()
