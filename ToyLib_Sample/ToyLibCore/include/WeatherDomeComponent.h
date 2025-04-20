@@ -1,15 +1,6 @@
 #pragma once
 #include "SkyDomeComponent.h"
-
-enum class WeatherType
-{
-    CLEAR = 0,
-    CLOUDY,
-    RAIN,
-    STORM,
-    SNOW
-};
-
+#include "WeatherManager.h"
 
 
 class WeatherDomeComponent : public SkyDomeComponent

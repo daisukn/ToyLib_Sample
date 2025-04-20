@@ -1,6 +1,15 @@
 #pragma once
 #include <memory>
 
+enum class WeatherType
+{
+    CLEAR = 0,
+    CLOUDY,
+    RAIN,
+    STORM,
+    SNOW
+};
+
 
 class WeatherManager
 {
