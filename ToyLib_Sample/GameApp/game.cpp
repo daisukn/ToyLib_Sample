@@ -81,13 +81,13 @@ void Game::InitGame()
                                   ParticleComponent::P_SMOKE);
     particleComp->SetAddBlend(true);
     
-    
+    /*
     auto sunlightActor = CreateActor<Actor>();
     auto sunlight = sunlightActor->CreateComponent<SpriteComponent>(100, VisualLayer::UI);
     std::shared_ptr<Texture> lightTex(new Texture);
     lightTex->CreateRadialRays(1024, 16, 3.f, 2.0f, 0.15f);
     sunlight->SetTexture(lightTex);
-    
+    */
 }
 
 void Game::LoadData()

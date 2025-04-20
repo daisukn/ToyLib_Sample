@@ -10,6 +10,13 @@ enum class WeatherType
     SNOW
 };
 
+struct WeatherState
+{
+    WeatherType type;
+    float rainAmount;
+    float fogAmount;
+    float snowAmount;
+};
 
 class WeatherManager
 {
@@ -30,4 +37,6 @@ private:
     void RandomizeWeather();
     
     int mCount;
+    
+
 };
