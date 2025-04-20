@@ -13,7 +13,7 @@ BillboardComponent::BillboardComponent(class Actor* a, int drawOrder)
 : VisualComponent(a, drawOrder, VisualLayer::Effect3D)
 , mScale(1.0f)
 {
-    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Billboard");
+    mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Mesh");
 }
 
 BillboardComponent::~BillboardComponent()
