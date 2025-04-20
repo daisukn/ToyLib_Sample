@@ -22,7 +22,7 @@ WeatherDomeComponent::WeatherDomeComponent(Actor* a)
 
 void WeatherDomeComponent::SetTime(float t)
 {
-    mTime = std::remainder(t, 1.0f);
+    mTime = fmod(t, 1.0f);
 }
 
 void WeatherDomeComponent::SetSunDirection(const Vector3& dir)

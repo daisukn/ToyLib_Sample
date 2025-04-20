@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 
+
 class WeatherManager
 {
 public:

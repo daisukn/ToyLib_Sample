@@ -19,7 +19,7 @@ ShadowSpriteComponent::ShadowSpriteComponent(Actor* owner, int drawOrder)
     mShader = mOwnerActor->GetApp()->GetRenderer()->GetShader("Sprite");
     
     mTexture = std::make_shared<Texture>();
-    mTexture->CreateAlphaCircle(256, 0.5f, 0.35f, Vector3(0.2f, 0.2f, 0.2f), 1.4f);
+    mTexture->CreateAlphaCircle(256, 0.5f, 0.3f, Vector3(0.f, 0.f, 0.f), 0.8f);
 }
 
 ShadowSpriteComponent::~ShadowSpriteComponent()
@@ -37,6 +37,7 @@ void ShadowSpriteComponent::Draw()
     if (!mIsVisible || mTexture == nullptr) return;
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
 
     float width = static_cast<float>(mTexture->GetWidth()) * mScaleWidth;
     float height = static_cast<float>(mTexture->GetHeight()) * mScaleHeight;

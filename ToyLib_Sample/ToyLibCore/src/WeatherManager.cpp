@@ -23,8 +23,6 @@ void WeatherManager::Update(float deltaTime)
     {
         RandomizeWeather();
     }
-        
-    
 }
 
 
