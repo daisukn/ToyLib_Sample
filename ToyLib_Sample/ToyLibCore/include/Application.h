@@ -41,6 +41,8 @@ public:
     class PhysWorld* GetPhysWorld() const { return mPhysWorld.get(); }
     // アセットマネージャ取得
     class AssetManager* GetAssetManager() const { return mAssetManager.get(); }
+    // オーディオ取得
+    class SoundMixer* GetSoundMixer() const { return mSoundMixer.get(); }
     
     // IMEをオフにする
     void InitIMEControl(SDL_Window* sdlWindow);
@@ -77,6 +79,11 @@ private:
     std::unique_ptr<class InputSystem> mInputSys;
     // 物理エンジン
     std::unique_ptr<class PhysWorld> mPhysWorld;
+    // アセット管理
+    std::unique_ptr<class AssetManager> mAssetManager;
+    // オーディオ関連
+    std::unique_ptr<class SoundMixer> mSoundMixer;
+
     // 時間管理
     unsigned int mTicksCount;
 
@@ -101,7 +108,7 @@ private:
     // IME 制御のためにハンドル保存（Windows以外はnullptrで良い）
     void* mNativeWindowHandle;
     
-    std::unique_ptr<class AssetManager> mAssetManager;
+
 
 };
 

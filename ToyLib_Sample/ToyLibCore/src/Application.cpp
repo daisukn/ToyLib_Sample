@@ -5,6 +5,7 @@
 #include "PhysWorld.h"
 #include "IMEUtil.h"
 #include "AssetManager.h"
+#include "SoundMixer.h"
 
 #include <algorithm>
 #include <SDL2/SDL_syswm.h>
@@ -20,6 +21,8 @@ Application::Application()
     mInputSys = std::make_unique<InputSystem>();
     mPhysWorld = std::make_unique<PhysWorld>();
     mAssetManager = std::make_unique<AssetManager>();
+    mSoundMixer = std::make_unique<SoundMixer>(mAssetManager.get());
+    
 }
 
 // デストラクタ

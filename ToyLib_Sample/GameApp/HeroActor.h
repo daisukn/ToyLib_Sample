@@ -34,5 +34,6 @@ private:
     class ColliderComponent* mCollComp;
     class CameraComponent* mCameraComp;
     class GravityComponent* mGravComp;
+    class SoundComponent* mSound;
     bool mMovable;
 };

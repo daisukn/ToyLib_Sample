@@ -63,6 +63,12 @@ HeroActor::HeroActor(Application* a)
 
     mGravComp = CreateComponent<GravityComponent>();
     //SetPosition(Vector3(0,100,0));
+    
+    
+    mSound = CreateComponent<SoundComponent>();
+    mSound->SetSound("Assets/Walk.mp3");
+    
+    
 }
 
 HeroActor::~HeroActor()
@@ -128,6 +134,7 @@ void HeroActor::ActorInput(const InputState& state)
             else
             {
                 animPlayer->Play(H_Run);
+                mSound->Play();
             }
         }
     }

@@ -20,7 +20,6 @@ public:
     void SetVertDist(float dist) { mVertDist = dist; }
     void SetTargetDist(float dist) { mTargetDist = dist; }
     void SetSpringConstant(float spring) { mSpringConstant = spring; }
-    //const Vector3 GetActualPos () const { return actualPos; }
     
 private:
     // カメラの位置を計算

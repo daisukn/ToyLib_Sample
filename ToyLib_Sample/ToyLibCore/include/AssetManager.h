@@ -14,16 +14,15 @@ public:
     std::shared_ptr<class Texture> GetTexture(const std::string& fileName);
     std::shared_ptr<class Texture> GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize);
     
+    // SE
     std::shared_ptr<class SoundEffect> GetSoundEffect(const std::string& fileName);
+    // BGM
     std::shared_ptr<class Music> GetMusic(const std::string& fileName);
     
     void UnloadData();
 private:
-    // アセット
     std::unordered_map<std::string, std::shared_ptr<class Texture>> mTextures;
     std::unordered_map<std::string, std::shared_ptr<class Mesh>> mMeshes;
-    
     std::unordered_map<std::string, std::shared_ptr<class SoundEffect>> mSoundEffects;
     std::unordered_map<std::string, std::shared_ptr<class Music>> mMusics;
-
 };

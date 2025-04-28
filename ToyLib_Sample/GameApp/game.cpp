@@ -209,6 +209,11 @@ void Game::LoadData()
     mWeather->SetWeatherDome(dome);
     mWeather->SetWeatherOverlay(overlay);
     mWeather->SetTimeSpeed(0.001f);
+    
+    
+    // BGM
+    GetSoundMixer()->LoadBGM("Assets/MusMus-BGM-112.mp3");
+    GetSoundMixer()->PlayBGM();
 }
 
 void Game::UpdateGame(float deltaTime)
@@ -218,5 +223,6 @@ void Game::UpdateGame(float deltaTime)
 
 void Game::ShutdownGame()
 {
+    GetSoundMixer()->StopBGM();
     
 }

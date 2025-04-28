@@ -13,9 +13,16 @@ public:
 
     void SetVolume(float volume) { mVolume = volume; }
     void SetLoop(bool loop) { mIsLoop = loop; }
+    void SetAutoPlay(bool autoPlay) { mAutoPlay = autoPlay; }
+    void SetUseDistanceAttenuation(bool useAttenuation) { mUseDistanceAttenuation = useAttenuation; }
+
+    void Update(float deltaTime) override;
 
 private:
     std::string mSoundName;
     float mVolume;
     bool mIsLoop;
+    bool mAutoPlay;
+    bool mUseDistanceAttenuation;
+    bool mHasPlayed;
 };
