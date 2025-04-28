@@ -1,6 +1,5 @@
 #include "Mesh.h"
 #include "Texture.h"
-#include "Renderer.h"
 #include "AssetManager.h"
 #include "VertexArray.h"
 #include "Bone.h"

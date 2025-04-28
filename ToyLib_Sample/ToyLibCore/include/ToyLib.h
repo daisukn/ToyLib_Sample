@@ -62,3 +62,9 @@
 
 // --- Animation ---
 #include "AnimationPlayer.h"
+
+// --- Sound ---
+#include "SoundEffect.h"
+#include "Music.h"
+#include "SoundMixer.h"
+#include "SoundComponent.h"
