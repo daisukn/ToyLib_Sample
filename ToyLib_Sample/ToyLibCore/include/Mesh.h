@@ -19,7 +19,7 @@ public:
     ~Mesh();
 
     // メッシュファイルを読み込む
-    virtual bool Load(const std::string& fileName, class Renderer* renderer, bool isRightHanded = false);
+    virtual bool Load(const std::string& fileName, class AssetManager* assetMamager, bool isRightHanded = false);
     // メッシュとリソースの開放
     void Unload();
 
@@ -49,7 +49,7 @@ private:
     // メッシュデータの読み込み（ボーンの有無を判断）
     void LoadMeshData();
     // マテリアルの読み込み
-    void LoadMaterials(class Renderer* renderer);
+    void LoadMaterials(class AssetManager* assetMamager);
     // アニメーションクリップの読み込み
     void LoadAnimations();
 

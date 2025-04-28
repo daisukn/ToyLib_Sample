@@ -192,45 +192,6 @@ void Renderer::DrawVisualLayer(VisualLayer layer)
 }
 
 
-
-// テクスチャ取り出し
-std::shared_ptr<Texture> Renderer::GetTexture(const std::string &fileName)
-{
-    auto iter = mTextures.find(fileName);
-    if (iter != mTextures.end())
-    {
-        return iter->second; // すでにあるのでそれを返す
-    }
-    else
-    {
-        auto tex = std::make_shared<Texture>();
-        if (tex->Load(fileName))
-        {
-            mTextures[fileName] = tex;
-            return tex;
-        }
-    }
-    return nullptr; // 失敗したら null
-}
-
-// 埋め込みテクスチャ
-std::shared_ptr<Texture> Renderer::GetEmbeddedTexture(const std::string& nameKey, const uint8_t* data, size_t dataSize)
-{
-    auto iter = mTextures.find(nameKey);
-    if (iter != mTextures.end())
-    {
-        return iter->second;
-    }
-
-    auto tex = std::make_shared<Texture>();
-    if (tex->LoadFromMemory(data, static_cast<unsigned int>(dataSize)))
-    {
-        mTextures[nameKey] = tex;
-        return tex;
-    }
-
-    return nullptr;
-}
 //スプライト用ポリゴン
 void Renderer::CreateSpriteVerts()
 {
@@ -251,32 +212,11 @@ void Renderer::CreateSpriteVerts()
     mSpriteVerts = std::make_shared<VertexArray>((float*)vertices, (unsigned int)4, (unsigned int*)indices, (unsigned int)6);
 }
 
-// メッシュ取り出し
-std::shared_ptr<Mesh> Renderer::GetMesh(const std::string& fileName, bool isRightHanded)
-{
-    auto iter = mMeshes.find(fileName);
-    if (iter != mMeshes.end())
-    {
-        return iter->second;
-    }
-
-    auto mesh = std::make_shared<Mesh>();
-    if (mesh->Load(fileName, this, isRightHanded))
-    {
-        mMeshes[fileName] = mesh;
-        return mesh;
-    }
-
-    return nullptr;
-}
 
 // データ解放
 void Renderer::UnloadData()
 {
-    // テクスチャ削除
-    mTextures.clear();
-    // メッシュ削除
-    mMeshes.clear();
+
     mVisualComps.clear();
 }
 

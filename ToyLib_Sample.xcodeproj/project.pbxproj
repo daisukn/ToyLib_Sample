@@ -324,6 +324,7 @@
 					"-lassimp",
 					"-lSDL2",
 					"-lSDL2_image",
+					"-lSDL2_mixer",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ToyLib_Sample/ToyLibCore/include/ToyLib_Sample-Bridging-Header.h";
@@ -353,6 +354,7 @@
 					"-lassimp",
 					"-lSDL2",
 					"-lSDL2_image",
+					"-lSDL2_mixer",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ToyLib_Sample/ToyLibCore/include/ToyLib_Sample-Bridging-Header.h";

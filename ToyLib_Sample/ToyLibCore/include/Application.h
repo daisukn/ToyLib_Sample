@@ -39,6 +39,8 @@ public:
     class Renderer* GetRenderer() const { return mRenderer.get(); }
     // 物理エンジンを取得
     class PhysWorld* GetPhysWorld() const { return mPhysWorld.get(); }
+    // アセットマネージャ取得
+    class AssetManager* GetAssetManager() const { return mAssetManager.get(); }
     
     // IMEをオフにする
     void InitIMEControl(SDL_Window* sdlWindow);
@@ -98,6 +100,8 @@ private:
     
     // IME 制御のためにハンドル保存（Windows以外はnullptrで良い）
     void* mNativeWindowHandle;
+    
+    std::unique_ptr<class AssetManager> mAssetManager;
 
 };
 

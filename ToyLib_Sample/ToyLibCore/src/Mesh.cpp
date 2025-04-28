@@ -1,6 +1,7 @@
 #include "Mesh.h"
-#include "Renderer.h"
 #include "Texture.h"
+#include "Renderer.h"
+#include "AssetManager.h"
 #include "VertexArray.h"
 #include "Bone.h"
 #include "Polygon.h"
@@ -423,7 +424,7 @@ void Mesh::CreateMesh(const aiMesh* m)
     
 }
 
-bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
+bool Mesh::Load(const std::string& fileName, AssetManager* assetMamager, bool isRightHanded)
 {
     unsigned int ASSIMP_LOAD_FLAGS = aiProcess_Triangulate | aiProcess_GenSmoothNormals |
                                      aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices |
@@ -446,7 +447,7 @@ bool Mesh::Load(const std::string& fileName, Renderer* r, bool isRightHanded)
     MatrixAi2Gl(mGlobalInverseTransform, inv);
 
     LoadMeshData();
-    LoadMaterials(r);
+    LoadMaterials(assetMamager);
     LoadAnimations();
 
     return true;
@@ -464,7 +465,7 @@ void Mesh::LoadMeshData()
     }
 }
 
-void Mesh::LoadMaterials(Renderer* r)
+void Mesh::LoadMaterials(AssetManager* assetMamager)
 {
     for (unsigned int cnt = 0; cnt < mScene->mNumMaterials; cnt++) {
         aiMaterial* pMaterial = mScene->mMaterials[cnt];
@@ -496,12 +497,12 @@ void Mesh::LoadMaterials(Renderer* r)
                         ? aiTex->mWidth
                         : aiTex->mWidth * aiTex->mHeight * 4;
 
-                    auto tex = r->GetEmbeddedTexture(key, imageData, imageSize);
+                    auto tex = assetMamager->GetEmbeddedTexture(key, imageData, imageSize);
                     if (tex) mat->SetDiffuseMap(tex);
                 }
             } else {
                 std::string textureFile = ASSETS_PATH + texPath;
-                auto tex = r->GetTexture(textureFile);
+                auto tex = assetMamager->GetTexture(textureFile);
                 if (tex) mat->SetDiffuseMap(tex);
             }
         }
