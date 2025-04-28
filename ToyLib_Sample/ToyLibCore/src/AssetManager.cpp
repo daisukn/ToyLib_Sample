@@ -1,6 +1,9 @@
 #include "AssetManager.h"
 #include "Texture.h"
 #include "Mesh.h"
+#include "SoundEffect.h"
+#include "Music.h"
+
 
 AssetManager::AssetManager()
 {
@@ -70,5 +73,41 @@ std::shared_ptr<Mesh> AssetManager::GetMesh(const std::string& fileName, bool is
         return mesh;
     }
 
+    return nullptr;
+}
+
+// 効果音を取得
+std::shared_ptr<SoundEffect> AssetManager::GetSoundEffect(const std::string& fileName)
+{
+    auto iter = mSoundEffects.find(fileName);
+    if (iter != mSoundEffects.end())
+    {
+        return iter->second;
+    }
+
+    auto se = std::make_shared<SoundEffect>();
+    if (se->Load(fileName))
+    {
+        mSoundEffects[fileName] = se;
+        return se;
+    }
+    return nullptr;
+}
+
+// BGMを取得
+std::shared_ptr<Music> AssetManager::GetMusic(const std::string& fileName)
+{
+    auto iter = mMusics.find(fileName);
+    if (iter != mMusics.end())
+    {
+        return iter->second;
+    }
+
+    auto music = std::make_shared<Music>();
+    if (music->Load(fileName))
+    {
+        mMusics[fileName] = music;
+        return music;
+    }
     return nullptr;
 }
