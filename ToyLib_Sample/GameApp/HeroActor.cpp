@@ -18,7 +18,7 @@ HeroActor::HeroActor(Application* a)
     {
         JsonHelper::GetString(json["mesh"], "file", meshPath);
     }
-    mMeshComp->SetMesh(a->GetRenderer()->GetMesh(meshPath));
+    mMeshComp->SetMesh(a->GetAssetManager()->GetMesh(meshPath));
     //mMeshComp->SetAnimID(mAnimID, PLAY_CYCLIC);
 
     bool useToon = false;
@@ -40,7 +40,7 @@ HeroActor::HeroActor(Application* a)
 
     // --- コライダー ---
     mCollComp = CreateComponent<ColliderComponent>();
-    mCollComp->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetRenderer()->GetMesh(meshPath)->GetVertexArray());
+    mCollComp->GetBoundingVolume()->ComputeBoundingVolume(GetApp()->GetAssetManager()->GetMesh(meshPath)->GetVertexArray());
     Vector3 vOffset;
     JsonHelper::GetVector3(json["collider"], "bounding_box_offset", vOffset);
     Vector3 vScale;

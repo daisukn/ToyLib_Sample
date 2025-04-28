@@ -14,4 +14,5 @@ protected:
     void ShutdownGame() override;
 private:
     std::unique_ptr<class WeatherManager> mWeather;
+
 };

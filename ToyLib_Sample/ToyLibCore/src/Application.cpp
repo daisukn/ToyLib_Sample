@@ -4,6 +4,7 @@
 #include "InputSystem.h"
 #include "PhysWorld.h"
 #include "IMEUtil.h"
+#include "AssetManager.h"
 
 #include <algorithm>
 #include <SDL2/SDL_syswm.h>
@@ -15,9 +16,10 @@ Application::Application()
 , mIsPause(false)
 , mNativeWindowHandle(nullptr)
 {
-    mRenderer = std::make_unique<class Renderer>();
-    mInputSys = std::make_unique<class InputSystem>();
-    mPhysWorld = std::make_unique<class PhysWorld>();
+    mRenderer = std::make_unique<Renderer>();
+    mInputSys = std::make_unique<InputSystem>();
+    mPhysWorld = std::make_unique<PhysWorld>();
+    mAssetManager = std::make_unique<AssetManager>();
 }
 
 // デストラクタ
