@@ -138,6 +138,7 @@ elseif(APPLE)
     #pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
     find_package(SDL2 REQUIRED HINTS /opt/homebrew/opt/sdl2)
     find_package(SDL2_image REQUIRED HINTS /opt/homebrew/opt/sdl2_image)
+    find_package(SDL2_mixer REQUIRED HINTS /opt/homebrew/opt/sdl2_mixer)
     find_package(GLEW REQUIRED HINTS /opt/homebrew/opt/glew)
     find_package(ASSIMP REQUIRED)
 
@@ -154,6 +155,7 @@ elseif(APPLE)
         OpenGL::GL
         SDL2::SDL2
         SDL2_image::SDL2_image
+        SDL2_mixer::SDL2_mixer
         GLEW::GLEW
         ${ASSIMP_LIBRARIES}
         "-framework Cocoa"
