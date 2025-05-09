@@ -10,11 +10,14 @@ public:
 
     void SetSound(const std::string& fileName);
     void Play();
+    void Stop();
+    bool IsPlaying() const;
 
     void SetVolume(float volume) { mVolume = volume; }
     void SetLoop(bool loop) { mIsLoop = loop; }
     void SetAutoPlay(bool autoPlay) { mAutoPlay = autoPlay; }
     void SetUseDistanceAttenuation(bool useAttenuation) { mUseDistanceAttenuation = useAttenuation; }
+    void SetExclusive(bool isExclusive) { mIsExclusive = isExclusive; }
 
     void Update(float deltaTime) override;
 
@@ -24,5 +27,8 @@ private:
     bool mIsLoop;
     bool mAutoPlay;
     bool mUseDistanceAttenuation;
+    bool mIsExclusive;
+
+    int mChannel;
     bool mHasPlayed;
 };

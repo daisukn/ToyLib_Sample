@@ -26,3 +26,4 @@ void SoundEffect::Play(int loops)
         Mix_PlayChannel(-1, mChunk, loops);
     }
 }
+

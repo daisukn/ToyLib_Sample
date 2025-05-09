@@ -231,6 +231,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				"HEADER_SEARCH_PATHS[arch=*]" = "";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
@@ -288,6 +289,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -304,14 +306,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				HEADER_SEARCH_PATHS = (
 					/opt/homebrew/include,
-					/usr/local/include,
-					"($SRCROOT)ToyLib_Sample/ToyLibCore/include",
+					"$(SRCROOT)/ToyLib_Sample/ToyLibCore/include",
 				);
-				LD_RUNPATH_SEARCH_PATHS = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
+				LD_RUNPATH_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /opt/homebrew/lib;
 				OTHER_LDFLAGS = (
 					"-lglew",
 					"-lassimp",
@@ -334,14 +332,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				HEADER_SEARCH_PATHS = (
 					/opt/homebrew/include,
-					/usr/local/include,
-					"($SRCROOT)ToyLib_Sample/ToyLibCore/include",
+					"$(SRCROOT)/ToyLib_Sample/ToyLibCore/include",
 				);
-				LD_RUNPATH_SEARCH_PATHS = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
+				LD_RUNPATH_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /opt/homebrew/lib;
 				OTHER_LDFLAGS = (
 					"-lglew",
 					"-lassimp",

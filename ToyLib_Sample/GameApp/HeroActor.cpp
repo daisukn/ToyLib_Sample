@@ -67,6 +67,7 @@ HeroActor::HeroActor(Application* a)
     
     mSound = CreateComponent<SoundComponent>();
     mSound->SetSound("Assets/Walk.mp3");
+    mSound->SetVolume(0.7f);
     
     
 }
@@ -78,7 +79,6 @@ HeroActor::~HeroActor()
 
 void HeroActor::UpdateActor(float deltaTime)
 {
-    //std::cout << GetPosition().y << std::endl;
 }
 
 void HeroActor::ActorInput(const InputState& state)
@@ -130,11 +130,17 @@ void HeroActor::ActorInput(const InputState& state)
                      mMoveComp->GetRightSpeed() == 0.0f)
             {
                 animPlayer->Play(H_Stand);
+                mSound->Stop();
+
             }
             else
             {
                 animPlayer->Play(H_Run);
-                mSound->Play();
+                if (!mSound->IsPlaying())
+                {
+                    mSound->Play();
+                }
+
             }
         }
     }

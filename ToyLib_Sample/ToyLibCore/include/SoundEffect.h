@@ -10,7 +10,7 @@ public:
 
     bool Load(const std::string& fileName);
     void Play(int loops = 0);
-    
+
     Mix_Chunk* GetChunk() const { return mChunk; }
 
 private:
