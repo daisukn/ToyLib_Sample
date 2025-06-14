@@ -37,18 +37,9 @@ if(WIN32)
     find_package(SDL2_image CONFIG REQUIRED)
     find_package(SDL2_ttf CONFIG REQUIRED)
     find_package(SDL2_mixer CONFIG REQUIRED)
-    find_package(GLEW REQUIRED)
+    find_package(GLEW CONFIG REQUIRED)
     find_package(OpenGL REQUIRED)
-
-    include_directories(
-        ${CMAKE_SOURCE_DIR}/${TOYLIB_PATH}/include
-        ${CMAKE_SOURCE_DIR}/${GAME_PATH}
-        C:/dev/local/assimp/include
-    )
-
-    link_directories(
-        "C:/dev/local/assimp/lib"
-    )
+    find_package(assimp CONFIG REQUIRED)
 
     target_link_libraries(${PROJECT_NAME}
         OpenGL32
@@ -57,23 +48,26 @@ if(WIN32)
         SDL2_image::SDL2_image
         SDL2_ttf::SDL2_ttf
         SDL2_mixer::SDL2_mixer
-        ${GLEW_LIBRARIES}
-        C:/dev/local/assimp/lib/assimp-vc143-mt.lib
+        GLEW::GLEW
+        assimp::assimp
     )
 
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
     target_link_options(${PROJECT_NAME} PRIVATE /SUBSYSTEM:CONSOLE)
 
+    # DLLコピー用のvcpkgパス（環境に応じて適宜修正）
+    set(VCPKG_BIN_DIR "C:/tools/vcpkg/installed/x64-windows/bin")
+
     set(DLL_FILES
-        "C:/dev/vcpkg/installed/x64-windows/bin/SDL2.dll"
-        "C:/dev/vcpkg/installed/x64-windows/bin/SDL2_image.dll"
-        "C:/dev/vcpkg/installed/x64-windows/bin/jpeg62.dll"
-        "C:/dev/vcpkg/installed/x64-windows/bin/libpng16.dll"
-        "C:/dev/vcpkg/installed/x64-windows/bin/zlib1.dll"
-        "C:/dev/vcpkg/installed/x64-windows/bin/SDL2_ttf.dll"
-        "C:/dev/vcpkg/installed/x64-windows/bin/SDL2_mixer.dll"
-        "C:/dev/vcpkg/installed/x64-windows/bin/glew32.dll"
-        "C:/dev/local/assimp/bin/assimp-vc143-mt.dll"
+        "${VCPKG_BIN_DIR}/SDL2.dll"
+        "${VCPKG_BIN_DIR}/SDL2_image.dll"
+        "${VCPKG_BIN_DIR}/jpeg62.dll"
+        "${VCPKG_BIN_DIR}/libpng16.dll"
+        "${VCPKG_BIN_DIR}/zlib1.dll"
+        "${VCPKG_BIN_DIR}/SDL2_ttf.dll"
+        "${VCPKG_BIN_DIR}/SDL2_mixer.dll"
+        "${VCPKG_BIN_DIR}/glew32.dll"
+        "${VCPKG_BIN_DIR}/assimp-vc143-mt.dll"
     )
 
     foreach(dll ${DLL_FILES})
@@ -84,18 +78,6 @@ if(WIN32)
             COMMENT "Copying ${dll} to ${CMAKE_BINARY_DIR}"
         )
     endforeach()
-
-
-    # Assimp DLL のコピー先はビルドディレクトリ
-    set(ASSIMP_DLL_PATH "C:/dev/local/assimp/bin/assimp-vc143-mt.dll")  # バージョンに合わせて適宜変更
-
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${ASSIMP_DLL_PATH}
-            ${CMAKE_BINARY_DIR}
-        COMMENT "Copying Assimp DLL to build directory"
-    )
-
 
 elseif(UNIX AND NOT APPLE)
     message(STATUS "Configuring for Linux build")
