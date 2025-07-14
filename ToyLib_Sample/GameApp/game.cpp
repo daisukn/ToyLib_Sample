@@ -9,7 +9,7 @@ TOYLIB_REGISTER_APP(Game)
 Game::Game()
 : Application()
 {
-
+    
 }
 
 Game::~Game()
