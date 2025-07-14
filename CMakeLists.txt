@@ -116,19 +116,17 @@ elseif(APPLE)
     message(STATUS "Configuring for macOS build")
 
     find_package(OpenGL REQUIRED)
-    #pkg_check_modules(SDL2 REQUIRED sdl2)
-    #pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
     find_package(SDL2 REQUIRED HINTS /opt/homebrew/opt/sdl2)
     find_package(SDL2_image REQUIRED HINTS /opt/homebrew/opt/sdl2_image)
     find_package(SDL2_mixer REQUIRED HINTS /opt/homebrew/opt/sdl2_mixer)
     find_package(GLEW REQUIRED HINTS /opt/homebrew/opt/glew)
-    find_package(ASSIMP REQUIRED)
+    find_package(ASSIMP REQUIRED HINTS /opt/homebrew/opt/assimp)
 
     include_directories(
         /opt/homebrew/include
-        /usr/local/include
         ${SDL2_INCLUDE_DIRS}
         ${SDL2_IMAGE_INCLUDE_DIRS}
+        ${SDL2_MIXER_INCLUDE_DIRS}
         ${GLEW_INCLUDE_DIRS}
         ${ASSIMP_INCLUDE_DIRS}
     )
