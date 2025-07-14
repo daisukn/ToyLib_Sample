@@ -137,7 +137,7 @@ elseif(APPLE)
         SDL2_image::SDL2_image
         SDL2_mixer::SDL2_mixer
         GLEW::GLEW
-        ${ASSIMP_LIBRARIES}
+        assimp::assimp
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreVideo"
