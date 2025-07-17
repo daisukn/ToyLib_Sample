@@ -146,7 +146,7 @@ elseif(APPLE)
 
     set_target_properties(${PROJECT_NAME} PROPERTIES
         BUILD_WITH_INSTALL_RPATH TRUE
-        INSTALL_RPATH "@executable_path/../lib;/opt/homebrew/lib;/usr/local/lib"
+        INSTALL_RPATH "@executable_path/../lib;/opt/homebrew/lib"
     )
 endif()
 
