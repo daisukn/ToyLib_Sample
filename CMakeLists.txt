@@ -89,7 +89,7 @@ elseif(UNIX AND NOT APPLE)
     pkg_check_modules(SDL2_TTF REQUIRED SDL2_ttf)
     pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
     find_package(GLEW REQUIRED)
-    #find_package(ASSIMP REQUIRED)
+    pkg_check_modules(ASSIMP REQUIRED assimp)
 
     include_directories(
         ${SDL2_INCLUDE_DIRS}
@@ -97,8 +97,7 @@ elseif(UNIX AND NOT APPLE)
         ${SDL2_TTF_INCLUDE_DIRS}
         ${SDL2_MIXER_INCLUDE_DIRS}
         ${GLEW_INCLUDE_DIRS}
-        #${ASSIMP_INCLUDE_DIRS}
-        /usr/local/include
+        ${ASSIMP_INCLUDE_DIRS}
     )
 
     target_link_libraries(${PROJECT_NAME}
@@ -108,8 +107,7 @@ elseif(UNIX AND NOT APPLE)
         ${SDL2_TTF_LIBRARIES}
         ${SDL2_MIXER_LIBRARIES} 
         ${GLEW_LIBRARIES}
-        #${ASSIMP_LIBRARIES}
-        assimp
+        ${ASSIMP_LIBRARIES}
     )
 
 elseif(APPLE)
