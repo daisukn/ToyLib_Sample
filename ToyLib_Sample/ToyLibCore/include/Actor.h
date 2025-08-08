@@ -113,6 +113,10 @@ public:
         return results;
     }
 
+    // Actor IDを設定/取得
+    void SetActorID(const std::string actorID) { mActorID = actorID; }
+    std::string GetActorID() const { return mActorID; }
+    
     
 private:
     // マトリックス
@@ -130,6 +134,9 @@ private:
     
     // ステータス
     enum State mStatus; // emum State 状態を管理
+    
+    // actor ID
+    std::string mActorID;
 
     
 

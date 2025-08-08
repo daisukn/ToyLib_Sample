@@ -14,6 +14,7 @@ Actor::Actor(Application* a)
 , mScale(1.0f)
 , mApp(a)
 , mIsRecomputeWorldTransform(true)
+, mActorID("Unnamed Actor")
 {
 
 }
