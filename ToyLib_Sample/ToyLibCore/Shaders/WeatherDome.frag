@@ -8,6 +8,7 @@ uniform int uWeatherType;     // 0: Clear, 1: Cloudy, 2: Rain, 3: Storm, 4: Snow
 uniform float uTimeOfDay;     // 0.0〜1.0（夜→昼→夜）
 uniform vec3 uSunDir;         // 太陽ベクトル（ワールド空間）
 
+/*
 // --- ノイズ関数 ---
 float hash(vec2 p)
 {
@@ -32,6 +33,47 @@ float fbm(vec2 p)
     {
         value += amp * noise(p);
         p *= 2.0;
+        amp *= 0.5;
+    }
+    return value;
+}
+*/
+
+// --- 置き換え：sinハッシュ禁止版 ---
+// 高速・安定な2Dハッシュ（sin不使用）
+float hash12(vec2 p) {
+    vec3 p3 = fract(vec3(p.x, p.y, p.x) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+// Value noise（バイリニア補間）
+float vnoise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+
+    // コーナーの乱数
+    float a = hash12(i);
+    float b = hash12(i + vec2(1.0, 0.0));
+    float c = hash12(i + vec2(0.0, 1.0));
+    float d = hash12(i + vec2(1.0, 1.0));
+
+    // Hermite補間（= 元の u と同じ）
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    // 2D補間
+    return mix(mix(a, b, u.x),
+               mix(c, d, u.x), u.y);
+}
+
+float fbm(vec2 p) {
+    float value = 0.0;
+    float amp   = 0.5;
+    // pが巨大化して精度落ちしないように、各オクターブでwrap
+    for (int i = 0; i < 5; ++i) {
+        value += amp * vnoise(p);
+        p = (p * 2.0);
+        p = mod(p, 1024.0); // ★ ここ重要：範囲を畳み込んでsin問題を根絶
         amp *= 0.5;
     }
     return value;

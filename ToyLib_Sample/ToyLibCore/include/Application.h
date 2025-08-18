@@ -16,7 +16,7 @@ public:
     virtual ~Application();
 
     // 初期化
-    bool Initialize();
+    virtual bool Initialize();
     // メインループ
     void RunLoop();
     // 終了処理
