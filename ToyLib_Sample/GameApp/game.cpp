@@ -59,7 +59,7 @@ void Game::InitGame()
     auto fireActor = CreateActor<Actor>();
     auto fireMesh = fireActor->CreateComponent<MeshComponent>();
     fireMesh->SetMesh(GetAssetManager()->GetMesh("Assets/campfile.x"));
-    
+  
     fireActor->SetPosition(Vector3(-15, 0, 15));
     fireActor->SetScale(0.03f);
     auto fireCollider = fireActor->CreateComponent<ColliderComponent>();
@@ -80,6 +80,21 @@ void Game::InitGame()
                                   5.5,
                                   ParticleComponent::P_SMOKE);
     particleComp->SetAddBlend(true);
+
+    
+    // 先行者
+    auto sksActor = CreateActor<Actor>();
+    auto sksMesh = sksActor->CreateComponent<MeshComponent>();
+    sksMesh->SetMesh(GetAssetManager()->GetMesh("Assets/sks.x"));
+  
+    sksActor->SetPosition(Vector3(-45, -100, 25));
+    sksActor->SetScale(0.0015f);
+    auto sksCollider = sksActor->CreateComponent<ColliderComponent>();
+    sksCollider->GetBoundingVolume()->ComputeBoundingVolume(GetAssetManager()->GetMesh("Assets/sks.x")->GetVertexArray());
+    sksCollider->SetDisp(true);
+    sksCollider->SetFlags(C_GROUND | C_WALL | C_FOOT);
+    sksActor->CreateComponent<GravityComponent>();
+    
     
     /*
     auto sunlightActor = CreateActor<Actor>();
