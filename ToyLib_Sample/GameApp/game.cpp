@@ -223,7 +223,7 @@ void Game::LoadData()
     mWeather = std::make_unique<WeatherManager>();
     mWeather->SetWeatherDome(dome);
     mWeather->SetWeatherOverlay(overlay);
-    mWeather->SetTimeSpeed(0.001f);
+    mWeather->SetTimeSpeed(0.0001f);
     
     
     // BGM

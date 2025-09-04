@@ -19,7 +19,7 @@ void WeatherManager::Update(float deltaTime)
     mWeatherDome->SetTime(mTime);
     mCount++;
     
-    if (mCount % 500 == 0)
+    if (mCount % 5000 == 0)
     {
         RandomizeWeather();
     }
