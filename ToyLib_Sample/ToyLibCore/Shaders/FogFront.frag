@@ -7,11 +7,13 @@ uniform vec2 uResolution;
 uniform float uFogAmount;
 
 // --- ハッシュベース簡易ノイズ関数 ---
-float hash(vec2 p) {
+float hash(vec2 p)
+{
     return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
-float noise(vec2 p) {
+float noise(vec2 p)
+{
     vec2 i = floor(p);
     vec2 f = fract(p);
     float a = hash(i);
@@ -22,7 +24,8 @@ float noise(vec2 p) {
     return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
 }
 
-float fbm(vec2 p) {
+float fbm(vec2 p)
+{
     float value = 0.0;
     float amplitude = 0.5;
     for (int i = 0; i < 4; ++i) {
